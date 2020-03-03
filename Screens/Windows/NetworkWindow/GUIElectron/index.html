@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Simple Layout Demo</title>
+	<link rel="stylesheet" href="./materialize/css/materialize.css">
+
+	<!--Temporary Icons from google, future versions will ref local files-->
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+	<script>window.$ = window.jQuery = require('./jquery/jquery-3.4.1.min.js');</script>
+</head>
+
+<body id="body" style="background-color: gold; padding: 0px;">
+	<nav class="nav-extended">
+		<div class="nav-wrapper grey darken-4">
+			<div class="right brand-logo"><img src="./images/C5ISR.png" style="height: 50px;"></div>
+			<a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+			<ul id="nav-mobile" class="left hide-on-med-and-down">
+				<li><a href="#">New Scenario</a></li>
+			</ul>
+		</div>
+		<div class="nav-content grey darken-3">
+			<ul class="tabs tabs-transparent">
+				<li class="tab"><a class="active" href="#test1">Scenario 1</a></li>
+				<li class="tab"><a href="#test2">Scenario 2</a></li>
+				<li class="tab"><a href="#test3">Scenario 3</a></li>
+				<li class="tab"><a href="#test4">Scenario 4</a></li>
+			</ul>
+		</div>
+	</nav>
+
+    <div class="row" id="panesRow" style="height: 664px; margin-bottom: 0px;">
+
+		<div class="col s1 grey lighten-3" style="height: 100%; padding: 0px;" id="NetworkItemsPane">
+			<div class="collection">
+				<div class="collection-item">Connection</div>
+				<div class="collection-item">Router</div>
+				<div class="collection-item">Firewall</div>
+			</div>
+		</div>
+  
+		<div class="col s8" style="height: 100%; background-color: white;">
+
+			<!-- Network Graph -->
+			<svg id="svg" style="position: relative; height: 100%; width: 100%;"></svg>
+
+			<!-- <div class="fixed-action-btn" style="position: relative; float: left; background-color: green;">
+				<a class="btn-floating btn-large blue">
+					<i class="large material-icons">add</i>
+				</a>
+				<ul>
+					<li><a class="btn-floating red"><i class="material-icons">insert_chart</i></a></li>
+					<li><a class="btn-floating yellow darken-1"><i class="material-icons">format_quote</i></a></li>
+					<li><a class="btn-floating green"><i class="material-icons">publish</i></a></li>
+					<li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>
+				</ul>
+			</div> -->
+			
+		</div>
+  
+		<div class="col s3 grey lighten-3" style="height: 100%; padding: 0px; overflow-y: scroll;" >
+			<div class="card" style="margin: 1px;">
+				<div class="card-image">
+				  <img src="./images/desktop_mac-24px.svg" height="100px" width="100px" style="padding-top: 20px;">
+				</div>
+				<div class="card-content" style="padding: 0px;">
+					<ul class="center-align">
+						<li><b>Name: </b>VM-B1</li>
+						<li><b>OS: </b>Windows 10</li>
+						<li><b>Vulnerable App: </b> p0</li>
+						<li><b>Collector: </b> Cuckoo</li>
+					</ul>
+				</div>
+				<div class="card-action center-align">
+					<a class="waves-effect waves-dark btn grey">Edit</a>
+					<a class="waves-effect waves-dark btn red">Delete</a>
+				</div>
+			</div>
+			<ul class="collapsible expandable" style="margin: 0px;">
+				<li class="active">
+				  <div class="collapsible-header"><i class="material-icons">device_hub</i>Network</div>
+				  <div class="collapsible-body">
+					  <ul>
+						  <li><b>IP:</b><input type="text" minlength="7" maxlength="15" size="15" pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$"></li>
+						  <li><b>Port:</b><input type="number" maxlength="5"></li>
+					  </ul>
+				  </div>
+				</li>
+				<li>
+				  <div class="collapsible-header"><i class="material-icons">remove_red_eye</i>Collectors</div>
+				  <div class="collapsible-body">
+					<div>
+						<label for="cars">Collector:</label>
+						<select id="cars">
+							<option value="volvo">Cuckoo</option>
+							<option value="saab">ECELd</option>
+						</select> 
+					</div>
+				  </div>
+				</li>
+				<li>
+				  <div class="collapsible-header"><i class="material-icons">developer_board</i>Binaries</div>
+				  <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+				</li>
+			</ul>
+		</div>
+	</div>
+</body>
+	<script type="text/javascript" src="./materialize/js/materialize.js"></script>
+	<script type="text/javascript" src="./d3/d3.js"></script>
+	<script type="text/javascript" src="./d3-force-directed-graph-master/code/index.js"></script>
+	
+	<!--Initialize FAB -->
+	<!-- <script>
+		document.addEventListener('DOMContentLoaded', function() {
+			var elems = document.querySelectorAll('.fixed-action-btn');
+			var instances = M.FloatingActionButton.init(elems, options);
+		});
+
+		// Or with jQuery
+		$(document).ready(function(){
+			$('.fixed-action-btn').floatingActionButton();
+		});
+	</script> -->
+
+	<!-- Right Panel collapsible -->
+	<script>
+		var rightPane = document.querySelector('.collapsible.expandable');
+		var rightPaneCollapsible = M.Collapsible.init(rightPane, {accordion: false});	
+	</script>
+</html>
