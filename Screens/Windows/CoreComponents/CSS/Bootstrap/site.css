@@ -1,0 +1,29 @@
+body {
+    height: 100%;
+	font-family: 'Segoe UI', Helvetica, sans-serif;
+}
+
+#content {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    height:540px;
+}
+
+#content_ns {
+	-webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    height:440px;
+}
+
+.list-group{
+    max-height: 480px;
+    overflow-auto;
+    -webkit-overflow-scrolling: touch;
+	overflow-x: hidden;
+}
+
+#pathStyle{
+	font-size:10px;
+}

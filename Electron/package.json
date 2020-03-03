@@ -1,0 +1,14 @@
+{
+  "name": "blackhole-electron",
+  "version": "1.0.0",
+  "description": "Practicum Team 3 - BlackHole with Electron",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "elfreddye",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^8.0.3"
+  }
+}
