@@ -7,19 +7,173 @@
 		<link href="../CoreComponents/CSS/Bootstrap/all.css" rel="stylesheet">
 		
         <meta charset="UTF-8">
-        <title>MachineList</title>
+        <title>BlackHole</title>
     </head>
     <body>
+		<div class="container">
+		
+			<div class="row">
+				<div class="col-md-12 text-right" style="height:45px; padding-top:5px;">
+					<button type="submit" onClick="window.location='../welcomeWindow/welcomeWindow.html';" class="btn btn-primary fa fa-backward"></button>
+				</div>
+			</div>
+			
+			<!--form>
+				<div class="form-group">
+					<label for="exampleInputEmail1">Scenario Name</label>
+					<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter scenario name"-->
+					<!--small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small-->
+				<!--/div>				
+			</form-->
 
-        <h1>Machine List</h1>
-        <button type="button" onClick="window.location='../newScenarioWindow/newScenario.html';" class="btn btn-primary">
-            EditMachine
-        </button>
-        <button type="button" onClick="window.location='../newScenarioWindow/newScenario.html';" class="btn btn-primary">
-            NewMachine
-        </button>
-        <button type="button" onClick="window.location='../newScenarioWindow/newScenario.html';" class="btn btn-primary">
-            Save
-        </button>
+			<div class="row" id="content_ns" style="padding-top:8px">
+				<div class="col-md-6" style="border-right:double gray;">
+					<div class="text-right" style="padding-bottom:10px;">
+						<button type="submit" onClick="window.location='../MachineEditWindow/machineEdit.html';" class="btn btn-primary">Add</button>		
+					</div>
+					<table class="table">
+					  <thead>
+						<tr>
+						  <th scope="col">#</th>
+						  <th scope="col">VM Name</th>
+						  <th scope="col">Operating System</th>
+						  <th scope="col"></th>
+						</tr>
+					  </thead>
+					  <tbody>
+						<tr>
+						  <th scope="row">1</th>
+						  <td>My Attacker</td>
+						  <td>Windows 10</td>
+						  <td><i class="fa fa-edit"></i></td>
+						</tr>
+						<tr>
+						  <th scope="row">2</th>
+						  <td>My Attacker</td>
+						  <td>Windows 10</td>
+						  <td><i class="fa fa-edit"></i></td>
+						</tr>
+						<tr>
+						  <th scope="row">3</th>
+						   <td>My Attacker</td>
+						  <td>Windows 10</td>
+						  <td><i class="fa fa-edit"></i></td>
+						</tr>
+					  </tbody>
+					</table>
+					
+				</div>
+				
+				<div class="col-md-6">
+					<div class="text-right" style="padding-bottom:10px;">
+							<button type="submit" class="btn btn-primary">Add</button>		
+					</div>
+				
+					<table class="table">
+					  <thead>
+						<tr>
+						 <th scope="col">#</th>
+						  <th scope="col">VM Name</th>
+						  <th scope="col">Operating System</th>
+						  <th scope="col"></th>
+						</tr>
+					  </thead>
+					  <tbody>
+						<tr>
+						  <th scope="row">1</th>
+						  <td>My Victim</td>
+						  <td>Linux Kali</td>
+						  <td><i class="fa fa-edit"></i></td>
+						</tr>
+						<tr>
+						  <th scope="row">2</th>
+						   <td>My Victim</td>
+						  <td>Linux Kali</td>
+						  <td><i class="fa fa-edit"></i></td>
+						</tr>
+						<tr>
+						  <th scope="row">3</th>
+						   <td>My Victim</td>
+						  <td>Linux Kali</td>
+						  <td><i class="fa fa-edit"></i></td>
+						</tr>
+					  </tbody>
+					</table>	
+					<br/><br/><br/><br/><br/>
+					<div class="text-right">						
+						<button type="submit" class="btn btn-primary">Execute</button>		
+					</div>
+					<!--div class="list-group">
+					  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
+						<div class="d-flex w-100 justify-content-between">
+						  <h5 class="mb-1">Kali Linux VM</h5>
+						  <small>Running</small>
+						</div>
+						<p class="mb-1">Virtual Machine with malware exposed.</p>
+						<small>Operation System: Kali - Memory: 4gb - Space: 40gb - IP: 127.0.0.1 - Port: 443</small>
+					  </a>
+					 <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+						<div class="d-flex w-100 justify-content-between">
+						  <h5 class="mb-1">Windows 10</h5>
+						  <small>Running</small>
+						</div>
+						<p class="mb-1">Virtual Machine with malware exposed.</p>
+						<small>Operation System: Kali - Memory: 4gb - Space: 40gb - IP: 127.0.0.1 - Port: 443</small>
+					  </a>
+					 <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+						<div class="d-flex w-100 justify-content-between">
+						  <h5 class="mb-1">Windows Server 2008</h5>
+						  <small>off</small>
+						</div>
+						<p class="mb-1">Virtual Machine with malware exposed.</p>
+						<small>Operation System: Kali - Memory: 4gb - Space: 40gb - IP: 127.0.0.1 - Port: 443</small>
+					  </a>
+					  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+						<div class="d-flex w-100 justify-content-between">
+						  <h5 class="mb-1">List group item heading</h5>
+						  <small class="text-muted">3 days ago</small>
+						</div>
+						<p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+						<small class="text-muted">Donec id elit non mi porta.</small>
+					  </a>
+					  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+						<div class="d-flex w-100 justify-content-between">
+						  <h5 class="mb-1">List group item heading</h5>
+						  <small class="text-muted">3 days ago</small>
+						</div>
+						<p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+						<small class="text-muted">Donec id elit non mi porta.</small>
+					  </a>
+					  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+						<div class="d-flex w-100 justify-content-between">
+						  <h5 class="mb-1">List group item heading</h5>
+						  <small class="text-muted">3 days ago</small>
+						</div>
+						<p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+						<small class="text-muted">Donec id elit non mi porta.</small>
+					  </a>
+					  				<div class="text-right" style="padding-top:10px; padding-bottom:10px;">
+					<button type="button" class="btn btn-secondary btn-sm fa fa-trash">Remove</button>
+					<button type="button" class="btn btn-primary btn-sm fa fa-edit">Edit</button>		
+
+
+<br/><br/><br/><br/><br/><br/><br/>
+					<div class="text-right">
+						<button type="submit" class="btn btn-primary">Add</button>		
+					</div>
+
+					
+				</div>
+					  <button type="submit" class="btn btn-primary">Submit</button>
+					</div-->
+				</div>
+			</div>
+			
+			
+			<footer class="footer fixed-bottom container">
+					<hr>
+					<p>&copy; 2020 Company, Inc.</p>
+			</footer>
+		</div>
     </body>
 </html>
