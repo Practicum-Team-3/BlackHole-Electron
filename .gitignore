@@ -1,3 +1,4 @@
 
-Electron/node_modules
-**/.DS_Store
+Electron/node_modules/*
+!Electron/node_modules/axios
+*.DS_Store
