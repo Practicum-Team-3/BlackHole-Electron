@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html>
     <head>
+		<script>
+			window.jQuery = window.$ = require('../../../Electron/node_modules/jquery/dist/jquery');
+			</script>
 		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css">	
 		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/site.css">	
 		<script scr="../CoreComponents/CSS/Bootstrap/bootstrap.js"></script>
 		<link href="../CoreComponents/CSS/Bootstrap/all.css" rel="stylesheet">
 		
         <meta charset="UTF-8">
-        <title>Machine Edit</title>
-    </head>
+		<title>Machine Edit</title>
+		<script src="../CoreComponents/CSS/Bootstrap/bootstrap.min.js"></script>
+	</head>
+	<h1>Edit Machine</h1>
     <body>
+		
 
 			<div id="accordion">
 			  <div class="card">
@@ -31,21 +37,50 @@
 				<div class="card-header" id="headingTwo">
 				  <h5 class="mb-0">
 					<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-					  Advance Settings
+					  System Settings
 					</button>
 				  </h5>
 				</div>
 				<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
 				  <div class="card-body">
-					Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+					<!-- Build System Settings window-->
+					<div class="container-fluid">
+						<div class="row">
+						  <div class="col-sm-4" style="border-right:double gray;";>
+							<!-- Build motherboard section-->
+							<h3 align="center">Motherboard</h3>
+							</div>
+						  <div class="col-sm-4" style="border-right:double gray;">
+							<!-- Build processor section-->
+							<h3 align="center">Processor</h3>
+							</div>
+						  <div class="col-sm-4" style="border-right:double gray;">
+							<!-- Build acceleration section-->
+							<h3 align="center">Acceleration</h3>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-4" style="border-right:double gray;">
+							  <!-- Build motherboard section-->
+							  <h6>Base Memory:<button type="button" class="btn btn-primary float-right">will be spinbox</button></h6>
+							  </div>
+							<div class="col-sm-4" style="border-right:double gray;">
+							  <!-- Build processor section-->
+							  <h6>Processor(s):</h6>
+							  </div>
+							<div class="col-sm-4" style="border-right:double gray;">
+							  <!-- Build acceleration section-->
+							  <h6>Paravirtualization Interface:</h6>
+							  </div>
+						  </div>
+					  </div>
 				  </div>
 				</div>
 			  </div>
 			
 			</div>
-        <h1>Machine Edit</h1>
         <button type="button" onClick="window.location='../newScenarioWindow/newScenario.html';" class="btn btn-primary">
-			Create
+			Save
         </button>
             
 		<button type="button" onClick="window.location='../MachineListWindow/machineList.html';" class="btn btn-primary">
