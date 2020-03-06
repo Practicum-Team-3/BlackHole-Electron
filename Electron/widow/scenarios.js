@@ -134,7 +134,6 @@ try{
     }catch{
         console.log("Automatic instance of widow.scenarios failed to start")
     }
-    
 }
 
 

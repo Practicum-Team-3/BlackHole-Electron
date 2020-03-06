@@ -13,7 +13,7 @@ Access to the widow environment is persistent across views and generated automat
 
 To access available scenarios:
 
-    widow.scenarios.getScenarioNameList()
+    widow.scenarios.getScenarioNamesList()
     
 To access a specific scenario:
     

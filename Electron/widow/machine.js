@@ -1,15 +1,20 @@
 
 
 function Machine(descriptor){
-    this.descriptor = descriptor
+    this.descriptor = descriptor==null ? JSON.parse(require('./widowDefaults.js').machineDescriptor) : descriptor
     
+    this.networkSettings = {}
+    
+    // Special properties
+    this.sharedFolders = new Set()
 }
 
 // === NAME
 Machine.prototype.getName = function(){
     return this.descriptor["name"]
 }
-
+// Set the internal name of the machine
+// (discouraged) rename machine from scenario instead
 Machine.prototype.setName = function(name){
     this.descriptor["name"] = name
 }
@@ -21,6 +26,11 @@ Machine.prototype.getOs = function(){
 
 Machine.prototype.setOs = function(id){
     this.descriptor["os"] = id
+}
+
+// === Type
+Machine.prototype.getIsAttacker = function(id){
+    return this.descriptor["is_attacker"]
 }
 
 
