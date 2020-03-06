@@ -2,6 +2,7 @@
 
 function Scenario(descriptor){
     this.descriptor = descriptor
+    this.machineNameList = null
     this.machines = {}
     
     // Create machine objects from the descriptor
@@ -24,6 +25,11 @@ Scenario.prototype.getId = function(){
 
 Scenario.prototype.setId = function(id){
     this.descriptor["scenario_id"] = id
+}
+
+// === Machines
+Scenario.prototype.getMachineNamesList = function(id){
+    return this.machineNameList
 }
 
 /*========================*/

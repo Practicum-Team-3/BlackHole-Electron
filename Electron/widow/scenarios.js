@@ -9,9 +9,13 @@ function Scenarios(widowAddress){
     
 }
 
-/*========================*/
-/*=== Get scenarios
-/*========================*/
+//========================
+//=== Get scenarios
+//========================
+
+Scenarios.prototype.getScenarioNamesList = function(name){
+    return this.nameList
+}
 
 Scenarios.prototype.getScenarioByName = function(name){
     return this.loaded[name]
@@ -27,35 +31,37 @@ Scenarios.prototype.getAllScenarios = function(){
     return scenarioList
 }
 
-/*========================*/
-/*=== Add scenarios
-/*========================*/
+//========================
+//=== Add scenarios
+//========================
+
+Scenarios.prototype.addScenario = function(){
+    
+}
+
+//========================
+//=== Remove scenarios
+//========================
 
 //...
 
-/*========================*/
-/*=== Remove scenarios
-/*========================*/
-
-//...
-
-/*========================*/
-/*=== Scenario saving
-/*========================*/
-
+//========================
+//=== Scenario saving
+//========================
+/*
 // Save scenario name on widow
 Scenarios.prototype.saveScenarioDeclaration = function(scenario){
     
 }
-
+*/
 // Call to trigger a save to Widow
-Scenarios.prototype.saveScenario = function(scenario){
+Scenarios.prototype.saveScenarioByName = function(name){
     
 }
 
-/*========================*/
-/*=== Scenario loading
-/*========================*/
+//========================
+//=== Scenario loading
+//========================
 
 // === Contact Widow and get the list of scenarios === //
 Scenarios.prototype.loadScenarios = function(){
@@ -112,9 +118,9 @@ Scenarios.prototype.loadAllScenarios = function(){
     }.bind(this))
 }
 
-/*======================================================*/
-/*=== Automatic instance for shared Electron runtime ===*/
-/*======================================================*/
+//======================================================
+//=== Automatic instance for shared Electron runtime ===
+//======================================================
 try{
     // Try to get existing scenarios instance from electron.remote
     var widow = {}
