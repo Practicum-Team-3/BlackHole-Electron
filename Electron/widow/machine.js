@@ -1,7 +1,7 @@
 
 
 function Machine(descriptor){
-    this.descriptor = descriptor==null ? JSON.parse(require('./widowDefaults.js').machineDescriptor) : descriptor
+    this.descriptor = descriptor==null ? JSON.parse(require('./defaults.js').machineDescriptor) : descriptor
     
     this.networkSettings = {}
     

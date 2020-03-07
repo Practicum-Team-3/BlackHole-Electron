@@ -1,7 +1,7 @@
 var Machine = require('./machine.js').Machine
 
 function Scenario(descriptor){
-    this.descriptor = descriptor==null ? JSON.parse(require('./widowDefaults.js').scenarioDescriptor) : descriptor
+    this.descriptor = descriptor==null ? JSON.parse(require('./defaults.js').scenarioDescriptor) : descriptor
     this.machines = {}
     
     // Create machine objects from the descriptor
