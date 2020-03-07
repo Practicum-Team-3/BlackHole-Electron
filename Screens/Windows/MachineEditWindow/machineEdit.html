@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+
+
+
 <html>
     <head>
 		<script>
@@ -67,7 +70,22 @@
 											<tr>
 												<td>Base Memory:</td>
 												<td>
-													<input type="range" class="custom-range" min="0" max="5" step="0.5" id="customRange3">
+													<div class="slidecontainer">
+														<input type="range" min="4" max="8192" class="custom-range" id="baseMemory_slider">
+														<p align="right"><span id="baseMemoryOut"></span> MB</p>
+													  </div>
+													  
+													  <!--to show slider value-->
+													  <script>
+														var memSlider = document.getElementById("baseMemory_slider");
+														var memOutput = document.getElementById("baseMemoryOut");
+														memOutput.innerHTML = memSlider.value;
+														
+														memSlider.oninput = function() {
+														  memOutput.innerHTML = this.value;
+														}
+													</script>
+													
 												</td>
 											</tr>
 											<tr>
@@ -75,23 +93,23 @@
 												<td>
 													<form action="/action_page.php">
 													<div class="form-check">
-													<label class="form-check-label" for="check1">
-														<input type="checkbox" class="form-check-input" id="check1" name="option1" value="something" checked>Hard Disk
+													<label class="form-check-label" for="hardDisk_checkbox">
+														<input type="checkbox" class="form-check-input" id="hardDisk_checkbox" name="option1" value="something">Hard Disk
 													</label>
 													</div>
 													<div class="form-check">
-													<label class="form-check-label" for="check2">
-														<input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">Optical
+													<label class="form-check-label" for="optical_checkbox">
+														<input type="checkbox" class="form-check-input" id="optical_checkbox" name="option2" value="something">Optical
 													</label>
 													</div>
 													<div class="form-check">
-														<label class="form-check-label" for="check2">
-														<input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">Floppy
+														<label class="form-check-label" for="floppy_checkbox">
+														<input type="checkbox" class="form-check-input" id="floppy_checkbox" name="option2" value="something">Floppy
 														</label>
 													</div>
 													<div class="form-check">
-														<label class="form-check-label" for="check2">
-														<input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">Network
+														<label class="form-check-label" for="network_checkbox">
+														<input type="checkbox" class="form-check-input" id="network_checkbox" name="option2" value="something">Network
 														</label>
 													</div>
 													</form>
@@ -101,7 +119,7 @@
 													<td>
 														<form action="/action_page.php">
 															<div class="form-group">
-															<select class="form-control" id="sel1" name="sellist1">
+															<select class="form-control" id="chipset_dropdown" name="sellist1">
 																<option>PIIX3</option>
 																<option>ICH9</option>
 															</select>
@@ -113,7 +131,7 @@
 												<td>Pointing Device:</td>
 												<td><form action="/action_page.php">
 													<div class="form-group">
-													<select class="form-control" id="sel1" name="sellist1">
+													<select class="form-control" id="pointingDevice_dropdown" name="sellist1">
 														<option>PS/2 Mouse</option>
 														<option>USB Tablet</option>
 														<option>USB Multi-Touch Tablet</option>
@@ -126,18 +144,18 @@
 												<td>
 													<form action="/action_page.php">
 													<div class="form-check">
-													<label class="form-check-label" for="check1">
-														<input type="checkbox" class="form-check-input" id="check1" name="option1" value="something" checked>Enable I/O APIC
+													<label class="form-check-label" for="enableIO_checkbox">
+														<input type="checkbox" class="form-check-input" id="enableIO_checkbox" name="option1" value="something">Enable I/O APIC
 													</label>
 													</div>
 													<div class="form-check">
-													<label class="form-check-label" for="check2">
-														<input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">Enable EFI (special OSes only)
+													<label class="form-check-label" for="enableEFI_checkbox">
+														<input type="checkbox" class="form-check-input" id="enableEFI_checkbox" name="option2" value="something">Enable EFI (special OSes only)
 													</label>
 													</div>
 													<div class="form-check">
-														<label class="form-check-label" for="check2">
-														<input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">Hardware Clock in UTC Time
+														<label class="form-check-label" for="hardwareClockUTC_checkbox">
+														<input type="checkbox" class="form-check-input" id="hardwareClockUTC_checkbox" name="option2" value="something">Hardware Clock in UTC Time
 														</label>
 													</div>													
 													</form>
@@ -166,13 +184,42 @@
 										  <tr>
 											<td>Processor(s):</td>
 											<td>
-												<input type="range" class="custom-range" min="0" max="5" step="0.5" id="customRange3">
+												<div class="slidecontainer">
+													<input type="range" min="1" max="4" class="custom-range" id="processor_slider">
+													<p align="right"><span id="processorOut"></span> CPU(s)</p>
+												  </div>
+												  
+												  <!--to show slider value-->
+												  <script>
+													var processorSlider = document.getElementById("processor_slider");
+													var processorOutput = document.getElementById("processorOut");
+													processorOutput.innerHTML = processorSlider.value;
+													
+													processorSlider.oninput = function() {
+													  processorOutput.innerHTML = this.value;
+													}
+												</script>
 											</td>
 										  </tr>
 										  <tr>
 											<td>Execution Cap:</td>
 											<td>
-												<input type="range" class="custom-range" min="0" max="5" step="0.5" id="customRange3">
+												<div class="slidecontainer">
+													<input type="range" min="1" max="100" class="custom-range" id="executionCap_slider">
+													<p align="right"><span id="executionCapOut"></span> %</p>
+												  </div>
+												  
+												  <!--to show slider value-->
+												  <script>
+													var executionCapSlider = document.getElementById("executionCap_slider");
+													var executionCapOutput = document.getElementById("executionCapOut");
+													executionCapOutput.innerHTML = executionCapSlider.value;
+													
+													executionCapSlider.oninput = function() {
+														executionCapOutput.innerHTML = this.value;
+													}
+												</script>												
+											</td>
 											</td>
 										  </tr>
 										  <tr>
@@ -181,7 +228,7 @@
 												<form action="/action_page.php">
 												<div class="form-check">
 												<label class="form-check-label" for="check1">
-													<input type="checkbox" class="form-check-input" id="check1" name="option1" value="something" checked>Enable PAE/NX
+													<input type="checkbox" class="form-check-input" id="enablePAENX_checkbox" name="option1" value="something">Enable PAE/NX
 												</label>
 												</div>																									
 												</form>
@@ -212,7 +259,7 @@
 											<td>
 												<form action="/action_page.php">
 													<div class="form-group">
-													<select class="form-control" id="sel1" name="sellist1">
+													<select class="form-control" id="paravirtualizationInterface_dropdown" name="sellist1">
 														<option>None</option>
 														<option>Default</option>
 														<option>Legacy</option>
@@ -230,12 +277,12 @@
 												<form action="/action_page.php">
 													<div class="form-check">
 													<label class="form-check-label" for="check1">
-														<input type="checkbox" class="form-check-input" id="check1" name="option1" value="something" checked>Enable VT-x/AMD-V
+														<input type="checkbox" class="form-check-input" id="enableVTxAMDV_checkbox" name="option1" value="something">Enable VT-x/AMD-V
 													</label>
 													</div>
 													<div class="form-check">
 													<label class="form-check-label" for="check2">
-														<input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">Enable Nested Paging
+														<input type="checkbox" class="form-check-input" id="enableNestedPaging_checkbox" name="option2" value="something">Enable Nested Paging
 													</label>
 													</div>																									
 												</form>
