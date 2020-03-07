@@ -14,77 +14,252 @@
 		<script src="../CoreComponents/CSS/Bootstrap/bootstrap.min.js"></script>
 	</head>
 	<h1>Edit Machine</h1>
-    <body>
+	<body>
 		
 
 			<div id="accordion">
-			  <div class="card">
+			<div class="card">
 				<div class="card-header" id="headingOne">
-				  <h5 class="mb-0">
+				<h5 class="mb-0">
 					<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-					  Basic Setting
+					Basic Setting
 					</button>
-				  </h5>
+				</h5>
 				</div>
 
 				<div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-				  <div class="card-body">
+				<div class="card-body">
 					Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-				  </div>
 				</div>
-			  </div>
-			  <div class="card">
+				</div>
+			</div>
+			<div class="card">
 				<div class="card-header" id="headingTwo">
-				  <h5 class="mb-0">
+				<h5 class="mb-0">
 					<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-					  System Settings
+					System Settings
 					</button>
-				  </h5>
+				</h5>
 				</div>
+
+				<!--Second section of main accordion-->
 				<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-				  <div class="card-body">
-					<!-- Build System Settings window-->
-					<div class="container-fluid">
-						<div class="row">
-						  <div class="col-sm-4" style="border-right:double gray;";>
-							<!-- Build motherboard section-->
-							<h3 align="center">Motherboard</h3>
-							</div>
-						  <div class="col-sm-4" style="border-right:double gray;">
-							<!-- Build processor section-->
-							<h3 align="center">Processor</h3>
-							</div>
-						  <div class="col-sm-4" style="border-right:double gray;">
-							<!-- Build acceleration section-->
-							<h3 align="center">Acceleration</h3>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-sm-4" style="border-right:double gray;">
-							  <!-- Build motherboard section-->
-							  <h6>Base Memory:<button type="button" class="btn btn-primary float-right">will be spinbox</button></h6>
+					<div class="card-body">
+						<!-- Inside Accordion begins here-->
+						<!-- Build System Settings window-->
+						<div class="container">
+							<h4>System Settings</h4>
+							<div id="accordion2">
+							<!--Motherboard-->
+							  <div class="card">
+								<div class="card-header">
+								  <a class="card-link" data-toggle="collapse" href="#inner1">
+									Motherboard
+								  </a>
+								</div>
+								<div id="inner1" class="collapse show" data-parent="#accordion2">
+								  <div class="card-body">
+									<!--motherboard section-->
+									<h5>Motherboard</h5>
+									<table class="table table-borderless">
+										
+										<tbody>
+											<tr>
+												<td>Base Memory:</td>
+												<td>
+													<input type="range" class="custom-range" min="0" max="5" step="0.5" id="customRange3">
+												</td>
+											</tr>
+											<tr>
+												<td>Boot Order:</td>
+												<td>
+													<form action="/action_page.php">
+													<div class="form-check">
+													<label class="form-check-label" for="check1">
+														<input type="checkbox" class="form-check-input" id="check1" name="option1" value="something" checked>Hard Disk
+													</label>
+													</div>
+													<div class="form-check">
+													<label class="form-check-label" for="check2">
+														<input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">Optical
+													</label>
+													</div>
+													<div class="form-check">
+														<label class="form-check-label" for="check2">
+														<input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">Floppy
+														</label>
+													</div>
+													<div class="form-check">
+														<label class="form-check-label" for="check2">
+														<input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">Network
+														</label>
+													</div>
+													</form>
+												</td>
+											</tr>											
+												<td>Chipset:</td>
+													<td>
+														<form action="/action_page.php">
+															<div class="form-group">
+															<select class="form-control" id="sel1" name="sellist1">
+																<option>PIIX3</option>
+																<option>ICH9</option>
+															</select>
+															</div>
+														</form>
+													</td>
+											</tr>
+											<tr>
+												<td>Pointing Device:</td>
+												<td><form action="/action_page.php">
+													<div class="form-group">
+													<select class="form-control" id="sel1" name="sellist1">
+														<option>PS/2 Mouse</option>
+														<option>USB Tablet</option>
+														<option>USB Multi-Touch Tablet</option>
+													</select>
+													</div>
+												</form></td></td>
+											</tr>
+											<tr>
+												<td>Extended Features:</td>
+												<td>
+													<form action="/action_page.php">
+													<div class="form-check">
+													<label class="form-check-label" for="check1">
+														<input type="checkbox" class="form-check-input" id="check1" name="option1" value="something" checked>Enable I/O APIC
+													</label>
+													</div>
+													<div class="form-check">
+													<label class="form-check-label" for="check2">
+														<input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">Enable EFI (special OSes only)
+													</label>
+													</div>
+													<div class="form-check">
+														<label class="form-check-label" for="check2">
+														<input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">Hardware Clock in UTC Time
+														</label>
+													</div>													
+													</form>
+												</td>
+											</tr>						
+										</tbody>
+										</table>
+								  </div>
+								</div>
 							  </div>
-							<div class="col-sm-4" style="border-right:double gray;">
-							  <!-- Build processor section-->
-							  <h6>Processor(s):</h6>
+							  <!--Processor-->
+							  <div class="card">
+								<div class="card-header">
+								  <a class="collapsed card-link" data-toggle="collapse" href="#inner2">
+								  Processor
+								</a>
+								</div>
+								<div id="inner2" class="collapse" data-parent="#accordion2">
+								  <div class="card-body">
+									<!--processor section-->
+									<h5>Processor</h5>
+									<table class="table table-borderless">
+										<thead>
+										</thead>
+										<tbody>
+										  <tr>
+											<td>Processor(s):</td>
+											<td>
+												<input type="range" class="custom-range" min="0" max="5" step="0.5" id="customRange3">
+											</td>
+										  </tr>
+										  <tr>
+											<td>Execution Cap:</td>
+											<td>
+												<input type="range" class="custom-range" min="0" max="5" step="0.5" id="customRange3">
+											</td>
+										  </tr>
+										  <tr>
+											<td>Extended Features:</td>
+											<td>
+												<form action="/action_page.php">
+												<div class="form-check">
+												<label class="form-check-label" for="check1">
+													<input type="checkbox" class="form-check-input" id="check1" name="option1" value="something" checked>Enable PAE/NX
+												</label>
+												</div>																									
+												</form>
+											</td>
+										  </tr>
+										</tbody>
+									  </table>
+								  </div>
+								</div>
 							  </div>
-							<div class="col-sm-4" style="border-right:double gray;">
-							  <!-- Build acceleration section-->
-							  <h6>Paravirtualization Interface:</h6>
+							  <!--Accelerator-->
+							  <div class="card">
+								<div class="card-header">
+								  <a class="collapsed card-link" data-toggle="collapse" href="#inner3">
+									Accelerator
+								  </a>
+								</div>
+								<div id="inner3" class="collapse" data-parent="#accordion2">
+								  <div class="card-body">
+									<!--accelerator section-->
+									<h5>Accelerator</h5>
+									<table class="table table-borderless">
+										<thead>
+										</thead>
+										<tbody>
+										  <tr>
+											<td>Paravirtualization Interface:</td>
+											<td>
+												<form action="/action_page.php">
+													<div class="form-group">
+													<select class="form-control" id="sel1" name="sellist1">
+														<option>None</option>
+														<option>Default</option>
+														<option>Legacy</option>
+														<option>Minimal</option>
+														<option>Hyper-V</option>
+														<option>KVM</option>
+													</select>
+													</div>
+												</form>
+											</td>
+										  </tr>
+										  <tr>
+											<td>Hardware Virtualization:</td>
+											<td>
+												<form action="/action_page.php">
+													<div class="form-check">
+													<label class="form-check-label" for="check1">
+														<input type="checkbox" class="form-check-input" id="check1" name="option1" value="something" checked>Enable VT-x/AMD-V
+													</label>
+													</div>
+													<div class="form-check">
+													<label class="form-check-label" for="check2">
+														<input type="checkbox" class="form-check-input" id="check2" name="option2" value="something">Enable Nested Paging
+													</label>
+													</div>																									
+												</form>
+											</td>
+										  </tr>										  
+										</tbody>
+									  </table>
+								  </div>
+								</div>
 							  </div>
+							</div>
 						  </div>
-					  </div>
-				  </div>
+					</div>
 				</div>
-			  </div>
+				</div>
+			</div>
 			
 			</div>
-        <button type="button" onClick="window.location='../newScenarioWindow/newScenario.html';" class="btn btn-primary">
+		<button type="button" onClick="window.location='../newScenarioWindow/newScenario.html';" class="btn btn-primary">
 			Save
-        </button>
-            
+		</button>
+			
 		<button type="button" onClick="window.location='../MachineListWindow/machineList.html';" class="btn btn-primary">
-            Cancel
-        </button>
-    </body>
+			Cancel
+		</button>
+	</body>
 </html>
