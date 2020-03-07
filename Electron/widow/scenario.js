@@ -13,6 +13,13 @@ Scenario.prototype.getName = function(){
     return this.descriptor["scenario_name"]
 }
 
+/**
+ * setName()
+ * Do not use.
+ * Set the name of a scenario instead by calling renameScenario() on Scenarios
+ *
+ * @private
+ */
 Scenario.prototype.setName = function(name){
     this.descriptor["scenario_name"] = name
 }
@@ -29,8 +36,13 @@ Scenario.prototype.setId = function(id){
 //========================
 //=== Machines
 //========================
-// Get a list with the names of the available machines
-Scenario.prototype.getMachineNamesList = function(id){
+/**
+ * getMachineNamesList()
+ * Get a list with the names of the available machines
+ *
+ * @return {string[]} Array of strings of machine names
+ */
+Scenario.prototype.getMachineNamesList = function(){
     let machineNameList = []
     for (machineName in this.machines){
         machineNameList.push(machineName)
@@ -39,7 +51,7 @@ Scenario.prototype.getMachineNamesList = function(id){
 }
 
 // Creates a new default machine instance, adds it to the current list of machines and returns it
-// Pass the name and ID of the new machine
+// Pass the name of the new machine
 Scenario.prototype.newMachine = function(machineName){
     let newMachine = new Machine()
     newMachine.setName(machineName)

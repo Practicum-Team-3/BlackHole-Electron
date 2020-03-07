@@ -4,24 +4,42 @@ const widowAddress = "http://localhost:5000/"
 
 function Scenarios(widowAddress){
     this.widowAddress = widowAddress
-    this.nameList = null
+    this.nameList = []
     this.loaded = {}
     
+    this.scenarioLimbo = null
 }
 
 //========================
 //=== Get scenarios
 //========================
 
-Scenarios.prototype.getScenarioNamesList = function(name){
+/**
+ * getScenarioNameList()
+ *
+ * @return {string[]} Array of strings of the scenario names available
+ */
+Scenarios.prototype.getScenarioNamesList = function(){
     return this.nameList
 }
 
+/**
+ * getScenarioByName()
+ *
+ * @param {string} name - Name of the scenario to obtain
+ * @return {Scenario} Scenario object of the specified name
+ */
 Scenarios.prototype.getScenarioByName = function(name){
     return this.loaded[name]
 }
 
 // Get array of scenario objects in order
+/**
+ * getAllScenarios()
+ * Obtain all Scenario objects in an array
+ *
+ * @return {Scenario[]} String of all Scenario objects
+ */
 Scenarios.prototype.getAllScenarios = function(){
     var scenarioList = []
     
@@ -32,18 +50,76 @@ Scenarios.prototype.getAllScenarios = function(){
 }
 
 //========================
-//=== Add scenarios
+//=== Rename scenarios
 //========================
 
-Scenarios.prototype.addScenario = function(){
-    
+/**
+ * renameScenario()
+ * Renames an existing scenario from the scenario list in widow
+ *
+ * @param {string} oldName - The old name of the scenario to update
+ * @param {string} newName - New name to give the scenario
+ */
+Scenarios.prototype.addScenario = function(scenario){
+    //STUB
+}
+
+//========================
+//=== Add scenarios
+//========================
+   
+/**
+ * addScenario()
+ * Adds a scenario instance to the list of scenarios in widow
+ *
+ * @param {Scenario} scenario - A Scenario instance to add to the list
+ */
+Scenarios.prototype.addScenario = function(scenario){
+    if (!this.nameList.includes(scenario.getName())){
+        this.nameList.push(scenario.getName())
+    }
+    this.loaded[scenario.getName()] = scenario
+}
+
+/**
+ * createNewScenario()
+ * Creates a new default Scenario object and returns it.
+ * The new scenario is not automatically added to the list of scenarios in widow
+ * If scenario is to be added to the list, call addNewScenario()
+ *
+ * @return {Scenario} Instance to a new Scenario object
+ */
+Scenarios.prototype.createNewScenario = function(){
+    self.scenarioLimbo = new Scenario()
+    return self.scenarioLimbo
+}
+
+/**
+ * addNewScenario()
+ * Adds the scenario created after a call to newScenario() to the list of scenarios in widow
+ */
+Scenarios.prototype.addNewScenario = function(){
+    if (this.scenarioLimbo!=null){
+        this.addScenario(this.scenarioLimbo)
+        this.scenarioLimbo = null
+    }
 }
 
 //========================
 //=== Remove scenarios
 //========================
-
-//...
+/**
+ * removeScenarioByName()
+ * Remove a scenario from the list of scenarios in widow
+ *
+ * @param {string} scenarioName - Name of the scenario to remove
+ * @return {Scenario} The instance of the removed scenario
+ */
+Scenarios.prototype.removeScenarioByName = function(scenarioName){
+    if (this.nameList.includes(scenarioName)){
+        //STUB
+    }
+}
 
 //========================
 //=== Scenario saving
@@ -54,13 +130,19 @@ Scenarios.prototype.saveScenarioDeclaration = function(scenario){
     
 }
 */
-// Call to trigger a save to Widow
-Scenarios.prototype.saveScenarioByName = function(name){
-    
+// 
+/**
+ * saveScenarioByName()
+ * Trigger the saving of a scenario to widow
+ *
+ * @param {string} scenarioName - Name of the scenario to save
+ */
+Scenarios.prototype.saveScenarioByName = function(scenarioName){
+    //STUB
 }
 
 //========================
-//=== Scenario loading
+//=== Scenario loading (Internal)
 //========================
 
 // === Contact Widow and get the list of scenarios === //
@@ -123,10 +205,13 @@ Scenarios.prototype.loadAllScenarios = function(){
 //======================================================
 try{
     // Try to get existing scenarios instance from electron.remote
-    var widow = {}
-    widow.scenarios = electron.remote.getGlobal('scenarios')
-    widow.scenarios.loadScenarios().then(function(){widow.scenarios.loadAllScenarios()})
+    let scenarios = electron.remote.getGlobal('scenarios')
     
+    if (scenarios.nameList.length==0){
+        var widow = {}
+        widow.scenarios = scenarios
+        widow.scenarios.loadScenarios().then(function(){widow.scenarios.loadAllScenarios()})
+    }
 }catch{
     // Create a new instance and put on exports for main to pick up and put on electron.remote
     try{
