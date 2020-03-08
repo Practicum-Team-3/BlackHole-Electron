@@ -8,13 +8,25 @@ function Scenario(descriptor){
     this.createMachinesFromDescriptor()
 }
 
+/**
+ * @function getDescriptorAsString
+ * @description Generate and return the updated descriptor
+ * @todo Complete implementation
+ *              
+ * @returns {string} String representation of the scenario descriptor
+ */
+Scenario.prototype.getDescriptorAsString = function(){
+    //TODO: clone descriptor, add machines
+    return JSON.stringify(this.descriptor)
+}
+
 // === NAME
 Scenario.prototype.getName = function(){
     return this.descriptor["scenario_name"]
 }
 
 /**
- * setName()
+ * @function setName
  * Do not use.
  * Set the name of a scenario instead by calling renameScenario() on Scenarios
  *
