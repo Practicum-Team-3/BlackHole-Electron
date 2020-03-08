@@ -1,55 +1,312 @@
 <!DOCTYPE html>
+
+
+
 <html>
     <head>
+		<script>
+			window.jQuery = window.$ = require('../../../Electron/node_modules/jquery/dist/jquery');
+			</script>
 		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css">	
 		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/site.css">	
 		<script scr="../CoreComponents/CSS/Bootstrap/bootstrap.js"></script>
 		<link href="../CoreComponents/CSS/Bootstrap/all.css" rel="stylesheet">
 		
         <meta charset="UTF-8">
-        <title>Machine Edit</title>
-    </head>
-    <body>
+		<title>Machine Edit</title>
+		<script src="../CoreComponents/CSS/Bootstrap/bootstrap.min.js"></script>
+	</head>
+	<h1>Edit Machine</h1>
+	<body>
+		
 
 			<div id="accordion">
-			  <div class="card">
+			<div class="card">
 				<div class="card-header" id="headingOne">
-				  <h5 class="mb-0">
+				<h5 class="mb-0">
 					<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-					  Basic Setting
+					Basic Setting
 					</button>
-				  </h5>
+				</h5>
 				</div>
 
 				<div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-				  <div class="card-body">
+				<div class="card-body">
 					Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-				  </div>
 				</div>
-			  </div>
-			  <div class="card">
+				</div>
+			</div>
+			<div class="card">
 				<div class="card-header" id="headingTwo">
-				  <h5 class="mb-0">
+				<h5 class="mb-0">
 					<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-					  Advance Settings
+					System Settings
 					</button>
-				  </h5>
+				</h5>
 				</div>
+
+				<!--Second section of main accordion-->
 				<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-				  <div class="card-body">
-					Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-				  </div>
+					<div class="card-body">
+						<!-- Inside Accordion begins here-->
+						<!-- Build System Settings window-->
+						<div class="container">
+							<h4>System Settings</h4>
+							<div id="accordion2">
+							<!--Motherboard-->
+							  <div class="card">
+								<div class="card-header">
+								  <a class="card-link" data-toggle="collapse" href="#inner1">
+									Motherboard
+								  </a>
+								</div>
+								<div id="inner1" class="collapse show" data-parent="#accordion2">
+								  <div class="card-body">
+									<!--motherboard section-->
+									<h5>Motherboard</h5>
+									<table class="table table-borderless">
+										
+										<tbody>
+											<tr>
+												<td>Base Memory:</td>
+												<td>
+													<div class="slidecontainer">
+														<input type="range" min="4" max="8192" class="custom-range" id="baseMemory_slider">
+														<p align="right"><span id="baseMemoryOut"></span> MB</p>
+													  </div>
+													  
+													  <!--to show slider value-->
+													  <script>
+														var memSlider = document.getElementById("baseMemory_slider");
+														var memOutput = document.getElementById("baseMemoryOut");
+														memOutput.innerHTML = memSlider.value;
+														
+														memSlider.oninput = function() {
+														  memOutput.innerHTML = this.value;
+														}
+													</script>
+													
+												</td>
+											</tr>
+											<tr>
+												<td>Boot Order:</td>
+												<td>
+													<form action="/action_page.php">
+													<div class="form-check">
+													<label class="form-check-label" for="hardDisk_checkbox">
+														<input type="checkbox" class="form-check-input" id="hardDisk_checkbox" name="option1" value="something">Hard Disk
+													</label>
+													</div>
+													<div class="form-check">
+													<label class="form-check-label" for="optical_checkbox">
+														<input type="checkbox" class="form-check-input" id="optical_checkbox" name="option2" value="something">Optical
+													</label>
+													</div>
+													<div class="form-check">
+														<label class="form-check-label" for="floppy_checkbox">
+														<input type="checkbox" class="form-check-input" id="floppy_checkbox" name="option2" value="something">Floppy
+														</label>
+													</div>
+													<div class="form-check">
+														<label class="form-check-label" for="network_checkbox">
+														<input type="checkbox" class="form-check-input" id="network_checkbox" name="option2" value="something">Network
+														</label>
+													</div>
+													</form>
+												</td>
+											</tr>											
+												<td>Chipset:</td>
+													<td>
+														<form action="/action_page.php">
+															<div class="form-group">
+															<select class="form-control" id="chipset_dropdown" name="sellist1">
+																<option>PIIX3</option>
+																<option>ICH9</option>
+															</select>
+															</div>
+														</form>
+													</td>
+											</tr>
+											<tr>
+												<td>Pointing Device:</td>
+												<td><form action="/action_page.php">
+													<div class="form-group">
+													<select class="form-control" id="pointingDevice_dropdown" name="sellist1">
+														<option>PS/2 Mouse</option>
+														<option>USB Tablet</option>
+														<option>USB Multi-Touch Tablet</option>
+													</select>
+													</div>
+												</form></td></td>
+											</tr>
+											<tr>
+												<td>Extended Features:</td>
+												<td>
+													<form action="/action_page.php">
+													<div class="form-check">
+													<label class="form-check-label" for="enableIO_checkbox">
+														<input type="checkbox" class="form-check-input" id="enableIO_checkbox" name="option1" value="something">Enable I/O APIC
+													</label>
+													</div>
+													<div class="form-check">
+													<label class="form-check-label" for="enableEFI_checkbox">
+														<input type="checkbox" class="form-check-input" id="enableEFI_checkbox" name="option2" value="something">Enable EFI (special OSes only)
+													</label>
+													</div>
+													<div class="form-check">
+														<label class="form-check-label" for="hardwareClockUTC_checkbox">
+														<input type="checkbox" class="form-check-input" id="hardwareClockUTC_checkbox" name="option2" value="something">Hardware Clock in UTC Time
+														</label>
+													</div>													
+													</form>
+												</td>
+											</tr>						
+										</tbody>
+										</table>
+								  </div>
+								</div>
+							  </div>
+							  <!--Processor-->
+							  <div class="card">
+								<div class="card-header">
+								  <a class="collapsed card-link" data-toggle="collapse" href="#inner2">
+								  Processor
+								</a>
+								</div>
+								<div id="inner2" class="collapse" data-parent="#accordion2">
+								  <div class="card-body">
+									<!--processor section-->
+									<h5>Processor</h5>
+									<table class="table table-borderless">
+										<thead>
+										</thead>
+										<tbody>
+										  <tr>
+											<td>Processor(s):</td>
+											<td>
+												<div class="slidecontainer">
+													<input type="range" min="1" max="4" class="custom-range" id="processor_slider">
+													<p align="right"><span id="processorOut"></span> CPU(s)</p>
+												  </div>
+												  
+												  <!--to show slider value-->
+												  <script>
+													var processorSlider = document.getElementById("processor_slider");
+													var processorOutput = document.getElementById("processorOut");
+													processorOutput.innerHTML = processorSlider.value;
+													
+													processorSlider.oninput = function() {
+													  processorOutput.innerHTML = this.value;
+													}
+												</script>
+											</td>
+										  </tr>
+										  <tr>
+											<td>Execution Cap:</td>
+											<td>
+												<div class="slidecontainer">
+													<input type="range" min="1" max="100" class="custom-range" id="executionCap_slider">
+													<p align="right"><span id="executionCapOut"></span> %</p>
+												  </div>
+												  
+												  <!--to show slider value-->
+												  <script>
+													var executionCapSlider = document.getElementById("executionCap_slider");
+													var executionCapOutput = document.getElementById("executionCapOut");
+													executionCapOutput.innerHTML = executionCapSlider.value;
+													
+													executionCapSlider.oninput = function() {
+														executionCapOutput.innerHTML = this.value;
+													}
+												</script>												
+											</td>
+											</td>
+										  </tr>
+										  <tr>
+											<td>Extended Features:</td>
+											<td>
+												<form action="/action_page.php">
+												<div class="form-check">
+												<label class="form-check-label" for="check1">
+													<input type="checkbox" class="form-check-input" id="enablePAENX_checkbox" name="option1" value="something">Enable PAE/NX
+												</label>
+												</div>																									
+												</form>
+											</td>
+										  </tr>
+										</tbody>
+									  </table>
+								  </div>
+								</div>
+							  </div>
+							  <!--Accelerator-->
+							  <div class="card">
+								<div class="card-header">
+								  <a class="collapsed card-link" data-toggle="collapse" href="#inner3">
+									Accelerator
+								  </a>
+								</div>
+								<div id="inner3" class="collapse" data-parent="#accordion2">
+								  <div class="card-body">
+									<!--accelerator section-->
+									<h5>Accelerator</h5>
+									<table class="table table-borderless">
+										<thead>
+										</thead>
+										<tbody>
+										  <tr>
+											<td>Paravirtualization Interface:</td>
+											<td>
+												<form action="/action_page.php">
+													<div class="form-group">
+													<select class="form-control" id="paravirtualizationInterface_dropdown" name="sellist1">
+														<option>None</option>
+														<option>Default</option>
+														<option>Legacy</option>
+														<option>Minimal</option>
+														<option>Hyper-V</option>
+														<option>KVM</option>
+													</select>
+													</div>
+												</form>
+											</td>
+										  </tr>
+										  <tr>
+											<td>Hardware Virtualization:</td>
+											<td>
+												<form action="/action_page.php">
+													<div class="form-check">
+													<label class="form-check-label" for="check1">
+														<input type="checkbox" class="form-check-input" id="enableVTxAMDV_checkbox" name="option1" value="something">Enable VT-x/AMD-V
+													</label>
+													</div>
+													<div class="form-check">
+													<label class="form-check-label" for="check2">
+														<input type="checkbox" class="form-check-input" id="enableNestedPaging_checkbox" name="option2" value="something">Enable Nested Paging
+													</label>
+													</div>																									
+												</form>
+											</td>
+										  </tr>										  
+										</tbody>
+									  </table>
+								  </div>
+								</div>
+							  </div>
+							</div>
+						  </div>
+					</div>
 				</div>
-			  </div>
+				</div>
+			</div>
 			
 			</div>
-        <h1>Machine Edit</h1>
-        <button type="button" onClick="window.location='../newScenarioWindow/newScenario.html';" class="btn btn-primary">
-			Create
-        </button>
-            
+		<button type="button" onClick="window.location='../newScenarioWindow/newScenario.html';" class="btn btn-primary">
+			Save
+		</button>
+			
 		<button type="button" onClick="window.location='../MachineListWindow/machineList.html';" class="btn btn-primary">
-            Cancel
-        </button>
-    </body>
+			Cancel
+		</button>
+	</body>
 </html>
