@@ -3,8 +3,9 @@ const widowAddress = "http://localhost:5000/"
 
 /**
  * @class Scenarios
- * @description Manager of the widow connection and keeper of scenarios.
- *              No need to instantiate, just refer to the shared instance by widow.scenarios
+ * @version 1.0.0
+ * @description Manager of scenarios and connection to Widow.
+ *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
  * @param {string} widowAddress Address to back-end "Widow"
  */
@@ -12,8 +13,9 @@ function Scenarios(widowAddress){
     this.widowAddress = widowAddress
     //Name list should only contain scenarios known by Widow
     this.nameList = []
+    //Keep Scenario objects, known and not known by Widow
     this.loaded = {}
-    
+    //To keep a new scenario while it's being added
     this.scenarioLimbo = null
 }
 
@@ -23,6 +25,7 @@ function Scenarios(widowAddress){
 
 /**
  * @function getScenarioNameList
+ * @description Get the list of scenarios currently saved on Widow
  * @memberof Scenarios
  *
  * @return {string[]} Array of strings of the scenario names available
@@ -33,6 +36,7 @@ Scenarios.prototype.getScenarioNamesList = function(){
 
 /**
  * @function getScenarioByName
+ * @description Get the instance of a specific scenario with a specific name
  * @memberof Scenarios
  *
  * @param {string} name - Name of the scenario to obtain
@@ -44,7 +48,7 @@ Scenarios.prototype.getScenarioByName = function(name){
 
 /**
  * @function getAllScenarios
- * @description Obtain all Scenario objects in an array
+ * @description Obtain all Scenario objects as an array
  * @memberof Scenarios
  *
  * @return {Scenario[]} Array of all Scenario objects
@@ -66,17 +70,23 @@ Scenarios.prototype.getAllScenarios = function(){
  * @function renameScenario
  * @description Renames an existing scenario from the scenario list in widow
  * @memberof Scenarios
- * @todo Implement when Widow supports it
+ * @todo Implement when Widow supports scenario renaming
  *
  * @param {string} oldName - The old name of the scenario to update
  * @param {string} newName - New name to give the scenario
+ * @returns {Promise} Promise for the completion of the renaming
  */
 Scenarios.prototype.renameScenario = function(oldName, newName){
-    if (this.nameList.includes(oldName)){
-        this.getScenarioByName("oldName").setName(newName)
-        this.nameList[this.nameList.indexOf(oldName)] = newName
-        // TODO: notify Widow about the renaming when supported
-    }
+    return new Promise(function(resolve, reject){
+        if (this.nameList.includes(oldName)){
+            this.getScenarioByName("oldName").setName(newName)
+            this.nameList[this.nameList.indexOf(oldName)] = newName
+            // TODO: notify Widow about the renaming when supported
+            // TODO: resolve promise
+        }else{
+            reject()
+        }
+    }.bind(this))
 }
 
 //========================
@@ -85,23 +95,34 @@ Scenarios.prototype.renameScenario = function(oldName, newName){
    
 /**
  * @function addScenario
- * @description Adds a scenario instance to the list of scenarios in widow
+ * @description Adds a scenario instance to the list of scenarios in Widow
  * @memberof Scenarios
  *
  * @param {Scenario} scenario - A Scenario instance to add to the list
+ * @returns {Promise} Promise for the completion of adding the scenario to Widow
  */
 Scenarios.prototype.addScenario = function(scenario){
-    if (!this.nameList.includes(scenario.getName())){
-        this.nameList.push(scenario.getName())
-    }
-    this.loaded[scenario.getName()] = scenario
+    return new Promise(function(resolve, reject){
+        if (!this.nameList.includes(scenario.getName())){
+            // declare new scenario to Widow
+            this.declareScenarioByName(scenario.getName())
+            .then(function(){
+                this.nameList.push(scenario.getName())
+                resolve()
+            })
+            // TODO: Add catch
+        }
+        //Scenario was already included, so just add (or overwrite) to loaded
+        this.loaded[scenario.getName()] = scenario
+    }.bind(this))
+    
 }
 
 /**
  * @function createNewScenario
  * @description Creates a new default Scenario object and returns it.
  * The new scenario is not automatically added to the list of scenarios in widow.
- * To complete the creation process call and add the scenario to the list, call completeScenarioCreation()
+ * To complete the creation process and add the scenario to the list, call completeScenarioCreation()
  * @memberof Scenarios
  *
  * @return {Scenario} Instance to a new Scenario object
@@ -115,12 +136,21 @@ Scenarios.prototype.createNewScenario = function(){
  * @function addNewScenario
  * @description Adds the scenario created after a call to createNewScenario() to the list of scenarios in widow
  * @memberof Scenarios
+ * @returns {Promise} Promise for the completion of the scenario creation process
  */
 Scenarios.prototype.completeScenarioCreation = function(){
-    if (this.scenarioLimbo!=null){
-        this.addScenario(this.scenarioLimbo)
-        this.scenarioLimbo = null
-    }
+    return new Promise(function(resolve, reject){
+        if (this.scenarioLimbo!=null){
+            this.addScenario(this.scenarioLimbo)
+            .then(function(){
+                this.scenarioLimbo = null
+                resolve()
+            })
+        }else{
+            reject()
+        }
+    }.bind(this))
+    
 }
 
 //========================
@@ -142,18 +172,6 @@ Scenarios.prototype.removeScenarioByName = function(scenarioName){
         //TODO implement remote deletion
     }
 }
-
-//========================
-//=== Scenario saving
-//========================
-/*
-// Save scenario name on widow
-Scenarios.prototype.saveScenarioDeclaration = function(scenario){
-    
-}
-*/
-// 
-
 
 //========================
 //=== Scenario loading/saving (Internal)
@@ -188,7 +206,7 @@ Scenarios.prototype.loadScenarioByName = function(name){
         
         axios.get(this.widowAddress+"scenarios/"+name)
         .then(function (response) {
-            // Add to the loaded dictionary
+            // Add to the loaded object
             this.loaded[name] = new Scenario(response.data)
             resolve()
             
@@ -214,20 +232,65 @@ Scenarios.prototype.loadAllScenarios = function(){
     }.bind(this))
 }
 
-// === Trigger the saving of a scenario to widow === //
+/**
+ * @function declareScenarioByName
+ * @private
+ * @description Declare a new scenario name to Widow
+ * @memberof Scenarios
+ * @param   {string} scenarioName Name of the scenario to declare
+ * @returns {Promise} Promise for the completion of the declaration
+ */
+Scenarios.prototype.declareScenarioByName = function(scenarioName){
+    return new Promise(function(resolve, reject){
+        // Check for the existance of the "new scenario", should fail if already exists
+        if (!this.nameList.includes(scenarioName)){
+            var axios = require('axios')
+
+            axios.get(this.widowAddress+"scenarios/new/"+name)
+            .then(function (response) {
+                // Add to the loaded dictionary
+                resolve()
+
+            }.bind(this)).catch(function (error) {
+                // handle error
+                console.log("declareScenarioByName Error")
+                console.log(error);
+                reject()
+
+            })
+        }else{
+            reject()
+        }
+    }.bind(this))
+}
+
+/**
+ * @function saveScenarioByName
+ * @description Trigger the saving of a scenario to Widow
+ * @memberof Scenarios
+ * @param   {string} scenarioName Name of the scenario to save
+ * @returns {Promise} Promise for the completion of the saving
+ */
 Scenarios.prototype.saveScenarioByName = function(scenarioName){
-    var axios = require('axios')
-    
-    if (this.nameList.includes(scenarioName)){
-        //TODO implement either promise or callback notifications
-        axios.post(this.widowAddress+"scenarios/edit/"+scenarioName, this.getScenarioByName("scenarioName"))
-        .then(function (response) {
-            console.log(response);
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-    }
+    return new Promise(function(resolve, reject){
+        var axios = require('axios')
+
+        //Check if the scenario exists and can be saved
+        if (this.nameList.includes(scenarioName)){
+            
+            axios.post(this.widowAddress+"scenarios/edit/"+scenarioName, this.getScenarioByName("scenarioName").getDescriptorAsString())
+            .then(function (response) {
+                console.log(response);
+                resolve()
+            })
+            .catch(function (error) {
+                console.log(error);
+                reject()
+            });
+        }else{
+            reject()
+        }
+    }.bind(this))
 }
 
 //======================================================

@@ -19,7 +19,7 @@ module.exports.machineDescriptor = '{\
 
 module.exports.scenarioDescriptor = '{\
     "scenario_name": "unnamed",\
-    "scenario_id": "dTRN{P)C",\
+    "scenario_id": "",\
     "creation_date": "02/03/2020 21:22:38",\
     "last_accessed": "02/03/2020 21:22:38",\
     "exploit_info": {\
