@@ -1,14 +1,31 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
-    <head>
-		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css">	
-		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/site.css">	
-		<script scr="../CoreComponents/CSS/Bootstrap/bootstrap.js"></script>
-		<link href="../CoreComponents/CSS/Bootstrap/all.css" rel="stylesheet">
+<head>
+	<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css">
+	<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/site.css">
+	<script scr="../CoreComponents/CSS/Bootstrap/bootstrap.js"></script>
+	<link href="../CoreComponents/CSS/Bootstrap/all.css" rel="stylesheet">
+
+	<meta charset="UTF-8">
+	<title>BlackHole</title>
+	<script src="../../../Electron/widow/scenarios.js"></script>
+
+	<script>
 		
-        <meta charset="UTF-8">
-        <title>BlackHole</title>
-    </head>
+		function loaded(){
+			document.getElementById("dump").innerHTML = widow.scenarios.getScenarioByName(test)
+        }
+			
+        function getScenarios() {
+			document.getElementById("dump").innerHTML = widow.scenarios.getScenarioNamesList()
+			alert('works');
+		}
+	</script>
+
+
+
+
+</head>
     <body>
 		<div class="container">
 		
@@ -70,6 +87,7 @@
 						<p class="mb-1">Virtual Machine with malware exposed.</p>
 						<small>Operation System: Kali - Memory: 4gb - Space: 40gb - IP: 127.0.0.1 - Port: 443</small>
 					  </a>
+					  <textarea id="dump"></textarea>
 					  <!--a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
 						<div class="d-flex w-100 justify-content-between">
 						  <h5 class="mb-1">List group item heading</h5>
