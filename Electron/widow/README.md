@@ -1,5 +1,5 @@
 # Widow
-Experimental back-end communication handlers and data abstractions.
+Back-end communication handlers and data abstractions.
 
 To adopt the usage of experimental widow in an html document add:
 
