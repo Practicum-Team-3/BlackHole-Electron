@@ -1,0 +1,46 @@
+<!doctype html>
+
+<html style="height:100%; max-height:100%" lang="en-US">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <!-- <link rel="shotcut-icon" href="" type="image/x-icon"/> -->
+        <!-- <link rel="apple-touch-icon" href=""/> -->
+        <meta charset="UTF-8">
+        <title>Widow Lab</title>
+        
+        <style type="text/css">
+            body{
+                font-family: sans-serif;
+                background-color: #e5dfdf;
+                color: #29a19c;
+                margin:0px;
+                padding: 0px;
+            }
+            .titleBar{
+                background-color: aliceblue;
+            }
+            h1{
+                font-size: 30pt;
+            }
+        </style>
+        
+        <script src="scenarios.js"></script>
+        <script>
+            function loaded(){
+                document.getElementById("dump").innerHTML = widow.scenarios.getScenarioNamesList()
+            }
+        </script>
+        
+    </head>
+    
+    
+    
+    <body onload="loaded()">
+        
+        <div class="titleBar" style="padding-left: 20px; padding-top: 0px; margin: 0px;">
+            <h1>Widow Lab</h1>
+        </div>
+        
+        <textarea id="dump"></textarea>
+    </body>
+</html>

@@ -23,3 +23,6 @@ app.on('window-all-closed', () => {
         app.quit()
     }
 })
+
+//Create instance of scenarios
+global.scenarios = require('./widow/scenarios.js').scenarios
