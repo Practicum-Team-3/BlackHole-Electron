@@ -1,102 +1,201 @@
 <!DOCTYPE html>
-
-
-
+<!-- Change the name of this file and of this directory to "MachineSettings" -->
 <html>
     <head>
 		<script>
-			window.jQuery = window.$ = require('../../../Electron/node_modules/jquery/dist/jquery');
-			</script>
+			window.$ = window.jQuery = require('../../../Electron/node_modules/jquery/dist/jquery');
+			var {remote} = require('electron');
+			var scenarios = remote.getGlobal('scenarios');
+
+			var query = location.search.substring(1);
+				var parameters = {};
+				var keyValues = query.split(/&/);
+				for (var keyValue in keyValues) {
+					var keyValuePairs = keyValue.split(/=/);
+					var key = keyValuePairs[0];
+					var value = keyValuePairs[1];
+					parameters[key] = value;
+				}
+
+							//REMOVE THIS LINE ON PRODUCTION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+							parameters = {'scenarioName':'Scenario 1', 'machineName':'attacker'}
+
+				var scenarioName = parameters['scenarioName'];
+				var machineName = parameters['machineName'];
+
+				var scenario = scenarios.getScenarioByName(scenarioName);
+				var machine = scenario.getMachineByName(machineName);
+
+		</script>
+
 		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css">	
 		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/site.css">	
-		<script scr="../CoreComponents/CSS/Bootstrap/bootstrap.js"></script>
+		<script src="../CoreComponents/CSS/Bootstrap/bootstrap.js"></script>
 		<link href="../CoreComponents/CSS/Bootstrap/all.css" rel="stylesheet">
 		
         <meta charset="UTF-8">
-		<title>Machine Edit</title>
+		<title>Machine Settings</title>
 		<script src="../CoreComponents/CSS/Bootstrap/bootstrap.min.js"></script>
 	</head>
-	<h1>Edit Machine</h1>
+	<h1>Machine Settings</h1>
 	<body>
-		
 
+<!-- MANALI's -->
+<!-- ------------------------------------------------------------------------------------------------------------------------------------- -->
 			<div id="accordion">
-			<div class="card">
-				<div class="card-header" id="headingOne">
-				<h5 class="mb-0">
-					<button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-					Basic Setting
-					</button>
-				</h5>
-				</div>
+				<div class="card">
+					<div class="card-header">
+						<h5 class="mb-0">
+							<button class="btn btn-link" data-toggle="collapse" data-target="#basicSettingsCardBody" aria-expanded="true" aria-controls="collapseTwo">
+							Basic Settings
+							</button>
+						</h5>
+					</div>
 
-				<div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
-				<div class="card-body">
-					<form>
-  <label for="fname">Machie Name:</label>
-  <input type="text" id="mname" name="mname">
+					<div class="card-body collapse" id="basicSettingsCardBody">
+						<div class="container">
+							<h4>Basic Settings</h4>
+							<form>
+								<div class="form-group">
+									<table class="table table-borderless">
+										<tbody>
+											<!-- Machine Name -->
+											<tr>
+												<td>Machine Name:</td>
+												<td>
+													<input type="text" class="form-control" id="machineNameInputText" name="machineNameInputText">				
+												</td>
+											</tr>
+											<!-- Machine Type -->
+											<tr>
+												<td>Is Attacker:</td>
+												<td>
+													<select class="form-control" id="attackerSelectBox">
+														<option value="true">True</option>
+														<option value="false">False</option>
+													</select>
+												</td>
+											</tr>
+												<!-- OS -->
+											<tr>										
+												<td>OS:</td>
+												<td>
+													<select id="OSSelectBox" class="form-control">
+														<option value="kalilinux">Kali Linux</option>
+														<option value="windows">Windows 10</option>
+														<option value="debian">Debian</option>
+													</select>
+												</td>
+											</tr>
+											<!-- Malware binary -->
+											<tr>
+												<td>Malware/Binary:</td>
+												<td>
+													<input type="text" id="malwareBinaryTextInput" class="form-control" name="malwareBinaryTextInput">
+												</td>
+												<td>
+													<input type="button" class="btn btn-outline-primary" value="Browse" >													
+												</td>
+											</tr>
+											<!-- Metasploit Module -->
+											<tr>
+												<td>Metasploit Module:</td>
+												<td>
+													<input type="text" class="form-control" id="metasploitModuleInputText" name="metasploitModuleInputText">
+												</td>
+												<td>
+													<input type="button" class="btn btn-outline-primary" value="Browse" >													
+												</td>
+											</tr>
+											<!-- Script -->
+											<tr>
+												<td>Script:</td>
+												<td>
+													<input type="text" class="form-control" id="scriptNameInputText" name="scriptNameInputText">
+												</td>
+												<td>
+													<input type="button" class="btn btn-outline-primary" value="Browse" >													
+												</td>
+											</tr>
+											<!-- Software -->
+											<tr>
+												<td>Software:</td>
+												<td>
+													<select class="form-control" id="softwareSelectBox">
+														<option value="s1">s1</option>
+														<option value="s2">s2</option>
+														<option value="s3">s3</option>
+													</select>
+												</td>
+												<td>
+													<input type="button" class="btn btn-outline-primary" value="Browse">													
+												</td>
+											</tr>					
+										</tbody>
+									</table>
+								</div>
+							</form>
+						</div>
+					</div>
 
-</br>
-</br>
-
-<label for="type" >Type:</label>
-
-<select id="type">
-  <option value="poventry">PoV Entry 1</option>
-  <option value="poventry">PoV Entry 2</option>
-</select>
-</br>
-</br>
-<form>
-<label for="fname1" >Create from existing VM:</label>
-<input type="button" value="Open Existing VM" >
-</form>
-</br>
-<label for="vmos" >VM OS:</label>
-
-<select id="type">
-  <option value="kalilinux">Kali Linux</option>
-  <option value="windows">Windows 10</option>
-  <option value="debian">Debian</option>
-</select>
-</br>
-</br>
-  <label for="fname2">Malware/Binary:</label>
-  </br>
-  <input type="text" id="mbname" name="mname">
-<input type="button" value="Browse" >
-</br>
-</br>
-  <label for="fname3">MetaSploit Module:</label>
-  </br>
-  <input type="text" id="msmname" name="mname">
-<input type="button" value="Browse" >
-</br>
-</br>
-  <label for="fname4">Script:</label>
-  </br>
-  <input type="text" id="sname" name="mname">
-<input type="button" value="Browse" >
-</br>
-</br>
-<label for="fname5">Software:</label>
-<select id="software">
-  <option value="s1">s1</option>
-  <option value="s2">s2</option>
-  <option value="s3">s3</option>
-</select>
-<input type="button" value="Add" >
-</form>
-				</div>
 				</div>
 			</div>
+
+			<script>
+
+				//grabbing all values
+				function updateBasicSetsInWidow(){
+
+					//get values from fields
+					
+					var mName = $('#machineNameInputText').val();
+					var mIsAttacker = $('#attackerSelectBox').val();
+					var mOS = $('#OSSelectBox').val();
+
+					//refresh widow
+					machine.setName(mName);
+
+					if(mIsAttacker == "true"){
+						machine.setIsAttacker(true);
+					}else{
+						machine.setIsAttacker(false);
+					}
+
+					machine.setOs(mOS);
+
+				}
+
+				function refreshBasicSetsFromWidow(){
+
+					//TODO: Both select boxes options must be created dynamically by 
+					//iterating over the different values the machines in widow can have for those fields
+					//then populating the element.
+					//CURRENT IMPLEMENTATION IS TEMPORARY. I HAD CLASS!!!
+
+
+					var mName = machine.getName();
+					var mIsAttacker = machine.getIsAttacker();
+					var mOS = machine.getOs();
+
+					$('#machineNameInputText').val(mName);
+
+					$('#attackerSelectBox').val(mIsAttacker);
+					$('#attackerSelectBox option[value=' + mIsAttacker + ']').attr('selected', 'selected');
+
+					$('#OSSelectBox option[value=' + mOS + ']').attr('selected', 'selected');
+					$('#OSSelectBox').val(mOS);
+				}
+			</script>
+
+<!-- Aaaron's -->
+<!-- ------------------------------------------------------------------------------------------------------------------------------------- -->
 			<div class="card">
 				<div class="card-header" id="headingTwo">
-				<h5 class="mb-0">
-					<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-					System Settings
-					</button>
-				</h5>
+					<h5 class="mb-0">
+						<button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+						System Settings
+						</button>
+					</h5>
 				</div>
 
 				<!--Second section of main accordion-->
@@ -168,7 +267,8 @@
 													</div>
 													</form>
 												</td>
-											</tr>											
+											</tr>
+											<tr>											
 												<td>Chipset:</td>
 													<td>
 														<form action="/action_page.php">
@@ -354,13 +454,35 @@
 				</div>
 			</div>
 			
-			</div>
-		<button type="button" onClick="window.location='../newScenarioWindow/newScenario.html';" class="btn btn-primary">
+		</div>
+		<button id="saveButton" type="button" class="btn btn-primary">
 			Save
 		</button>
 			
-		<button type="button" onClick="window.location='../MachineListWindow/machineList.html';" class="btn btn-primary">
+		<button id="cancelButton" type="button" class="btn btn-primary">
 			Cancel
 		</button>
 	</body>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function(event) { 
+			//calling widow and populating manali's forms
+			
+			var scenario = scenarios.getScenarioByName(scenarioName);
+			var machine = scenario.getMachineByName(machineName);
+			refreshBasicSetsFromWidow();
+			//also refresh aarons settings
+		});
+
+		$("#saveButton").click(function(){
+			updateBasicSetsInWidow();
+
+			window.location='../newScenarioWindow/newScenario.html';
+		});
+
+		$("#cancelButton").click(function(){
+
+			window.location='../MachineListWindow/machineList.html';
+		});
+	</script>
 </html>
