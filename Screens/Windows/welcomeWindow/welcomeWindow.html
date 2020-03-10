@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<script src="../../../Electron/widow/scenarios.js"></script>
 	<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css">
 	<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/site.css">
 	<script scr="../CoreComponents/CSS/Bootstrap/bootstrap.js"></script>
@@ -8,18 +9,120 @@
 
 	<meta charset="UTF-8">
 	<title>BlackHole</title>
-	<script src="../../../Electron/widow/scenarios.js"></script>
+	
 
 	<script>
+		document.addEventListener("DOMContentLoaded", function(event) { 
+		  var scenarios = widow.scenarios.getScenarioNamesList();
+		  
+		  for (i = 0; i < scenarios.length; i++) {
+			console.log(scenarios[i]);
+			addItem(scenarios[i]);	
+		  }
 		
-		function loaded(){
-			document.getElementById("dump").innerHTML = widow.scenarios.getScenarioByName(test)
-        }
-			
-        function getScenarios() {
-			document.getElementById("dump").innerHTML = widow.scenarios.getScenarioNamesList()
-			alert('works');
+		});
+
+		function addItem(scenario) {
+			var item = document.getElementById("scenariosList");
+			var btn = document.createElement("button");
+			btn.setAttribute('type', "button");
+			btn.setAttribute('onclick', "getScenario('" + scenario + "')");
+			btn.setAttribute('class', "list-group-item list-group-item-action");
+			btn.appendChild(document.createTextNode(scenario));
+			item.appendChild(btn);
 		}
+		
+		function editMachine(e){
+			var id = e.id.split('-');
+			var scenarioName = id[0];
+			var machineName = id[1];
+			
+			//Call MachineSettings Window
+			window.open('../MachineEditWindow/machineEdit.html?scenarioName=' + scenarioName + '?machineName=' + machineName);
+		}
+		
+		function getScenario(scenario){
+			//empty list
+			var div = document.getElementById('machines');
+			while(div.firstChild){
+				div.removeChild(div.firstChild);
+			}
+			
+			//Needed Variables
+			var machineName, machineDes, machineOS, machineRAM, machineCPU, machineHDD, machineIP, machineNetName, machineNetType, machinePort;
+			
+			var scenarioDetails = widow.scenarios.getScenarioByName(scenario);
+			var machines = scenarioDetails.getMachineNamesList();
+			
+			machines.forEach((element) => {
+				machineName = element;
+				
+				//Get Machine details
+				machineDetails = scenarioDetails.getMachineByName(machineName);
+				
+				machineOS = machineDetails.getOs();
+				machineDes = 'Machine to test SQLInjection exploits';
+				machineIP = machineDetails.networkSettings.getIpAddress();
+				machineNetName = machineDetails.networkSettings.getNetworkName();
+				machineNetType = machineDetails.networkSettings.getNetworkType();
+				
+				
+				//Create html element under container based on selected scenario.
+				var item = document.getElementById("machines");
+				
+				var a = document.createElement("a");
+				a.setAttribute('href', '#');
+				a.setAttribute('class', 'list-group-item list-group-item-action flex-column align-items-start');
+				
+				var div = document.createElement("div");
+				div.setAttribute('class', 'd-flex w-100 justify-content-between');
+				
+				var h5 = document.createElement("h5");
+				h5.setAttribute('class', 'mb-1');
+				h5.appendChild(document.createTextNode(machineName));
+				
+				var small = document.createElement("small");
+				small.appendChild(document.createTextNode('Running'));
+				
+				var p = document.createElement("p");
+				p.setAttribute('class', 'mb-1');
+				p.appendChild(document.createTextNode(machineDes));
+				
+				var smallDes = document.createElement("small");
+				var display = "Operation System: " + machineOS + " - Network Name: " + machineNetName + " - IP: " + machineIP;
+				smallDes.appendChild(document.createTextNode(display));
+				
+				var divButtons = document.createElement("div");
+				divButtons.setAttribute('class', 'text-right');
+				divButtons.setAttribute('style', 'padding-top:10px; padding-bottom:10px;');
+				
+				var btnRemove = document.createElement("button");
+				btnRemove.setAttribute('class', 'btn btn-secondary btn-sm fa fa-trash');
+				btnRemove.appendChild(document.createTextNode('Remove'));
+				
+				var btnEdit = document.createElement("button");
+				btnEdit.setAttribute('class', 'btn btn-primary btn-sm fa fa-edit');
+				btnEdit.setAttribute('id', scenario + '-' + machineName);
+				btnEdit.setAttribute('onclick', 'editMachine(this)');
+				btnEdit.appendChild(document.createTextNode('Edit'));
+				
+				//Append elements to div
+				div.appendChild(h5);
+				div.appendChild(small);
+				
+				divButtons.appendChild(btnRemove);
+				divButtons.appendChild(btnEdit);
+				
+				a.appendChild(div);
+				a.appendChild(p);
+				a.appendChild(smallDes);
+				a.appendChild(divButtons);
+				
+				item.appendChild(a);
+							
+			})
+		}
+		
 	</script>
 
 
@@ -40,78 +143,28 @@
 					<button type="button" onClick="window.location='../newScenarioWindow/newScenario.html';" class="list-group-item list-group-item-action active fa fa-plus">
 						New Scenario
 					</button>	
-					<div class="list-group">						
-						<button type="button" class="list-group-item list-group-item-action">Scenario #001</button>
-						<button type="button" class="list-group-item list-group-item-action">Scenario #001</button>
-						<button type="button" class="list-group-item list-group-item-action">Scenario #001</button>
-						<button type="button" class="list-group-item list-group-item-action">Scenario #001</button>
-						<button type="button" class="list-group-item list-group-item-action">Scenario #001</button>
-						<button type="button" class="list-group-item list-group-item-action">Scenario #001</button>
-						<!--<button type="button" class="list-group-item list-group-item-action">Scenario #001</button>
-						<button type="button" class="list-group-item list-group-item-action">Scenario #001</button>
-						<button type="button" class="list-group-item list-group-item-action">Scenario #001</button>
-						<button type="button" class="list-group-item list-group-item-action">Scenario #001</button>
-						<button type="button" class="list-group-item list-group-item-action">Scenario #001</button>
-						<button type="button" class="list-group-item list-group-item-action" disabled>Scenario #010</button>-->
+					<div id="scenariosList" class="list-group">						
+						<!--button type="button" class="list-group-item list-group-item-action">Scenario #001</button>-->
 					</div>									
 				</div>
 				
 				<div class="col-md-9">
-				<div class="text-right" style="padding-top:10px; padding-bottom:10px;">
-					<button type="button" class="btn btn-secondary btn-sm fa fa-trash">Remove</button>
-					<button type="button" class="btn btn-primary btn-sm fa fa-edit">Edit</button>					
-				</div>
 
-					<div class="list-group">
-					  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
+					<div id="machines" class="list-group">
+					
+					  <!--a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
 						<div class="d-flex w-100 justify-content-between">
 						  <h5 class="mb-1">Kali Linux VM</h5>
 						  <small>Running</small>
 						</div>
 						<p class="mb-1">Virtual Machine with malware exposed.</p>
 						<small>Operation System: Kali - Memory: 4gb - Space: 40gb - IP: 127.0.0.1 - Port: 443</small>
-					  </a>
-					 <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-between">
-						  <h5 class="mb-1">Windows 10</h5>
-						  <small>Running</small>
-						</div>
-						<p class="mb-1">Virtual Machine with malware exposed.</p>
-						<small>Operation System: Kali - Memory: 4gb - Space: 40gb - IP: 127.0.0.1 - Port: 443</small>
-					  </a>
-					 <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-between">
-						  <h5 class="mb-1">Windows Server 2008</h5>
-						  <small>off</small>
-						</div>
-						<p class="mb-1">Virtual Machine with malware exposed.</p>
-						<small>Operation System: Kali - Memory: 4gb - Space: 40gb - IP: 127.0.0.1 - Port: 443</small>
-					  </a>
-					  <textarea id="dump"></textarea>
-					  <!--a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-between">
-						  <h5 class="mb-1">List group item heading</h5>
-						  <small class="text-muted">3 days ago</small>
-						</div>
-						<p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-						<small class="text-muted">Donec id elit non mi porta.</small>
-					  </a>
-					  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-between">
-						  <h5 class="mb-1">List group item heading</h5>
-						  <small class="text-muted">3 days ago</small>
-						</div>
-						<p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-						<small class="text-muted">Donec id elit non mi porta.</small>
-					  </a>
-					  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-between">
-						  <h5 class="mb-1">List group item heading</h5>
-						  <small class="text-muted">3 days ago</small>
-						</div>
-						<p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-						<small class="text-muted">Donec id elit non mi porta.</small>
+						<div class="text-right" style="padding-top:10px; padding-bottom:10px;">
+							<button type="button" class="btn btn-secondary btn-sm fa fa-trash">Remove</button>
+							<button type="button" class="btn btn-primary btn-sm fa fa-edit">Edit</button>					
+						</div>					  
 					  </a-->
+					  
 					</div>
 				</div>
 			</div>
