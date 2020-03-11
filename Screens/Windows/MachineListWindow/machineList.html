@@ -17,7 +17,12 @@
 
         <script>
             var {remote} = require('electron');
-			var scenarios = remote.getGlobal('scenarios');
+            var scenarios = remote.getGlobal('scenarios');
+            var boxes = remote.getGlobal('boxes');
+            var scenario;
+            var attackerMachinesList;
+            var victimMachinesList;
+            var machineBeingEdited;
         </script>
 
         <title>BlackHole</title>
@@ -77,7 +82,7 @@
             <div class="row" id="add_buttons" style="height:45px; padding-top:10px; padding-bottom:10px;">
                 <div class="col-11">
                     <div class="text-center">
-                        <button type="submit" onClick="window.location='../MachineEditWindow/machineEdit.html'" class="btn btn-primary" style="width: 40%;" data-toggle="modal" data-target="#myModal">Add VM</button>					
+                        <button type="submit" class="btn btn-primary" onclick="createNewVM()" style="width: 40%;" data-toggle="modal" data-target="#myModal">Add VM</button>					
                     </div>
                 </div>
                 <div class="col-1" id="save_button_row">
@@ -93,11 +98,472 @@
 			</footer>
 		</div>
     
+        <!-- The Modal machineedit-->
+        <div class="modal fade" id="myModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Machine Settings</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div id="accordion">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link" data-toggle="collapse" data-target="#basicSettingsCardBody" aria-expanded="true" aria-controls="collapseTwo">
+                                    Basic Settings
+                                    </button>
+                                </h5>
+                            </div>
+        
+                            <div class="card-body collapse" id="basicSettingsCardBody">
+                                <div class="container">
+                                    <h4>Basic Settings</h4>
+                                    <form>
+                                        <div class="form-group">
+                                            <table class="table table-borderless">
+                                                <tbody>
+                                                    <!-- Machine Name -->
+                                                    <tr>
+                                                        <td>Machine Name:</td>
+                                                        <td>
+                                                            <input type="text" class="form-control" id="machineNameInputText" name="machineNameInputText">				
+                                                        </td>
+                                                    </tr>
+                                                    <!-- Machine Type -->
+                                                    <tr>
+                                                        <td>Is Attacker:</td>
+                                                        <td>
+                                                            <select class="form-control" id="attackerSelectBox">
+                                                                <option value="true">True</option>
+                                                                <option value="false">False</option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                        <!-- OS -->
+                                                    <tr>										
+                                                        <td>OS:</td>
+                                                        <td>
+                                                            <select id="OSSelectBox" class="form-control">
+                                                                <option value="kalilinux">Kali Linux</option>
+                                                                <option value="windows">Windows 10</option>
+                                                                <option value="debian">Debian</option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                    <!-- Malware binary -->
+                                                    <tr>
+                                                        <td>Malware/Binary:</td>
+                                                        <td>
+                                                            <input type="text" id="malwareBinaryTextInput" class="form-control" name="malwareBinaryTextInput">
+                                                        </td>
+                                                        <td>
+                                                            <input type="button" class="btn btn-outline-primary" value="Browse" >													
+                                                        </td>
+                                                    </tr>
+                                                    <!-- Metasploit Module -->
+                                                    <tr>
+                                                        <td>Metasploit Module:</td>
+                                                        <td>
+                                                            <input type="text" class="form-control" id="metasploitModuleInputText" name="metasploitModuleInputText">
+                                                        </td>
+                                                        <td>
+                                                            <input type="button" class="btn btn-outline-primary" value="Browse" >													
+                                                        </td>
+                                                    </tr>
+                                                    <!-- Script -->
+                                                    <tr>
+                                                        <td>Script:</td>
+                                                        <td>
+                                                            <input type="text" class="form-control" id="scriptNameInputText" name="scriptNameInputText">
+                                                        </td>
+                                                        <td>
+                                                            <input type="button" class="btn btn-outline-primary" value="Browse" >													
+                                                        </td>
+                                                    </tr>
+                                                    <!-- Software -->
+                                                    <tr>
+                                                        <td>Software:</td>
+                                                        <td>
+                                                            <select class="form-control" id="softwareSelectBox">
+                                                                <option value="s1">s1</option>
+                                                                <option value="s2">s2</option>
+                                                                <option value="s3">s3</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <input type="button" class="btn btn-outline-primary" value="Browse">													
+                                                        </td>
+                                                    </tr>					
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+        
+                        </div>
+                    </div>
+        
+                    <script>
+        
+                        //grabbing all values
+                        function updateBasicSetsInWidow(mac){
+        
+                            //get values from fields
+                            var mName = $('#machineNameInputText').val();
+                            var mIsAttacker = $('#attackerSelectBox').val();
+                            var mOS = $('#OSSelectBox').val();
+        
+                            //refresh widow
+                            mac.setName(mName);
+        
+                            if(mIsAttacker == "true"){
+                                mac.setIsAttacker(true);
+                            }else{
+                                mac.setIsAttacker(false);
+                            }
+        
+                            mac.setOs(mOS);
+                        }
+        
+                        function refreshBasicSetsFromWidow(mac){
+                            //populate os select box
+                            var OSList = boxes.getBoxesList();
+                            var mName = mac.getName();
+                            var mIsAttacker = mac.getIsAttacker();
+                            var mOS = mac.getOs();
+        
+                            //update machine name
+                            $('#machineNameInputText').val(mName);
+        
+                            //update the select boxes
+                            populateOSSelect(OSList, mOS);
+                            populateIsAttackerSelect(mIsAttacker);
+                        }
+        
+                        function populateOSSelect(OSList, mOS){
+                            //fill with options
+                            OSSelect = $('#OSSelectBox');
+                            OSSelect.empty();
+                            OSSelect.val(mOS);
+        
+                            for(var i = 0; i<OSList.length; i++){
+                                var option = document.createElement("option");
+                                
+                                option.value = OSList[i];
+                                option.innerHTML = OSList[i];
+        
+                                if(option.value == mOS){
+                                    option.selected = 'selected';
+                                }else{
+                                    option.selected = '';
+                                }
+        
+                                OSSelect.append(option);
+                            }
+                        }
+        
+                        function populateIsAttackerSelect(mIsAttacker){
+                            var isAttackerBox = $('#attackerSelectBox');
+                            isAttackerBox.val(mIsAttacker);
+                            children = isAttackerBox.children();
+                            for(var i = 0; i<children.length; i++){
+                                if(String(children[i].value) == String(mIsAttacker)){
+                                    children[i].selected = 'selected';
+                                }else{
+                                    children[i].selected = '';
+                                }
+                            }
+                        }
+                    </script>
+        
+        <!-- Aaaron's -->
+        <!-- ------------------------------------------------------------------------------------------------------------------------------------- -->
+                    <div class="card">
+                        <div class="card-header" id="headingTwo">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                System Settings
+                                </button>
+                            </h5>
+                        </div>
+        
+                        <!--Second section of main accordion-->
+                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                            <div class="card-body">
+                                <!-- Inside Accordion begins here-->
+                                <!-- Build System Settings window-->
+                                <div class="container">
+                                    <h4>System Settings</h4>
+                                    <div id="accordion2">
+                                    <!--Motherboard-->
+                                      <div class="card">
+                                        <div class="card-header">
+                                          <a class="card-link" data-toggle="collapse" href="#inner1">
+                                            Motherboard
+                                          </a>
+                                        </div>
+                                        <div id="inner1" class="collapse show" data-parent="#accordion2">
+                                          <div class="card-body">
+                                            <!--motherboard section-->
+                                            <h5>Motherboard</h5>
+                                            <table class="table table-borderless">
+                                                
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Base Memory:</td>
+                                                        <td>
+                                                            <div class="slidecontainer">
+                                                                <input type="range" min="4" max="8192" class="custom-range" id="baseMemory_slider">
+                                                                <p align="right"><span id="baseMemoryOut"></span> MB</p>
+                                                              </div>
+                                                              
+                                                              <!--to show slider value-->
+                                                              <script>
+                                                                var memSlider = document.getElementById("baseMemory_slider");
+                                                                var memOutput = document.getElementById("baseMemoryOut");
+                                                                memOutput.innerHTML = memSlider.value;
+                                                                
+                                                                memSlider.oninput = function() {
+                                                                  memOutput.innerHTML = this.value;
+                                                                }
+                                                            </script>
+                                                            
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Boot Order:</td>
+                                                        <td>
+                                                            <form action="/action_page.php">
+                                                            <div class="form-check">
+                                                            <label class="form-check-label" for="hardDisk_checkbox">
+                                                                <input type="checkbox" class="form-check-input" id="hardDisk_checkbox" name="option1" value="something">Hard Disk
+                                                            </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                            <label class="form-check-label" for="optical_checkbox">
+                                                                <input type="checkbox" class="form-check-input" id="optical_checkbox" name="option2" value="something">Optical
+                                                            </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <label class="form-check-label" for="floppy_checkbox">
+                                                                <input type="checkbox" class="form-check-input" id="floppy_checkbox" name="option2" value="something">Floppy
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <label class="form-check-label" for="network_checkbox">
+                                                                <input type="checkbox" class="form-check-input" id="network_checkbox" name="option2" value="something">Network
+                                                                </label>
+                                                            </div>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>											
+                                                        <td>Chipset:</td>
+                                                            <td>
+                                                                <form action="/action_page.php">
+                                                                    <div class="form-group">
+                                                                    <select class="form-control" id="chipset_dropdown" name="sellist1">
+                                                                        <option>PIIX3</option>
+                                                                        <option>ICH9</option>
+                                                                    </select>
+                                                                    </div>
+                                                                </form>
+                                                            </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Pointing Device:</td>
+                                                        <td><form action="/action_page.php">
+                                                            <div class="form-group">
+                                                            <select class="form-control" id="pointingDevice_dropdown" name="sellist1">
+                                                                <option>PS/2 Mouse</option>
+                                                                <option>USB Tablet</option>
+                                                                <option>USB Multi-Touch Tablet</option>
+                                                            </select>
+                                                            </div>
+                                                        </form></td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Extended Features:</td>
+                                                        <td>
+                                                            <form action="/action_page.php">
+                                                            <div class="form-check">
+                                                            <label class="form-check-label" for="enableIO_checkbox">
+                                                                <input type="checkbox" class="form-check-input" id="enableIO_checkbox" name="option1" value="something">Enable I/O APIC
+                                                            </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                            <label class="form-check-label" for="enableEFI_checkbox">
+                                                                <input type="checkbox" class="form-check-input" id="enableEFI_checkbox" name="option2" value="something">Enable EFI (special OSes only)
+                                                            </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <label class="form-check-label" for="hardwareClockUTC_checkbox">
+                                                                <input type="checkbox" class="form-check-input" id="hardwareClockUTC_checkbox" name="option2" value="something">Hardware Clock in UTC Time
+                                                                </label>
+                                                            </div>													
+                                                            </form>
+                                                        </td>
+                                                    </tr>						
+                                                </tbody>
+                                                </table>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <!--Processor-->
+                                      <div class="card">
+                                        <div class="card-header">
+                                          <a class="collapsed card-link" data-toggle="collapse" href="#inner2">
+                                          Processor
+                                        </a>
+                                        </div>
+                                        <div id="inner2" class="collapse" data-parent="#accordion2">
+                                          <div class="card-body">
+                                            <!--processor section-->
+                                            <h5>Processor</h5>
+                                            <table class="table table-borderless">
+                                                <thead>
+                                                </thead>
+                                                <tbody>
+                                                  <tr>
+                                                    <td>Processor(s):</td>
+                                                    <td>
+                                                        <div class="slidecontainer">
+                                                            <input type="range" min="1" max="4" class="custom-range" id="processor_slider">
+                                                            <p align="right"><span id="processorOut"></span> CPU(s)</p>
+                                                          </div>
+                                                          
+                                                          <!--to show slider value-->
+                                                          <script>
+                                                            var processorSlider = document.getElementById("processor_slider");
+                                                            var processorOutput = document.getElementById("processorOut");
+                                                            processorOutput.innerHTML = processorSlider.value;
+                                                            
+                                                            processorSlider.oninput = function() {
+                                                              processorOutput.innerHTML = this.value;
+                                                            }
+                                                        </script>
+                                                    </td>
+                                                  </tr>
+                                                  <tr>
+                                                    <td>Execution Cap:</td>
+                                                    <td>
+                                                        <div class="slidecontainer">
+                                                            <input type="range" min="1" max="100" class="custom-range" id="executionCap_slider">
+                                                            <p align="right"><span id="executionCapOut"></span> %</p>
+                                                          </div>
+                                                          
+                                                          <!--to show slider value-->
+                                                          <script>
+                                                            var executionCapSlider = document.getElementById("executionCap_slider");
+                                                            var executionCapOutput = document.getElementById("executionCapOut");
+                                                            executionCapOutput.innerHTML = executionCapSlider.value;
+                                                            
+                                                            executionCapSlider.oninput = function() {
+                                                                executionCapOutput.innerHTML = this.value;
+                                                            }
+                                                        </script>												
+                                                    </td>
+                                                    </td>
+                                                  </tr>
+                                                  <tr>
+                                                    <td>Extended Features:</td>
+                                                    <td>
+                                                        <form action="/action_page.php">
+                                                        <div class="form-check">
+                                                        <label class="form-check-label" for="check1">
+                                                            <input type="checkbox" class="form-check-input" id="enablePAENX_checkbox" name="option1" value="something">Enable PAE/NX
+                                                        </label>
+                                                        </div>																									
+                                                        </form>
+                                                    </td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <!--Accelerator-->
+                                      <div class="card">
+                                        <div class="card-header">
+                                          <a class="collapsed card-link" data-toggle="collapse" href="#inner3">
+                                            Accelerator
+                                          </a>
+                                        </div>
+                                        <div id="inner3" class="collapse" data-parent="#accordion2">
+                                          <div class="card-body">
+                                            <!--accelerator section-->
+                                            <h5>Accelerator</h5>
+                                            <table class="table table-borderless">
+                                                <thead>
+                                                </thead>
+                                                <tbody>
+                                                  <tr>
+                                                    <td>Paravirtualization Interface:</td>
+                                                    <td>
+                                                        <form action="/action_page.php">
+                                                            <div class="form-group">
+                                                            <select class="form-control" id="paravirtualizationInterface_dropdown" name="sellist1">
+                                                                <option>None</option>
+                                                                <option>Default</option>
+                                                                <option>Legacy</option>
+                                                                <option>Minimal</option>
+                                                                <option>Hyper-V</option>
+                                                                <option>KVM</option>
+                                                            </select>
+                                                            </div>
+                                                        </form>
+                                                    </td>
+                                                  </tr>
+                                                  <tr>
+                                                    <td>Hardware Virtualization:</td>
+                                                    <td>
+                                                        <form action="/action_page.php">
+                                                            <div class="form-check">
+                                                            <label class="form-check-label" for="check1">
+                                                                <input type="checkbox" class="form-check-input" id="enableVTxAMDV_checkbox" name="option1" value="something">Enable VT-x/AMD-V
+                                                            </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                            <label class="form-check-label" for="check2">
+                                                                <input type="checkbox" class="form-check-input" id="enableNestedPaging_checkbox" name="option2" value="something">Enable Nested Paging
+                                                            </label>
+                                                            </div>																									
+                                                        </form>
+                                                    </td>
+                                                  </tr>										  
+                                                </tbody>
+                                              </table>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                </div>
+                
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="saveMachine()" data-dismiss="modal">Save</button>
+                </div>
+                
+                </div>
+            </div>
+        </div>
 
         <script>
-            var scenario;
-            var attackerMachinesList;
-            var victimMachinesList;
 
             //get scenario name from url
             // var query = location.search.substring(1);
@@ -115,12 +581,18 @@
 
             // var sName = parameters['scenarioName'];
             
-            
-            scenario = scenarios.getScenarioBeingCreated();
-            attackerMachinesList = scenario.getAllAttackerMachines();
-            victimMachinesList = scenario.getAllVictimMachines();
-            populateVMLists(attackerMachinesList, victimMachinesList);
-            
+            function refreshLists(){
+                scenario = scenarios.getScenarioBeingCreated();
+                attackerMachinesList = scenario.getAllAttackerMachines();
+                victimMachinesList = scenario.getAllVictimMachines();
+                populateVMLists(attackerMachinesList, victimMachinesList);
+            }
+
+            function refreshFromNewMachine(){
+                attackerMachinesList = scenario.getAllAttackerMachines();
+                victimMachinesList = scenario.getAllVictimMachines();
+                populateVMLists(attackerMachinesList, victimMachinesList);
+            }
 
             function populateVMLists(attackerMachinesList, victimMachinesList){
                 //populate attackers
@@ -149,6 +621,7 @@
             }
             
             function itemsAddVulnVM(machine) {
+            var mName = machine.getName();
             $("#vulnTbl tbody").append(
                 "<tr>" +
                     "<td class='fa fa-desktop'></td>" +
@@ -170,11 +643,24 @@
 			    window.open("../MachineEditWindow/machineEdit.html");
             }
 
+            function createNewVM(){
+                machineBeingEdited = scenario.createNewMachine("FooBar Machine");
+                refreshBasicSetsFromWidow(machineBeingEdited);
+            }
+
+            function saveMachine(){
+                updateBasicSetsInWidow(machineBeingEdited);
+                refreshFromNewMachine();
+            }
+
             function saveScenario(){
                 scenarios.completeScenarioCreation();
                 window.location='../welcomeWindow/welcomeWindow.html'
             }
 
+            $('document').ready(function(){
+                refreshLists();
+            });
         </script>
     </body>
 </html>
