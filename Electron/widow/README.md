@@ -1,7 +1,7 @@
 # Widow 0310201812
 Back-end communication handlers and data abstractions.
 
-To adopt the usage of experimental widow in an html document add:
+To adopt the usage of widow in an html document add:
 
     <script src="../../../Electron/widow/scenarios.js"></script>
     
@@ -25,3 +25,7 @@ To access a specific scenario:
 To get all scenarios:
 
     widow.scenarios.getAllScenarios()
+    
+To obtain available VM boxes
+
+    widow.boxes.getBoxesList()
