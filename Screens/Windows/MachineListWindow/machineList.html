@@ -12,9 +12,13 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
         
-        <script src="../../../Electron/widow/scenarios.js"></script>
+        <!-- <script src="../../../Electron/widow/scenarios.js"></script> -->
         <meta charset="UTF-8">
 
+        <script>
+            var {remote} = require('electron');
+			var scenarios = remote.getGlobal('scenarios');
+        </script>
 
         <title>BlackHole</title>
 		
@@ -94,23 +98,23 @@
             var victimMachinesList;
 
             //get scenario name from url
-            var query = location.search.substring(1);
-            var parameters = {};
-            var keyValues = query.split(/&/);
-            for (var keyValue in keyValues) {
-                var keyValuePairs = keyValue.split(/=/);
-                var key = keyValuePairs[0];
-                var value = keyValuePairs[1];
-                parameters[key] = value;
-            }
+            // var query = location.search.substring(1);
+            // var parameters = {};
+            // var keyValues = query.split(/&/);
+            // for (var keyValue in keyValues) {
+            //     var keyValuePairs = keyValue.split(/=/);
+            //     var key = keyValuePairs[0];
+            //     var value = keyValuePairs[1];
+            //     parameters[key] = value;
+            // }
 
             //remove after testing
-            parameters = {"scenarioName":"Scenario 1"}
+            // parameters = {"scenarioName":"Scenario 1"}
 
-            var sName = parameters['scenarioName'];
+            // var sName = parameters['scenarioName'];
             
             
-            scenario = scenarios.getScenarioByName(sName);
+            scenario = scenarios.getScenarioBeingCreated();
             attackerMachinesList = scenario.getAllAttackerMachines();
             victimMachinesList = scenario.getAllVictimMachines();
             populateVMLists(attackerMachinesList, victimMachinesList);
