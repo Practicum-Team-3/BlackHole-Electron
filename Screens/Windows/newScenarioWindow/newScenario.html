@@ -1,64 +1,145 @@
 <!DOCTYPE html>
+
 <html>
     <head>
-		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css">	
+		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css">
+		<script src="../../../Electron/node_modules/jquery/dist/jquery.js"></script>
 		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/site.css">	
 		<script scr="../CoreComponents/CSS/Bootstrap/bootstrap.js"></script>
 		<link href="../CoreComponents/CSS/Bootstrap/all.css" rel="stylesheet">
-		
+		  <!--link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css"-->
+		  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+		  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
         <meta charset="UTF-8">
         <title>BlackHole</title>
-    </head>
-    <body>
-		<div class="container">
 		
-			<div class="row">
+		
+		<script>
+
+			document.addEventListener("DOMContentLoaded", function(event) { 
+			  //$( "#exampleModalCenter" ).dialog();	
+			
+			});
+
+			
+				
+			function addExploit() {
+				
+				var exploitName = document.getElementById("exploitName").value;
+				var exploitType = document.getElementById("exploitType").value;
+				var exploitDownload = document.getElementById("exploitDownload").value;
+				
+				//Add into table
+				 itemsAdd(exploitName, exploitType, exploitDownload);
+				 cleanDialogModel();
+			}
+			
+			function addVuln() {
+				var vulnName = document.getElementById("vulnName").value;
+				var vulnType = document.getElementById("vulnType").value;
+				var vulnCVE = document.getElementById("vulnCVE").value;
+				var vulnDownload = document.getElementById("vulnDownload").value;
+				
+				//Add into table
+				 itemsAddVuln(vulnName, vulnType, vulnCVE, vulnDownload);
+				 cleanDialogModel();
+			}
+			
+			function itemsAdd(name, type, link) {
+			  $("#exploitTbl tbody").append(
+				  "<tr>" +
+					"<td scope='row'> </td>" +
+					"<td>" + name + "</td>" +
+					"<td>" + type + "</td>" +
+					"<td id='pathStyle'>" + link + "</td>" +
+					"<td onclick='delRow(this)'><i class='fa fa-minus-circle'></i></td>" +
+				  "</tr>"
+			  );
+			}
+			
+			function itemsAddVuln(name, type, cve, link) {
+			  $("#vulnTbl tbody").append(
+				  "<tr>" +
+					"<td scope='row'> </td>" +
+					"<td>" + name + "</td>" +
+					"<td>" + type + "</td>" +
+					"<td id='pathStyle'>" + cve + "</td>" +
+					"<td id='pathStyle'>" + link + "</td>" +
+					"<td onclick='delRow(this)'><i class='fa fa-minus-circle'></i></td>" +
+				  "</tr>"
+			  );
+			}
+			
+			function cleanDialogModel(){
+				document.getElementById("exploitName").value = "";
+				document.getElementById("exploitType").value = "";
+				document.getElementById("exploitDownload").value = "";
+				
+				document.getElementById("vulnName").value = "";
+				document.getElementById("vulnType").value = "";
+				document.getElementById("vulnCVE").value = "";
+				document.getElementById("vulnDownload").value = "";
+			}
+			
+			
+			function delRow(e){
+				$(e).closest('tr').remove();
+			}
+
+		</script>
+		
+    </head>
+    <body>		
+		<div class="container" style="height:540px;">
+
+			<div class="row">				
 				<div class="col-md-12 text-right" style="height:45px; padding-top:5px;">
 					<button type="submit" onClick="window.location='../welcomeWindow/welcomeWindow.html';" class="btn btn-primary fa fa-backward"></button>
+					
 				</div>
 			</div>
 			
 			<form>
 				<div class="form-group">
-					<label for="exampleInputEmail1">Scenario Name</label>
-					<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter scenario name">
-					<!--small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small-->
-				</div>				
+					<label for="scenarioName">Scenario Name</label>
+					<input class="form-control" id="scenarioName" placeholder="Enter scenario name">						
+				</div>	
+				<!--div class="row"style="padding-top:8px">
+					<div class="col-md-3">
+						<div class="form-group">
+							<label for="exampleInputEmail1">Scenario Name</label>
+							<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter scenario name">							
+						</div>	
+					</div>
+					<div class="col-md-9">
+						<div class="form-group">
+							<label for="exampleInputEmail1">Description</label>
+							<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter description...">
+							
+						</div>	
+					</div>
+				</div-->			
 			</form>
 
 			<div class="row" id="content_ns" style="padding-top:8px">
 				<div class="col-md-6" style="border-right:double gray;">
 					<div class="text-right" style="padding-bottom:10px;">
-						<button type="submit" class="btn btn-primary">Add</button>		
+						<button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Add</button>					
 					</div>
-					<table class="table">
+					<label>Exploit Information</label>
+					<table id="exploitTbl" class="table">
 					  <thead>
 						<tr>
 						  <th scope="col">#</th>
 						  <th scope="col">Exploit</th>
-						  <th scope="col">Path</th>
+						  <th scope="col">Type</th>
+						  <th scope="col">Download URL</th>
 						  <th scope="col"></th>
 						</tr>
 					  </thead>
 					  <tbody>
-						<tr>
-						  <th scope="row">1</th>
-						  <td>e0.exe</td>
-						  <td id="pathStyle">C:\Users\abustamante\Documents\BlackHole-Electron\e0.exe</td>
-						  <td><i class="fa fa-minus-circle"></i></td>
-						</tr>
-						<tr>
-						  <th scope="row">2</th>
-						  <td>e0.exe</td>
-						  <td id="pathStyle">C:\Users\abustamante\Documents\BlackHole-Electron\e0.exe</td>
-						  <td><i class="fa fa-minus-circle"></i></td>
-						</tr>
-						<tr>
-						  <th scope="row">3</th>
-						  <td>e0.exe</td>
-						  <td id="pathStyle">C:\Users\abustamante\Documents\BlackHole-Electron\e0.exe</td>
-						  <td><i class="fa fa-minus-circle"></i></td>
-						</tr>
+
 					  </tbody>
 					</table>
 					
@@ -66,114 +147,103 @@
 				
 				<div class="col-md-6">
 					<div class="text-right" style="padding-bottom:10px;">
-							<button type="submit" class="btn btn-primary">Add</button>		
+							<button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#myModal_">Add</button>		
 					</div>
-				
-					<table class="table">
+					<label>Vulnerability Information</label>
+					<table id="vulnTbl" class="table">
 					  <thead>
 						<tr>
 						  <th scope="col">#</th>
-						  <th scope="col">Vulnerable</th>
-						  <th scope="col">Path</th>
+						  <th scope="col">Vuln</th>
+						  <th scope="col">Type</th>
+						  <th scope="col">CVE</th>
+						  <th scope="col">Download URL</th>
 						  <th scope="col"></th>
 						</tr>
 					  </thead>
 					  <tbody>
-						<tr>
-						  <th scope="row">1</th>
-						  <td>e0.exe</td>
-						  <td id="pathStyle">C:\Users\abustamante\Documents\BlackHole-Electron\e0.exe</td>
-						  <td><i class="fa fa-minus-circle"></i></td>
-						</tr>
-						<tr>
-						  <th scope="row">2</th>
-						  <td>e0.exe</td>
-						  <td id="pathStyle">C:\Users\abustamante\Documents\BlackHole-Electron\e0.exe</td>
-						  <td><i class="fa fa-minus-circle"></i></td>
-						</tr>
-						<tr>
-						  <th scope="row">3</th>
-						  <td>e0.exe</td>
-						  <td id="pathStyle">C:\Users\abustamante\Documents\BlackHole-Electron\e0.exe</td>
-						  <td><i class="fa fa-minus-circle"></i></td>
-						</tr>
+
 					  </tbody>
-					</table>	
-					<br/><br/><br/><br/><br/>
-					<div class="text-right">						
-						<button type="submit" onClick="window.location='../MachineListWindow/machineList.html'" class="btn btn-primary">Next</button>		
+					</table>						
+				</div>						
+			</div>
+			
+			<!-- The Modal Add Exploit-->
+			<div class="modal fade" id="myModal">
+				<div class="modal-dialog modal-dialog-centered">
+				  <div class="modal-content">
+				  
+					<!-- Modal Header -->
+					<div class="modal-header">
+					  <h4 class="modal-title">Add Exploit</h4>
+					  <button type="button" class="close" data-dismiss="modal">&times;</button>
 					</div>
-					<!--div class="list-group">
-					  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
-						<div class="d-flex w-100 justify-content-between">
-						  <h5 class="mb-1">Kali Linux VM</h5>
-						  <small>Running</small>
-						</div>
-						<p class="mb-1">Virtual Machine with malware exposed.</p>
-						<small>Operation System: Kali - Memory: 4gb - Space: 40gb - IP: 127.0.0.1 - Port: 443</small>
-					  </a>
-					 <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-between">
-						  <h5 class="mb-1">Windows 10</h5>
-						  <small>Running</small>
-						</div>
-						<p class="mb-1">Virtual Machine with malware exposed.</p>
-						<small>Operation System: Kali - Memory: 4gb - Space: 40gb - IP: 127.0.0.1 - Port: 443</small>
-					  </a>
-					 <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-between">
-						  <h5 class="mb-1">Windows Server 2008</h5>
-						  <small>off</small>
-						</div>
-						<p class="mb-1">Virtual Machine with malware exposed.</p>
-						<small>Operation System: Kali - Memory: 4gb - Space: 40gb - IP: 127.0.0.1 - Port: 443</small>
-					  </a>
-					  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-between">
-						  <h5 class="mb-1">List group item heading</h5>
-						  <small class="text-muted">3 days ago</small>
-						</div>
-						<p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-						<small class="text-muted">Donec id elit non mi porta.</small>
-					  </a>
-					  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-between">
-						  <h5 class="mb-1">List group item heading</h5>
-						  <small class="text-muted">3 days ago</small>
-						</div>
-						<p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-						<small class="text-muted">Donec id elit non mi porta.</small>
-					  </a>
-					  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-between">
-						  <h5 class="mb-1">List group item heading</h5>
-						  <small class="text-muted">3 days ago</small>
-						</div>
-						<p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-						<small class="text-muted">Donec id elit non mi porta.</small>
-					  </a>
-					  				<div class="text-right" style="padding-top:10px; padding-bottom:10px;">
-					<button type="button" class="btn btn-secondary btn-sm fa fa-trash">Remove</button>
-					<button type="button" class="btn btn-primary btn-sm fa fa-edit">Edit</button>		
-
-
-<br/><br/><br/><br/><br/><br/><br/>
-					<div class="text-right">
-						<button type="submit" class="btn btn-primary">Add</button>		
-					</div>
-
 					
-				</div>
-					  <button type="submit" class="btn btn-primary">Submit</button>
-					</div-->
+					<!-- Modal body -->
+					<div class="modal-body">
+						<label for="exploitName">Exploit Name</label>
+						<input class="form-control" id="exploitName" placeholder="Enter exploit name"></br>
+						<label for="exploitType">Exploit Type</label>
+						<input class="form-control" id="exploitType" placeholder="Enter exploit type"></br>
+						<label for="exploitDownload">Exploit Download</label>
+						<input class="form-control" id="exploitDownload" placeholder="Enter exploit download link">	
+					</div>
+					
+					<!-- Modal footer -->
+					<div class="modal-footer">
+					  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					  <button type="button" class="btn btn-primary" onclick="addExploit()" data-dismiss="modal">Save	</button>
+					</div>
+					
+				  </div>
 				</div>
 			</div>
 			
-			
+			<!-- The Modal Add Vulnerability-->
+			<div class="modal fade" id="myModal_">
+				<div class="modal-dialog modal-dialog-centered">
+				  <div class="modal-content">
+				  
+					<!-- Modal Header -->
+					<div class="modal-header">
+					  <h4 class="modal-title">Add Vulnerable File</h4>
+					  <button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+					
+					<!-- Modal body -->
+					<div class="modal-body">
+					  <div class="modal-body">
+						<label for="vulnName">Vulnerability Name</label>
+						<input class="form-control" id="vulnName" placeholder="Enter vuln name"></br>
+						
+						<label for="vulnType">Vulnerability Type</label>
+						<input class="form-control" id="vulnType" placeholder="Enter vuln type"></br>
+						
+						<label for="vulnCVE">Vulnerability CVE</label>
+						<input class="form-control" id="vulnCVE" placeholder="Enter vuln CVE"></br>
+						
+						<label for="vulnDownload">Vulnerability Download</label>
+						<input class="form-control" id="vulnDownload" placeholder="Enter vuln download link">	
+					</div>
+					</div>
+					
+					<!-- Modal footer -->
+					<div class="modal-footer">
+					  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					  <button type="button" onclick="addVuln()" class="btn btn-primary" data-dismiss="modal">Save</button>
+					</div>
+					
+				  </div>
+				</div>				
+			</div>
+				
 			<footer class="footer fixed-bottom container">
 					<hr>
 					<p>&copy; 2020 Company, Inc.</p>
 			</footer>
 		</div>
+		<div class="text-right">						
+				<button type="submit" style="margin-right:120px;" onClick="window.location='../MachineListWindow/machineList.html'" class="btn btn-primary">Create</button>		
+			</div>
     </body>
 </html>
