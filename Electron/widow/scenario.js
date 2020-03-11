@@ -68,9 +68,9 @@ Scenario.prototype.getName = function(){
 
 /**
  * @function setName
- * @private
  * @description Set the internal name of a scenario.
- *              To set both external and internal names call renameScenario() on Scenarios instead
+ *              When a scenario has been added to the backend, it also has an external name
+ *              To set both external and internal names, call renameScenario() on Scenarios instead
  * @memberof Scenario
  * @param {string} ame New name of the scenario
  */

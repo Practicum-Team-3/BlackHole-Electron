@@ -3,7 +3,7 @@ const widowAddress = "http://localhost:5000/"
 
 /**
  * @class Scenarios
- * @version 1.1.0
+ * @version 1.2.0
  * @description Manager of scenarios and connection to Widow.
  *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
@@ -288,6 +288,57 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
     }.bind(this))
 }
 
+Scenarios.prototype.createVagrant = function(scenarioName){
+    console.log("11")
+    return new Promise(function(resolve, reject){
+        // Check for the existance of the "new scenario", should fail if already exists
+        if (this.nameList.includes(scenarioName)){
+            var axios = require('axios')
+            
+            axios.get(this.widowAddress+"vagrantFiles/"+scenarioName+"/all")
+            .then(function (response) {
+                // Add to the loaded dictionary
+                console.log("16")
+                resolve()
+
+            }.bind(this)).catch(function (error) {
+                // handle error
+                console.log("createVagrant Error")
+                console.log(error);
+                reject()
+
+            }.bind(this))
+        }else{
+            console.log("No scenario")
+            reject()
+        }
+    }.bind(this))
+}
+
+Scenarios.prototype.run = function(scenarioName){
+    return new Promise(function(resolve, reject){
+        // Check for the existance of the "new scenario", should fail if already exists
+        if (this.nameList.includes(scenarioName)){
+            var axios = require('axios')
+            
+            axios.get(this.widowAddress+"vagrantFiles/"+scenarioName+"/run")
+            .then(function (response) {
+                // Add to the loaded dictionary
+                resolve()
+
+            }.bind(this)).catch(function (error) {
+                // handle error
+                console.log("run Error")
+                console.log(error);
+                reject()
+
+            }.bind(this))
+        }else{
+            reject()
+        }
+    }.bind(this))
+}
+
 /**
  * @function saveScenarioByName
  * @description Trigger the saving of a scenario to Widow
@@ -325,6 +376,7 @@ Scenarios.prototype.saveScenarioByName = function(scenarioName){
  * @class Boxes
  * @version 1.0.0
  * @description Available VM boxes
+ *              No need to instantiate, just reference the shared instance on widow.boxes
  *              
  * @param {string} widowAddress Address to back-end "Widow"
  */
