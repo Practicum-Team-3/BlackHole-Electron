@@ -6,6 +6,7 @@
 			window.$ = window.jQuery = require('../../../Electron/node_modules/jquery/dist/jquery');
 			var {remote} = require('electron');
 			var scenarios = remote.getGlobal('scenarios');
+			var boxes = remote.getGlobal('boxes');
 
 			var query = location.search.substring(1);
 				var parameters = {};
@@ -147,7 +148,6 @@
 				function updateBasicSetsInWidow(){
 
 					//get values from fields
-					
 					var mName = $('#machineNameInputText').val();
 					var mIsAttacker = $('#attackerSelectBox').val();
 					var mOS = $('#OSSelectBox').val();
@@ -162,28 +162,57 @@
 					}
 
 					machine.setOs(mOS);
-
 				}
 
 				function refreshBasicSetsFromWidow(){
-
-					//TODO: Both select boxes options must be created dynamically by 
-					//iterating over the different values the machines in widow can have for those fields
-					//then populating the element.
-					//CURRENT IMPLEMENTATION IS TEMPORARY. I HAD CLASS!!!
-
-
+					//populate os select box
+					var OSList = boxes.getBoxesList();
 					var mName = machine.getName();
 					var mIsAttacker = machine.getIsAttacker();
 					var mOS = machine.getOs();
 
+					//update machine name
 					$('#machineNameInputText').val(mName);
 
-					$('#attackerSelectBox').val(mIsAttacker);
-					$('#attackerSelectBox option[value=' + mIsAttacker + ']').attr('selected', 'selected');
+					//update the select boxes
+					populateOSSelect(OSList, mOS);
+					populateIsAttackerSelect(mIsAttacker);
+				}
 
-					$('#OSSelectBox option[value=' + mOS + ']').attr('selected', 'selected');
-					$('#OSSelectBox').val(mOS);
+				function populateOSSelect(OSList, mOS){
+					
+					//fill with options
+					OSSelect = $('#OSSelectBox');
+					OSSelect.empty();
+					OSSelect.val(mOS);
+
+					for(var i = 0; i<OSList.length; i++){
+						var option = document.createElement("option");
+						
+						option.value = OSList[i];
+						option.innerHTML = OSList[i];
+
+						if(option.value == mOS){
+							option.selected = 'selected';
+						}else{
+							option.selected = '';
+						}
+
+						OSSelect.append(option);
+					}
+				}
+
+				function populateIsAttackerSelect(mIsAttacker){
+					var isAttackerBox = $('#attackerSelectBox');
+					isAttackerBox.val(mIsAttacker);
+					children = isAttackerBox.children();
+					for(var i = 0; i<children.length; i++){
+						if(String(children[i].value) == String(mIsAttacker)){
+							children[i].selected = 'selected';
+						}else{
+							children[i].selected = '';
+						}
+					}
 				}
 			</script>
 
@@ -467,9 +496,6 @@
 	<script>
 		document.addEventListener("DOMContentLoaded", function(event) { 
 			//calling widow and populating manali's forms
-			
-			var scenario = scenarios.getScenarioByName(scenarioName);
-			var machine = scenario.getMachineByName(machineName);
 			refreshBasicSetsFromWidow();
 			//also refresh aarons settings
 		});
