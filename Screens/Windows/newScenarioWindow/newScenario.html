@@ -2,11 +2,13 @@
 
 <html>
     <head>
+		<script src="../../../Electron/widow/scenarios.js"></script>
 		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css">
 		<script src="../../../Electron/node_modules/jquery/dist/jquery.js"></script>
 		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/site.css">	
 		<script scr="../CoreComponents/CSS/Bootstrap/bootstrap.js"></script>
 		<link href="../CoreComponents/CSS/Bootstrap/all.css" rel="stylesheet">
+
 		  <!--link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css"-->
 		  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 		  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -22,8 +24,85 @@
 			
 			});
 
-			
+			//Initiate the process for a new scenario
+			function createScenario(){				
 				
+				var scenarioName = document.getElementById("scenarioName").value;
+				
+				//Create new scenario instance
+				widow.scenarios.createNewScenario();
+				
+				//Retrieve scenario instance
+				var newScenario = widow.scenarios.getScenarioBeingCreated();
+				
+				//Set scenario Name
+				newScenario.setName(scenarioName);
+				
+				//Set scenario exploits	
+				var table = document.getElementById("exploitTbl");
+	 
+				for (var i = 1 ; i < table.rows.length; i++) {
+		 
+					var exploitName = table.rows[i].cells[1].innerHTML;
+					var exploitType = table.rows[i].cells[2].innerHTML;
+					var exploitLink = table.rows[i].cells[3].innerHTML;
+		 
+					//for (var j = 0; j < table.rows[i].cells.length; j++) {
+					//row += table.rows[i].cells[j].innerHTML;
+					//row += " | ";
+					//}
+					newScenario.exploitInfo.setName(exploitName);
+					newScenario.exploitInfo.setType(exploitType);
+					newScenario.exploitInfo.setDownloadLink(exploitLink);
+					break;
+					
+				}
+				
+				//Set scenario vuln
+				var table = document.getElementById("vulnTbl");
+	 
+				for (var i = 1 ; i < table.rows.length; i++) {
+		 
+					var vulnName = table.rows[i].cells[1].innerHTML;
+					var vulnType = table.rows[i].cells[2].innerHTML;
+					var vulnLink = table.rows[i].cells[3].innerHTML;
+					var vulnCRV = table.rows[i].cells[4].innerHTML;
+		 
+					//for (var j = 0; j < table.rows[i].cells.length; j++) {
+					//row += table.rows[i].cells[j].innerHTML;
+					//row += " | ";
+					//}
+					newScenario.vulnerabilityInfo.setName(vulnName);
+					newScenario.vulnerabilityInfo.setType(vulnType);
+					newScenario.vulnerabilityInfo.setCveLink(vulnCRV);
+					newScenario.vulnerabilityInfo.setDownloadLink(vulnLink);
+					break;
+					
+				}
+				
+				//Call MachineListWindow
+				window.open('../MachineListWindow/machineList.html');
+			}
+			
+			//Access and loop table
+			function createExploitInfo(newScenario){
+			var table = document.getElementById("exploitTbl");
+ 
+				for (var i = 1 ; i < table.rows.length; i++) {
+		 
+					var exploitName = table.rows[i].cells[1].innerHTML;
+					var exploitType = table.rows[i].cells[2].innerHTML;
+					var exploitLink = table.rows[i].cells[3].innerHTML;
+		 
+					//for (var j = 0; j < table.rows[i].cells.length; j++) {
+					//row += table.rows[i].cells[j].innerHTML;
+					//row += " | ";
+					//}
+		 
+					alert(exploitName);
+				}
+			}
+			
 			function addExploit() {
 				
 				var exploitName = document.getElementById("exploitName").value;
@@ -91,15 +170,13 @@
 		
     </head>
     <body>		
-		<div class="container" style="height:540px;">
-
+		<div class="container" style="height:400px;">		
 			<div class="row">				
-				<div class="col-md-12 text-right" style="height:45px; padding-top:5px;">
+				<div class="col-md-12 text-right" style="height:15px; padding-top:5px;">
 					<button type="submit" onClick="window.location='../welcomeWindow/welcomeWindow.html';" class="btn btn-primary fa fa-backward"></button>
 					
 				</div>
 			</div>
-			
 			<form>
 				<div class="form-group">
 					<label for="scenarioName">Scenario Name</label>
@@ -121,7 +198,6 @@
 					</div>
 				</div-->			
 			</form>
-
 			<div class="row" id="content_ns" style="padding-top:8px">
 				<div class="col-md-6" style="border-right:double gray;">
 					<div class="text-right" style="padding-bottom:10px;">
@@ -168,6 +244,11 @@
 				</div>						
 			</div>
 			
+			<div class="text-right">						
+				<!--button type="submit" onClick="window.location='../MachineListWindow/machineList.html'" class="btn btn-primary">Create</button-->		
+				<button type="submit" onClick="createScenario()" class="btn btn-primary">Create</button>		
+			</div>
+
 			<!-- The Modal Add Exploit-->
 			<div class="modal fade" id="myModal">
 				<div class="modal-dialog modal-dialog-centered">
@@ -242,8 +323,6 @@
 					<p>&copy; 2020 Company, Inc.</p>
 			</footer>
 		</div>
-		<div class="text-right">						
-				<button type="submit" style="margin-right:120px;" onClick="window.location='../MachineListWindow/machineList.html'" class="btn btn-primary">Create</button>		
-			</div>
+
     </body>
 </html>
