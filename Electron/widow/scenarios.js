@@ -3,7 +3,7 @@ const widowAddress = "http://localhost:5000/"
 
 /**
  * @class Scenarios
- * @version 1.0.0
+ * @version 1.1.0
  * @description Manager of scenarios and connection to Widow.
  *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
@@ -17,6 +17,10 @@ function Scenarios(widowAddress){
     this.loaded = {}
     //To keep a new scenario while it's being added
     this.scenarioLimbo = null
+    
+    //Flag to indicate if the initial loading has been done
+    this.hasDoneInitialLoad = false
+    
 }
 
 //========================
@@ -102,6 +106,7 @@ Scenarios.prototype.renameScenario = function(oldName, newName){
  * @returns {Promise} Promise for the completion of adding the scenario to Widow
  */
 Scenarios.prototype.addScenario = function(scenario){
+    
     return new Promise(function(resolve, reject){
         if (!this.nameList.includes(scenario.getName())){
             // declare new scenario to Widow
@@ -109,8 +114,11 @@ Scenarios.prototype.addScenario = function(scenario){
             .then(function(){
                 this.nameList.push(scenario.getName())
                 resolve()
-            })
-            // TODO: Add catch
+                
+            }.bind(this)).catch(function(){
+                reject()
+                
+            }.bind(this))
         }
         //Scenario was already included, so just add (or overwrite) to loaded
         this.loaded[scenario.getName()] = scenario
@@ -123,13 +131,27 @@ Scenarios.prototype.addScenario = function(scenario){
  * @description Creates a new default Scenario object and returns it.
  * The new scenario is not automatically added to the list of scenarios in widow.
  * To complete the creation process and add the scenario to the list, call completeScenarioCreation()
+ * The scenario can be obtained by calling getScenarioBeingCreated()
+ * @see getScenarioBeingCreated()
+ *      completeScenarioCreation()
  * @memberof Scenarios
  *
  * @return {Scenario} Instance to a new Scenario object
  */
 Scenarios.prototype.createNewScenario = function(){
-    self.scenarioLimbo = new Scenario()
-    return self.scenarioLimbo
+    var Scenario = require('./scenario.js').Scenario
+    this.scenarioLimbo = new Scenario()
+    return this.scenarioLimbo
+}
+
+/**
+ * @function getScenarioBeingCreated
+ * @description Returns the scenario created by a previous call to createNewScenario()
+ * @memberof Scenarios
+ * @returns {Scenario} The scenario being created
+ */
+Scenarios.prototype.getScenarioBeingCreated = function(){
+    return this.scenarioLimbo
 }
 
 /**
@@ -145,6 +167,8 @@ Scenarios.prototype.completeScenarioCreation = function(){
             .then(function(){
                 this.scenarioLimbo = null
                 resolve()
+            }.bind(this)).catch(function(){
+                reject()
             })
         }else{
             reject()
@@ -245,8 +269,8 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
         // Check for the existance of the "new scenario", should fail if already exists
         if (!this.nameList.includes(scenarioName)){
             var axios = require('axios')
-
-            axios.get(this.widowAddress+"scenarios/new/"+name)
+            
+            axios.get(this.widowAddress+"scenarios/new/"+scenarioName)
             .then(function (response) {
                 // Add to the loaded dictionary
                 resolve()
@@ -257,7 +281,7 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
                 console.log(error);
                 reject()
 
-            })
+            }.bind(this))
         }else{
             reject()
         }
@@ -293,22 +317,91 @@ Scenarios.prototype.saveScenarioByName = function(scenarioName){
     }.bind(this))
 }
 
+//========================
+//=== Boxes
+//========================
+
+/**
+ * @class Boxes
+ * @version 1.0.0
+ * @description Available VM boxes
+ *              
+ * @param {string} widowAddress Address to back-end "Widow"
+ */
+function Boxes(widowAddress){
+    this.widowAddress = widowAddress
+    this.boxes = {}
+}
+
+Boxes.prototype.loadBoxes = function(){
+    return new Promise(function(resolve, reject){
+        
+        var axios = require('axios')
+        
+        axios.get(this.widowAddress+"boxes/all")
+        .then(function (response) {
+            // Keep list locally
+            this.boxes = response.data
+            resolve()
+            
+        }.bind(this)).catch(function (error) {
+            // handle error
+            console.log(error);
+            reject()
+            
+        })
+    }.bind(this))
+}
+
+/**
+ * @function getBoxesList
+ * @description Returns an array with strings of the box names
+ * @memberof Boxes
+ * @returns {string[]} Array with box names as strings
+ */
+Boxes.prototype.getBoxesList = function(){
+    var boxesList = []
+    for (boxNum in this.boxes){
+        boxesList.push(this.boxes[boxNum])
+    }
+    return boxesList
+}
+
 //======================================================
 //=== Automatic instance for shared Electron runtime ===
 //======================================================
 try{
-    // Try to get existing scenarios instance from electron.remote
-    let scenarios = electron.remote.getGlobal('scenarios')
+    var widow = {}
     
-    if (scenarios.nameList.length==0){
-        var widow = {}
-        widow.scenarios = scenarios
-        widow.scenarios.loadScenarios().then(function(){widow.scenarios.loadAllScenarios()})
+    // Try to get existing scenarios instance from electron.remote
+    var scenarios = electron.remote.getGlobal('scenarios')
+    widow.scenarios = scenarios
+    
+    //Get existing boxes instance
+    var boxes = electron.remote.getGlobal('boxes')
+    widow.boxes = boxes
+    
+    //Check if scenarios have been loaded
+    if (!scenarios.hasDoneInitialLoad){
+        // Load scenario list
+        widow.scenarios.loadScenarios().then(function(){
+            // Load all the scenarios from the list
+            return widow.scenarios.loadAllScenarios()
+        })
+        .then(function(){
+            //Set flag
+            widow.scenarios.hasDoneInitialLoad = true
+            return widow.boxes.loadBoxes()
+        })
+        .then(function(){
+            console.log("Primary load finished")
+        })
     }
 }catch{
     // Create a new instance and put on exports for main to pick up and put on electron.remote
     try{
         exports.scenarios = new Scenarios(widowAddress)
+        exports.boxes = new Boxes(widowAddress)
     }catch{
         console.log("Automatic instance of widow.scenarios failed to start")
     }

@@ -2,7 +2,7 @@ var Machine = require('./machine.js').Machine
 
 /**
  * @class Scenario
- * @version 1.0.0
+ * @version 1.1.0
  * @description Single scenario properties
  *              
  * @param {string} descriptor Scenario descriptor (JSON)
@@ -97,6 +97,28 @@ Scenario.prototype.getId = function(){
  */
 Scenario.prototype.setId = function(id){
     this.descriptor["scenario_id"] = id
+}
+
+// === Description
+
+/**
+ * @function getDescription
+ * @description Returns the scenario description
+ * @memberof Scenario
+ * @returns {string} Scenario description
+ */
+Scenario.prototype.getDescription = function(){
+    return this.descriptor["description"]
+}
+
+/**
+ * @function setDescription
+ * @description Set the description or summary of the scenario
+ * @memberof Scenario
+ * @param {string} description Scenario description/summary
+ */
+Scenario.prototype.setDescription = function(description){
+    this.descriptor["description"] = description
 }
 
 // === Creation date
@@ -331,7 +353,7 @@ Scenario.prototype.createNewMachine = function(machineName){
 
 /**
  * @function renameMachine
- * @description Renames a machines and also updates the internal name
+ * @description Renames a machine both externally and internally
  * @memberof Scenario
  * @param {string} oldName Name of the machine to rename
  * @param {string} newName New name to replace the old
@@ -391,6 +413,22 @@ Scenario.prototype.createMachinesFromDescriptor = function(){
 // Add machine
 Scenario.prototype.addMachine = function(machine){
     this.machines[machine.getName()] = machine
+}
+
+/**
+ * @function removeMachineByName
+ * @description Removes a machine from the list and returns it
+ * @memberof Scenario
+ * @param {string} machineName Name of the machine to remove
+ * @returns {Machine} Removed machine
+ * @throws Undefined machine
+ */
+Scenario.prototype.removeMachineByName = function(machineName){
+    if (this.machines[machineName]!=null){
+        delete this.machines[machineName]
+    }else{
+        throw "Undefined machine"
+    }
 }
 
 // Remove machine
