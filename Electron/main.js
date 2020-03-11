@@ -24,5 +24,6 @@ app.on('window-all-closed', () => {
     }
 })
 
-//Create instance of scenarios
+//Create instance of scenarios and boxes
 global.scenarios = require('./widow/scenarios.js').scenarios
+global.boxes = require('./widow/scenarios.js').boxes
