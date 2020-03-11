@@ -18,20 +18,21 @@ module.exports.machineDescriptor = '{\
 }'
 
 module.exports.scenarioDescriptor = '{\
-    "scenario_name": "unnamed",\
+    "scenario_name": "",\
     "scenario_id": "",\
-    "creation_date": "02/03/2020 21:22:38",\
-    "last_accessed": "02/03/2020 21:22:38",\
+    "description": "",\
+    "creation_date": "01/01/2020 21:22:38",\
+    "last_accessed": "01/01/2020 21:22:38",\
     "exploit_info": {\
-        "name": "test_name",\
-        "type": "test_type",\
-        "download_link": "test_download_link"\
+        "name": "",\
+        "type": "",\
+        "download_link": ""\
     },\
     "vulnerability_info": {\
-        "name": "test_name",\
-        "type": "test_type",\
-        "cve_link": "test_cve_link",\
-        "download_link": "test_download_link"\
+        "name": "",\
+        "type": "",\
+        "cve_link": "",\
+        "download_link": ""\
     },\
     "machines": {}\
 }'
