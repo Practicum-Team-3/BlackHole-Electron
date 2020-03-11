@@ -81,7 +81,8 @@
 				}
 				
 				//Call MachineListWindow
-				window.open('../MachineListWindow/machineList.html');
+				//window.open('../MachineListWindow/machineList.html');
+				document.getElementById("btnNext").click();
 			}
 			
 			//Access and loop table
@@ -249,6 +250,8 @@
 			<div class="text-right">						
 				<!--button type="submit" onClick="window.location='../MachineListWindow/machineList.html'" class="btn btn-primary">Create</button-->		
 				<button type="submit" onClick="createScenario()" class="btn btn-primary">Create</button>		
+				<button type="submit" id="btnNext" style="display: none;" onClick="window.location='../MachineListWindow/machineList.html';" class="btn btn-primary">Next</button>		
+				
 			</div>
 
 			<!-- The Modal Add Exploit-->
@@ -275,7 +278,7 @@
 					<!-- Modal footer -->
 					<div class="modal-footer">
 					  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					  <button type="button" class="btn btn-primary" onclick="addExploit()" data-dismiss="modal">Save	</button>
+					  <button type="button" class="btn btn-primary" onclick="addExploit()" data-dismiss="modal">Save</button>
 					</div>
 					
 				  </div>
