@@ -3,7 +3,7 @@ const widowAddress = "http://localhost:5000/"
 
 /**
  * @class Scenarios
- * @version 1.0.1
+ * @version 1.1.0
  * @description Manager of scenarios and connection to Widow.
  *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
@@ -131,6 +131,9 @@ Scenarios.prototype.addScenario = function(scenario){
  * @description Creates a new default Scenario object and returns it.
  * The new scenario is not automatically added to the list of scenarios in widow.
  * To complete the creation process and add the scenario to the list, call completeScenarioCreation()
+ * The scenario can be obtained by calling getScenarioBeingCreated()
+ * @see getScenarioBeingCreated()
+ *      completeScenarioCreation()
  * @memberof Scenarios
  *
  * @return {Scenario} Instance to a new Scenario object
@@ -138,6 +141,16 @@ Scenarios.prototype.addScenario = function(scenario){
 Scenarios.prototype.createNewScenario = function(){
     var Scenario = require('./scenario.js').Scenario
     this.scenarioLimbo = new Scenario()
+    return this.scenarioLimbo
+}
+
+/**
+ * @function getScenarioBeingCreated
+ * @description Returns the scenario created by a previous call to createNewScenario()
+ * @memberof Scenarios
+ * @returns {Scenario} The scenario being created
+ */
+Scenarios.prototype.getScenarioBeingCreated = function(){
     return this.scenarioLimbo
 }
 
