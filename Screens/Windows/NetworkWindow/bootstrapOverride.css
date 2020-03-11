@@ -1,0 +1,40 @@
+.nav-tabs{
+    border-bottom: 1px solid #616c77;
+}
+
+.nav-tabs .nav-link {
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    color: white;
+    background-color: #454d55;
+}
+
+.nav-tabs .nav-link:hover, .nav-tabs .nav-link:focus {
+    color: white;
+    border-color: #616c77 #616c77 #616c77;
+    background-color: #616c77;
+}
+
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-item.show .nav-link {
+    color: #495057;
+    background-color: #fff;
+    border-color: #fff #fff #fff;
+}
+
+/* More color options */
+
+/* Needed to overwrite active tab contents to be able to use flex */
+.tab-content > .active{
+    display: flex;
+    align-items: stretch;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+}
+
+.col{
+    
+}
