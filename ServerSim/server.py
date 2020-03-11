@@ -76,7 +76,7 @@ def getScenario(scenario_name):
 }'''
 
 @app.route('/scenarios/edit/<scenario_name>', methods = ['POST'])
-def editScenario(scenario_name ):
+def editScenario(scenario_name):
     return "cox"#jsonify(scenario_manager.editScenario(scenario_name ,  request.get_json()))
 
 @app.route('/scenarios/new/<scenario_name>')
@@ -85,7 +85,13 @@ def createScenario(scenario_name):
 
 @app.route('/boxes/all')
 def getAvailableBoxes():
-    return "cox"#jsonify(vagrant_manager.getAvailableBoxes())
+    return '''{
+        "1": "bento/ubuntu-16.04",
+        "2": "generic/alpine37",
+        "3": "kalilinux/rolling",
+        "4": "laravel/homestead",
+        "5": "opentable/win-7-professional-amd64-nocm"
+    }'''
 
 @app.route('/vagrantFiles/<scenario_name>/all')
 def createVagrantFiles(scenario_name):
