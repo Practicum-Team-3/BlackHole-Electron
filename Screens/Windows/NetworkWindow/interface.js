@@ -2,8 +2,6 @@ var tabBar = null
 var idList = new Set()
 // To store references to central views indexed by scenario name
 var centralViews = {}
-var selectedScenarioName = ""
-var selectedScenario = null
 var selectedMachine = null
 try{
     window.$ = window.jQuery = require("../../../Electron/node_modules/jquery/dist/jquery")
@@ -12,74 +10,61 @@ try{
 window.onload = function(){
     tabBar = document.getElementById("tabBar")
     
-    selectedScenarioName = getUrlVars()["scenario"]
+    //TODO: open tabs for previously opened scenarios
     
-    if (selectedScenarioName==null){//Maybe new scenario
-        selectedScenarioName = "foo"
+    //Open tab for newly opened scenario
+    try{
+        makeTabAndSectionForScenario(getCurrentScenario())
+    }catch(error){
+        console.log(error)
+    }
+}
+
+/**
+ * @function getCurrentScenario
+ * @description Pull current scenario from widow based on the scenario name url parameter
+ * @return {Scenario} Scenario object of current scenario
+ * @throws No scenario found
+ */
+function getCurrentScenario(){
+    var selectedScenario = null
+    
+    //Get name of scenario
+    var selectedScenarioName = getUrlVars()["scenario"]
+    
+    //Pull from widow
+    if (selectedScenarioName==null){//New scenario
+        selectedScenarioName = ""
         selectedScenario = widow.scenarios.getScenarioBeingCreated()
     }else{
-        selectedScenarioName = decodeURIComponent(selectedScenarioName)
+        selectedScenarioName = selectedScenarioName
         selectedScenario = widow.scenarios.getScenarioByName(selectedScenarioName)
     }
     
-    makeTabAndSectionForScenario(selectedScenarioName)
-}
-
-function getUrlVars() {
-    var vars = {};
-    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-        vars[key] = value;
-    });
-    return vars;
-}
-
-function runScenario(){
-    console.log("Running...")
-    widow.scenarios.createVagrant(selectedScenarioName).then(function(){
-        console.log("Vagrant created")
-        return widow.scenarios.run(selectedScenarioName)
-    }).then(function(){
-        console.log("Running")
-    })
-}
-
-
-/**
- * @function generateUniqueId
- * @returns {string} Unique string ID for the session
- */
-function generateUniqueId(){
-    var id = ""
-    do{
-        id = "a"+Math.random().toString(36).substring(5)
-    }while(idList.has(id))
-    idList.add(id)
-    return id
-}
-
-function makeTabAndSectionForScenario(scenarioName){
-    //Make the section
-    var id = addCentralViewForScenario(scenarioName)
-    //Do the fields here for now
-    //TODO: give this another home
+    if (selectedScenario==null){
+        throw("No scenario found")
+    }
     
-    if (selectedScenario!=null){
-        if (selectedScenario.getAllVictimMachines().length>0){
-            selectedMachine = selectedScenario.getAllVictimMachines()[0]
-            console.log("Loaded Machine")
+    return selectedScenario
+}
+
+function makeTabAndSectionForScenario(scenario){
+    //Make the section for the scenario
+    var id = addCentralViewForScenario(scenario.getName())
+    
+    //Fill machine info fields with the first victim machine for now
+    //TODO: Make this smarter
+    if (scenario!=null){
+        if (scenario.getAllVictimMachines().length>0){
+            var machine = scenario.getAllVictimMachines()[0]
+            var centralView = centralViews[scenario.getName()]
             
-            var centralView = centralViews[scenarioName]
-            centralView.machineInfo.domElements["nameValue"].innerHTML = selectedMachine.getName()
-            centralView.machineInfo.domElements["osValue"].innerHTML = selectedMachine.getOs()
-            centralView.machineInfo.domElements["vulnerabilityValue"].innerHTML = selectedScenario.vulnerabilityInfo.getName()
-            centralView.machineInfo.domElements["guiValue"].innerHTML = selectedMachine.getGui()
-            
-            centralView.machineInfo.domElements["ipValue"].value = selectedMachine.networkSettings.getIpAddress()
-            centralView.machineInfo.domElements["networkValue"].value = selectedMachine.networkSettings.getNetworkName()
+            fillMachineInfo(machine, centralView)
         }
     }
+    
     //Then make the tab
-    addTab(scenarioName, "#"+id)
+    addTab(scenario.getName(), "#"+id)
 }
 
 function addTab(label, href){
@@ -97,6 +82,34 @@ function addTab(label, href){
     
     $(tabLink).tab('show')
 }
+
+/**
+ * @function fillMachineInfo
+ * @description Take the information of a machine and fill the machine info section with it
+ * @param {object} centralView [[Description]]
+ */
+function fillMachineInfo(machine, centralView){
+    centralView.machineInfo.domElements["nameValue"].innerHTML = machine.getName()
+    centralView.machineInfo.domElements["osValue"].innerHTML = machine.getOs()
+    centralView.machineInfo.domElements["vulnerabilityValue"].innerHTML = "Undefined"
+    centralView.machineInfo.domElements["guiValue"].innerHTML = machine.getGui()
+
+    centralView.machineInfo.domElements["ipValue"].value = machine.networkSettings.getIpAddress()
+    centralView.machineInfo.domElements["networkValue"].value = machine.networkSettings.getNetworkName()
+}
+
+
+
+function runScenario(){
+    console.log("Running...")
+    widow.scenarios.createVagrant(selectedScenarioName).then(function(){
+        console.log("Vagrant created")
+        return widow.scenarios.run(selectedScenarioName)
+    }).then(function(){
+        console.log("Running")
+    })
+}
+
 
 /**
  * @function addSection
@@ -253,84 +266,7 @@ function getNewRow(){
     return rowDom
 }
 
-function addBrDom(rowDom){
-    var brDom = document.createElement("br")
-    rowDom.appendChild(brDom)
-}
 
-function addDivider(rowDom){
-    var hrDom = document.createElement("hr")
-    rowDom.appendChild(hrDom)
-}
-
-function addLabelDom(rowDom, labelName, className, text, machineInfo){
-    var labelDom = document.createElement("div")
-    labelDom.className = className
-    labelDom.innerHTML = text
-    //Add reference to dom
-    addReferenceToDomElement(machineInfo, labelDom, labelName)
-    //Gets real
-    rowDom.appendChild(labelDom)
-}
-
-function addInputDom(rowDom, inputName, type, className, text, machineInfo){
-    //<input type="text" class="form-control mb-2 mr-sm-2" id="email2" placeholder="Enter email" name="email">
-    var inputDom = document.createElement("input")
-    inputDom.className = className
-    inputDom.setAttribute("type", type)
-    inputDom.value = text
-    //Add reference to dom
-    addReferenceToDomElement(machineInfo, inputDom, inputName)
-    //Gets real
-    rowDom.appendChild(inputDom)
-}
-
-function addButtonDom(rowDom, buttonName, className, text, machineInfo){
-    var buttonDom = document.createElement("button")
-    buttonDom.className = className
-    buttonDom.innerHTML = text
-    //Add reference to dom
-    addReferenceToDomElement(machineInfo, buttonDom, buttonName)
-    //Gets real
-    rowDom.appendChild(buttonDom)
-}
-
-function addSelectDom(rowDom, selectName, optionsList, className, machineInfo){
-    var selectDom = document.createElement("select")
-    selectDom.className = className
-    
-    //create options
-    optionsList.forEach(function(option){
-        var optionDom = document.createElement("option")
-        optionDom.innerHTML = option
-        selectDom.appendChild(optionDom)
-    })
-    
-    //Add reference to dom
-    addReferenceToDomElement(machineInfo, selectDom, selectName)
-    //Gets real
-    rowDom.appendChild(selectDom)
-}
-
-function addCheckboxDom(rowDom, checkboxName, className, text, machineInfo){
-    var checkboxLabelDom = document.createElement("label")
-    checkboxLabelDom.setAttribute("for", checkboxName)
-    checkboxLabelDom.className = className
-    
-    var checkboxDom = document.createElement("input")
-    checkboxDom.className = "form-check-input"
-    checkboxDom.setAttribute("type", "checkbox")
-    checkboxDom.setAttribute("id", checkboxName)
-    
-    
-    //Add reference to dom
-    addReferenceToDomElement(machineInfo, checkboxDom, checkboxName)
-    //Gets real
-    checkboxLabelDom.appendChild(checkboxDom)
-    checkboxLabelDom.innerHTML += text
-    //Gets realer
-    rowDom.appendChild(checkboxLabelDom)
-}
 
 
 /* Add reference */
