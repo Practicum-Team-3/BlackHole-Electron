@@ -34,21 +34,5 @@
     width: 100%;
 }
 
-.col{
-    margin-bottom: 0px;
-}
 
-/* Card */
-.card {
-    border: none;
-}
 
-.card-header {
-    padding: 0.20rem 1.25rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.125);
-}
-
-.card-body {
-    padding-left: 0px;
-    padding-right: 0px;
-}

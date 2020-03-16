@@ -1,4 +1,4 @@
-// Functions to easily create and add specific nodes (components) to the DOM
+// Functions to easily create and add specific nodes (components) in the DOM
 
 function addBrNode(node){
     var brNode = document.createElement("br")

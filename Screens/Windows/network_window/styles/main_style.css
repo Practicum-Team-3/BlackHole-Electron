@@ -1,6 +1,6 @@
 @font-face {
     font-family: icon;
-    src: url(./icons/iconFontSolid.otf);
+    src: url(./icons/icons_solid.otf);
 }
 
 body {
@@ -40,7 +40,7 @@ body {
     flex-flow: row nowrap;
 }
 .bottomBar{
-    flex: 0 0 22px;
+    flex: 0 0 25px;
 }
 
 /* ======= Inside central view ======= */

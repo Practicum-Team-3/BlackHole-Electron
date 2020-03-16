@@ -12,7 +12,7 @@ function MachineInfo(scenario, machineInfoNode){
     function addInterfaceNodes(){
     
         //GENERATE INTERFACE
-        addLabelNode(formNode, "bigIcon", "desktop")
+        addNode(formNode, "div", "bigIcon", "desktop")
 
         interface.addLabelPair(null, "Name:", "nameValue", "UNDEF")
         interface.addLabelPair(null, "OS:", "osValue", "UNDEF")
