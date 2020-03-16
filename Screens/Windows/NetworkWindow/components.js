@@ -1,78 +1,112 @@
-function addBrDom(rowDom){
-    var brDom = document.createElement("br")
-    rowDom.appendChild(brDom)
+// Functions to easily create and add specific nodes (components) to the DOM
+
+function addBrNode(node){
+    var brNode = document.createElement("br")
+    node.appendChild(brNode)
+    return brNode
 }
 
-function addDivider(rowDom){
-    var hrDom = document.createElement("hr")
-    rowDom.appendChild(hrDom)
+function addHrNode(node){
+    var hrNode = document.createElement("hr")
+    node.appendChild(hrNode)
+    return hrNode
 }
 
-function addLabelDom(rowDom, labelName, className, text, machineInfo){
-    var labelDom = document.createElement("div")
-    labelDom.className = className
-    labelDom.innerHTML = text
-    //Add reference to dom
-    addReferenceToDomElement(machineInfo, labelDom, labelName)
-    //Gets real
-    rowDom.appendChild(labelDom)
+function addHyperlinkNode(node, className, href, innerHTML){
+    var hyperlinkNode = document.createElement("a")
+    hyperlinkNode.className = className
+    hyperlinkNode.setAttribute("href", href)
+    if (innerHTML!=null){
+        hyperlinkNode.innerHTML = innerHTML
+    }
+    
+    node.appendChild(hyperlinkNode)
+    return hyperlinkNode
 }
 
-function addInputDom(rowDom, inputName, type, className, text, machineInfo){
-    //<input type="text" class="form-control mb-2 mr-sm-2" id="email2" placeholder="Enter email" name="email">
-    var inputDom = document.createElement("input")
-    inputDom.className = className
-    inputDom.setAttribute("type", type)
-    inputDom.value = text
-    //Add reference to dom
-    addReferenceToDomElement(machineInfo, inputDom, inputName)
-    //Gets real
-    rowDom.appendChild(inputDom)
+/**
+ * function addNode
+ * @description Appends a node of a specific type to another node
+ * @param   {object} node      Node to add the new node to
+ * @param   {string} nodename  Type of the node to add
+ * @param   {string} className CSS class to give the new node
+ * @param   {string} innerHTML html to add inside the new node
+ * @returns {object} The new node
+ */
+function addNode(node, nodename, className, innerHTML){
+    var genericNode = document.createElement(nodename)
+    genericNode.className = className
+    if (innerHTML!=null){
+        genericNode.innerHTML = innerHTML
+    }
+    node.appendChild(genericNode)
+    return genericNode
 }
 
-function addButtonDom(rowDom, buttonName, className, text, machineInfo){
-    var buttonDom = document.createElement("button")
-    buttonDom.className = className
-    buttonDom.innerHTML = text
-    //Add reference to dom
-    addReferenceToDomElement(machineInfo, buttonDom, buttonName)
-    //Gets real
-    rowDom.appendChild(buttonDom)
+function addLabelNode(node, className, innerHTML, forId){
+    var labelNode = document.createElement("label")
+    labelNode.className = className
+    labelNode.innerHTML = innerHTML
+    if (forId!=null){
+        labelNode.setAttribute("for", forId)
+    }
+    node.appendChild(labelNode)
+    return labelNode
 }
 
-function addSelectDom(rowDom, selectName, optionsList, className, machineInfo){
-    var selectDom = document.createElement("select")
-    selectDom.className = className
+function addInputNode(node, className, type , value){
+    var inputNode = document.createElement("input")
+    inputNode.className = className
+    inputNode.setAttribute("type", type)
+    inputNode.value = value
+    
+    node.appendChild(inputNode)
+    return inputNode
+}
+
+function addButtonNode(node, className, onClick, innerHTML){
+    var buttonNode = document.createElement("button")
+    buttonNode.className = className
+    if (onClick!=null){
+        inputNode.setAttribute("onClick", onClick)
+    }
+    if (innerHTML!=null){
+        buttonNode.innerHTML = innerHTML
+    }
+    node.appendChild(buttonNode)
+    return buttonNode
+}
+
+function addSelectNode(node, className, optionsList){
+    var selectNode = document.createElement("select")
+    selectNode.className = className
     
     //create options
     optionsList.forEach(function(option){
-        var optionDom = document.createElement("option")
-        optionDom.innerHTML = option
-        selectDom.appendChild(optionDom)
+        var optionNode = document.createElement("option")
+        optionNode.innerHTML = option
+        selectNode.appendChild(optionNode)
     })
     
-    //Add reference to dom
-    addReferenceToDomElement(machineInfo, selectDom, selectName)
-    //Gets real
-    rowDom.appendChild(selectDom)
+    node.appendChild(selectNode)
+    return selectNode
 }
 
-function addCheckboxDom(rowDom, checkboxName, className, text, machineInfo){
-    var checkboxLabelDom = document.createElement("label")
-    checkboxLabelDom.setAttribute("for", checkboxName)
-    checkboxLabelDom.className = className
+function addCheckboxNode(node, className, innerHTML){
+    var checkboxId = generateUniqueId()
     
-    var checkboxDom = document.createElement("input")
-    checkboxDom.className = "form-check-input"
-    checkboxDom.setAttribute("type", "checkbox")
-    checkboxDom.setAttribute("id", checkboxName)
+    var checkboxLabelNode = document.createElement("label")
+    checkboxLabelNode.setAttribute("for", checkboxId)
+    checkboxLabelNode.className = className
     
+    var checkboxNode = document.createElement("input")
+    checkboxNode.className = "form-check-input"
+    checkboxNode.setAttribute("type", "checkbox")
+    checkboxNode.setAttribute("id", checkboxId)
     
-    //Add reference to dom
-    addReferenceToDomElement(machineInfo, checkboxDom, checkboxName)
-    //Gets real
-    checkboxLabelDom.appendChild(checkboxDom)
-    checkboxLabelDom.innerHTML += text
-    //Gets realer
-    rowDom.appendChild(checkboxLabelDom)
+    checkboxLabelNode.appendChild(checkboxNode)
+    checkboxLabelNode.innerHTML += innerHTML
+    
+    node.appendChild(checkboxLabelNode)
+    return checkboxNode
 }

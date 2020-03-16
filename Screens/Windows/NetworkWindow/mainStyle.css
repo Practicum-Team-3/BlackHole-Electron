@@ -11,48 +11,80 @@ body {
     padding-left:0px;
     padding-right:0px;
     overflow: hidden;
+    
 }
 
-.mainSection{
+.global{
     position: absolute;
+    top: 0px;
+    bottom: 0px;
     left: 0px;
     right: 0px;
+    
+    display: flex;
+    flex-flow: column nowrap;
 }
 
+/* ======= Outer sections ======= */
+
 .toolBar{
-    top: 0px;
+    flex-grow: 0;
     font-size: 17pt;
     font-family: icon;
 }
-.tabBar{
-    top: 50px;
-}
-.centralViewContainer{
-    top: 100px;
-    bottom: 22px;
-    overflow-y: auto;
+.centralView{
+    flex-grow: 1;
+    overflow-y: hidden;
+    
+    display: flex;
+    flex-flow: row nowrap;
 }
 .bottomBar{
-    height: 22px;
-    bottom: 0px;
+    flex: 0 0 22px;
 }
 
+/* ======= Inside central view ======= */
+
+.overviewBar{
+    flex: 0 1 200px;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    /*resize: horizontal;*/
+}
+.scenarioSpecificArea{
+    flex-grow: 1;
+    height: 100%;
+    
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+/* ======= Inside scenario specific area ======= */
+
+.tabBar{
+    flex-grow: 0;
+    width: 100%;
+}
+/*  */
+.scenarioViews{
+    flex-grow: 1;
+    width: 100%;
+    overflow: hidden;
+}
 /* single Central View (the view controlled by tabbing) */
-.singleCentralView{
+.scenarioView{
     
 }
 
 /* divs inside a single central view */
-.singleCentralView > div {
-  text-align: center;
-}
+
 
 .networkGraphContainer{
     background-color: #1c2938;
 }
 
 .machineInfoContainer{
-    padding: 10px;
     font-weight: bold;
     overflow-y: auto;
     overflow-x: hidden;
@@ -61,15 +93,12 @@ body {
 /* Form elements */
 .alignRight{
     text-align: right;
-    padding: 2px;
 }
 .alignCenter{
     text-align: center;
-    padding: 2px;
 }
 .alignLeft{
     text-align: left;
-    padding: 2px;
 }
 
 .bigIcon{
