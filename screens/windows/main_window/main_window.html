@@ -1,0 +1,100 @@
+<!doctype html>
+<!-- Network view window -->
+<html style="height:100%; max-height:100%" lang="en-US">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <!-- <link rel="shotcut-icon" href="" type="image/x-icon"/> -->
+        <!-- <link rel="apple-touch-icon" href=""/> -->
+        <meta charset="UTF-8">
+        <title>BH</title>
+    
+        <script src="../../../Electron/widow/scenarios.js"></script>
+        
+        <!-- main interface -->
+        <script src="./interface.js"></script>
+        <!-- -->
+        <script src="../../../Electron/node_modules/jquery/dist/jquery.js"></script>
+		<link rel="stylesheet" href="../core_components/css/Bootstrap/bootstrap.css">
+		<script src="../core_components/css/bootstrap/bootstrap.js"></script>
+        <!-- nodeCombos -->
+        <link rel="stylesheet" href="../core_components/node_combos/combo_styles.css">
+        <script src="../core_components/node_combos/utilities.js"></script>
+        <script src="../core_components/node_combos/components.js"></script>
+        <script src="../core_components/node_combos/node_combos.js"></script>
+        <!-- views -->
+        <script src="./views/net_graph.js"></script>
+        <script src="./views/machine_info.js"></script>
+        <script src="./views/scenario_tab_and_view.js"></script>
+        
+        <link rel="stylesheet" href="./styles/bootstrap_override.css">
+        <link rel="stylesheet" href="./styles/main_style.css">
+        
+    </head>
+    
+    <body>
+        
+        <div class="global">
+            <!-- === Toolbar === -->
+            <div class="toolBar navbar navbar-expand bg-dark navbar-dark">
+
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" title="Open" href="#">folder-open</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="runScenario()" href="#">running</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">binoculars</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">cog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">scroll</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">project-diagram</a>
+                    </li>
+                </ul>
+
+            </div>
+            
+            <!-- === central view === -->
+            <div class="centralView">
+                <!-- === Overview bar === -->
+                <div class="overviewBar">
+                
+                </div>
+                <!-- === scenario specific area === -->
+                <div class="scenarioSpecificArea">
+                    
+                    <!-- Tab bar -->
+                    <div class="tabBar bg-dark nav-dark" role="navigation">
+                        <ul class="nav nav-tabs pl-2 pt-2" id="tabBar"></ul>
+                    </div>
+                    
+                    <div class="tab-content scenarioViews" id="scenarioViewsContainer">
+                        <!-- Single tabs -->
+                    </div>
+                </div>
+                
+            </div>
+            <!-- === bottom bar === -->
+            <div class="bottomBar bg-dark">
+            </div>
+            
+        </div>
+        
+        <!-- Toast -->
+        <div class="toast">
+            <div class="toast-header" id="toastHeader">
+                Toast Header
+            </div>
+            <div class="toast-body" id="toastBody">
+                Some text inside the toast body
+            </div>
+        </div>
+        
+    </body>
+</html>

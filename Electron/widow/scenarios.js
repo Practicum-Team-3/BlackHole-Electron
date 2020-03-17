@@ -3,7 +3,7 @@ const widowAddress = "http://localhost:5000/"
 
 /**
  * @class Scenarios
- * @version 1.2.0
+ * @version 1.2.2
  * @description Manager of scenarios and connection to Widow.
  *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
@@ -155,8 +155,9 @@ Scenarios.prototype.getScenarioBeingCreated = function(){
 }
 
 /**
- * @function addNewScenario
+ * @function completeScenarioCreation
  * @description Adds the scenario created after a call to createNewScenario() to the list of scenarios in widow
+ *              and saves the scenario back to the widow backend
  * @memberof Scenarios
  * @returns {Promise} Promise for the completion of the scenario creation process
  */
@@ -165,9 +166,12 @@ Scenarios.prototype.completeScenarioCreation = function(){
         if (this.scenarioLimbo!=null){
             this.addScenario(this.scenarioLimbo)
             .then(function(){
+                var scenarioName = this.scenarioLimbo.getName()
                 this.scenarioLimbo = null
+                return this.saveScenarioByName(scenarioName)
+            }.bind(this)).then(function(){
                 resolve()
-            }.bind(this)).catch(function(){
+            }).catch(function(){
                 reject()
             })
         }else{
@@ -223,15 +227,15 @@ Scenarios.prototype.loadScenarios = function(){
 }
 
 // === Load a specific scenario into memory === //
-Scenarios.prototype.loadScenarioByName = function(name){
+Scenarios.prototype.loadScenarioByName = function(scenarioName){
     return new Promise(function(resolve, reject){
         var Scenario = require('./scenario.js').Scenario
         var axios = require('axios')
         
-        axios.get(this.widowAddress+"scenarios/"+name)
+        axios.get(this.widowAddress+"scenarios/"+encodeURIComponent(scenarioName))
         .then(function (response) {
             // Add to the loaded object
-            this.loaded[name] = new Scenario(response.data)
+            this.loaded[scenarioName] = new Scenario(response.data)
             resolve()
             
         }.bind(this)).catch(function (error) {
@@ -270,7 +274,7 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
         if (!this.nameList.includes(scenarioName)){
             var axios = require('axios')
             
-            axios.get(this.widowAddress+"scenarios/new/"+scenarioName)
+            axios.get(this.widowAddress+"scenarios/new/"+encodeURIComponent(scenarioName))
             .then(function (response) {
                 // Add to the loaded dictionary
                 resolve()
@@ -278,57 +282,6 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
             }.bind(this)).catch(function (error) {
                 // handle error
                 console.log("declareScenarioByName Error")
-                console.log(error);
-                reject()
-
-            }.bind(this))
-        }else{
-            reject()
-        }
-    }.bind(this))
-}
-
-Scenarios.prototype.createVagrant = function(scenarioName){
-    console.log("11")
-    return new Promise(function(resolve, reject){
-        // Check for the existance of the "new scenario", should fail if already exists
-        if (this.nameList.includes(scenarioName)){
-            var axios = require('axios')
-            
-            axios.get(this.widowAddress+"vagrantFiles/"+scenarioName+"/all")
-            .then(function (response) {
-                // Add to the loaded dictionary
-                console.log("16")
-                resolve()
-
-            }.bind(this)).catch(function (error) {
-                // handle error
-                console.log("createVagrant Error")
-                console.log(error);
-                reject()
-
-            }.bind(this))
-        }else{
-            console.log("No scenario")
-            reject()
-        }
-    }.bind(this))
-}
-
-Scenarios.prototype.run = function(scenarioName){
-    return new Promise(function(resolve, reject){
-        // Check for the existance of the "new scenario", should fail if already exists
-        if (this.nameList.includes(scenarioName)){
-            var axios = require('axios')
-            
-            axios.get(this.widowAddress+"vagrantFiles/"+scenarioName+"/run")
-            .then(function (response) {
-                // Add to the loaded dictionary
-                resolve()
-
-            }.bind(this)).catch(function (error) {
-                // handle error
-                console.log("run Error")
                 console.log(error);
                 reject()
 
@@ -349,19 +302,86 @@ Scenarios.prototype.run = function(scenarioName){
 Scenarios.prototype.saveScenarioByName = function(scenarioName){
     return new Promise(function(resolve, reject){
         var axios = require('axios')
-
+        
         //Check if the scenario exists and can be saved
         if (this.nameList.includes(scenarioName)){
             
-            axios.post(this.widowAddress+"scenarios/edit/"+scenarioName, this.getScenarioByName("scenarioName").getDescriptorAsString())
+            axios.post(this.widowAddress+"scenarios/edit/"+encodeURIComponent(scenarioName), this.getScenarioByName(scenarioName).getDescriptorAsString())
             .then(function (response) {
-                console.log(response);
                 resolve()
             })
             .catch(function (error) {
+                console.log("F3")
                 console.log(error);
                 reject()
             });
+        }else{
+            console.log("Scenario saving rejected")
+            reject()
+        }
+    }.bind(this))
+}
+
+//========================
+//=== Vagrant
+//========================
+
+/**
+ * @function prepareMachinesByScenarioName
+ * @description Tells Widow backend to have the VMs ready
+ * @memberof Scenarios
+ * @param   {string} scenarioName Name of the scenario to prepare the machines for
+ * @returns {Promise} Promise for the preparation of the machines
+ */
+Scenarios.prototype.prepareMachinesByScenarioName = function(scenarioName){
+    return new Promise(function(resolve, reject){
+        // Check for the existance of the "new scenario", should fail if already exists
+        if (this.nameList.includes(scenarioName)){
+            var axios = require('axios')
+            
+            axios.get(this.widowAddress+"vagrantFiles/"+encodeURIComponent(scenarioName)+"/all")
+            .then(function (response) {
+                resolve()
+
+            }.bind(this)).catch(function (error) {
+                // handle error
+                console.log("createVagrant Error")
+                console.log(error);
+                reject()
+
+            }.bind(this))
+        }else{
+            console.log("No scenario")
+            reject()
+        }
+    }.bind(this))
+}
+
+/**
+ * @function runScenarioByName
+ * @description Execute the run command on a specific scenario
+ * @memberof Scenarios
+ * @param   {string} scenarioName Name of the scenario to run
+ * @returns {Promise} Promise for the completion of the run command
+ */
+Scenarios.prototype.runScenarioByName = function(scenarioName){
+    return new Promise(function(resolve, reject){
+        // Check for the existance of the "new scenario", should fail if already exists
+        if (this.nameList.includes(scenarioName)){
+            var axios = require('axios')
+            
+            axios.get(this.widowAddress+"vagrantFiles/"+encodeURIComponent(scenarioName)+"/run")
+            .then(function (response) {
+                // Add to the loaded dictionary
+                resolve()
+
+            }.bind(this)).catch(function (error) {
+                // handle error
+                console.log("run Error")
+                console.log(error);
+                reject()
+
+            }.bind(this))
         }else{
             reject()
         }
@@ -385,6 +405,13 @@ function Boxes(widowAddress){
     this.boxes = {}
 }
 
+/**
+ * @function loadBoxes
+ * @description Pulls available boxes from Widow
+ * @see getBoxesList
+ * @memberof Boxes
+ * @returns {Promise} Promise for the completion of the loading
+ */
 Boxes.prototype.loadBoxes = function(){
     return new Promise(function(resolve, reject){
         
@@ -426,26 +453,26 @@ try{
     var widow = {}
     
     // Try to get existing scenarios instance from electron.remote
-    var scenarios = electron.remote.getGlobal('scenarios')
-    widow.scenarios = scenarios
+    widow.scenarios = electron.remote.getGlobal('scenarios')
     
     //Get existing boxes instance
-    var boxes = electron.remote.getGlobal('boxes')
-    widow.boxes = boxes
+    widow.boxes = electron.remote.getGlobal('boxes')
     
     //Check if scenarios have been loaded
-    if (!scenarios.hasDoneInitialLoad){
+    if (!widow.scenarios.hasDoneInitialLoad){
         // Load scenario list
-        widow.scenarios.loadScenarios().then(function(){
+        widow.scenarios.loadScenarios()
+        .then(function(){
             // Load all the scenarios from the list
             return widow.scenarios.loadAllScenarios()
         })
         .then(function(){
-            //Set flag
-            widow.scenarios.hasDoneInitialLoad = true
+            //Load available boxes
             return widow.boxes.loadBoxes()
         })
         .then(function(){
+            //Set flag
+            widow.scenarios.hasDoneInitialLoad = true
             console.log("Primary load finished")
         })
     }

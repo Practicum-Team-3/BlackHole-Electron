@@ -2,23 +2,22 @@
 
 <html>
     <head>
-		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css">
-		<script src="../../../Electron/node_modules/jquery/dist/jquery.js"></script>
-		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/site.css">	
-		<script scr="../CoreComponents/CSS/Bootstrap/bootstrap.js"></script>
-		<link href="../CoreComponents/CSS/Bootstrap/all.css" rel="stylesheet">
+		<link rel="stylesheet" href="../../core_components/css/bootstrap/bootstrap.css">
+		<script src="../../../../Electron/node_modules/jquery/dist/jquery.js"></script>
+		<link rel="stylesheet" href="../../core_components/css/bootstrap/site.css">	
+		<script scr="../../core_components/css/bootstrap/bootstrap.js"></script>
+		<link href="../../core_components/css/bootstrap/all.css" rel="stylesheet">
         <!--link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css"-->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
         
-        <!-- <script src="../../../Electron/widow/scenarios.js"></script> -->
+        <script src="../../../../Electron/widow/scenarios.js"></script>
         <meta charset="UTF-8">
 
         <script>
-            var {remote} = require('electron');
-            var scenarios = remote.getGlobal('scenarios');
-            var boxes = remote.getGlobal('boxes');
+            var scenarios = widow.scenarios
+            var boxes = widow.boxes
             var scenario;
             var attackerMachinesList;
             var victimMachinesList;
@@ -33,7 +32,7 @@
 
 			<div class="row">				
 				<div class="col-md-12 text-right" style="height:45px; padding-top:5px;">
-					<button type="submit" onClick="window.location='../welcomeWindow/welcomeWindow.html';" class="btn btn-primary fa fa-backward"></button>
+					<button type="submit" onClick="window.location='../../welcome_window/welcome_window.html';" class="btn btn-primary fa fa-backward"></button>
                 </div>
                 <div class="col-md-12 text-left" style="height:45px; border-bottom:2px solid gray;">
                     <h3>MachineList</h3>
@@ -640,7 +639,7 @@
 
             function editVM(){
                 //Call MachineSettings Window
-			    window.open("../MachineEditWindow/machineEdit.html");
+			    window.open("../machine_edit/machine_edit.html");
             }
 
             function createNewVM(){
@@ -654,8 +653,14 @@
             }
 
             function saveScenario(){
-                scenarios.completeScenarioCreation();
-                window.location='../welcomeWindow/welcomeWindow.html'
+                var scenarioName = scenarios.getScenarioBeingCreated().getName()
+                scenarios.completeScenarioCreation().then(function(){
+                    return scenarios.saveScenarioByName(scenarioName)
+                }).then(function(){
+                    window.location='../../welcome_window/welcome_window.html' 
+                }).catch(function(){
+                    console.log("Cannot create scenario")
+                });
             }
 
             $('document').ready(function(){

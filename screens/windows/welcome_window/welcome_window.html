@@ -2,23 +2,25 @@
 <html>
 <head>
 	<script src="../../../Electron/widow/scenarios.js"></script>
-	<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css">
-	<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/site.css">
-	<script scr="../CoreComponents/CSS/Bootstrap/bootstrap.js"></script>
-	<link href="../CoreComponents/CSS/Bootstrap/all.css" rel="stylesheet">
+	<link rel="stylesheet" href="../core_components/css/bootstrap/bootstrap.css">
+	<link rel="stylesheet" href="../core_components/css/bootstrap/site.css">
+	<script scr="../core_components/css/bootstrap/bootstrap.js"></script>
+	<link href="../core_components/css/bootstrap/all.css" rel="stylesheet">
 
 	<meta charset="UTF-8">
 	<title>BlackHole</title>
 	
 
 	<script>
+        var lastScenarioNameSelected = ""
+        
 		document.addEventListener("DOMContentLoaded", function(event) { 
-		  var scenarios = widow.scenarios.getScenarioNamesList();
-		  
-		  for (i = 0; i < scenarios.length; i++) {
-			console.log(scenarios[i]);
-			addItem(scenarios[i]);	
-		  }
+            var scenarios = widow.scenarios.getScenarioNamesList();
+
+            for (i = 0; i < scenarios.length; i++) {
+                console.log(scenarios[i]);
+                addItem(scenarios[i]);	
+            }
 		
 		});
 
@@ -38,14 +40,18 @@
 			var machineName = id[1];
 			
 			//Call MachineSettings Window
-			window.open('../MachineEditWindow/machineEdit.html?scenarioName=' + scenarioName + '&machineName=' + machineName);
+			window.open('../dialogs/machine_edit/machine_edit.html?scenarioName=' + scenarioName + '&machineName=' + machineName);
 		}
 		
 		function removeMachine(e){
 			
 		}
 		
-		function getScenario(scenario){
+		function getScenario(scenarioName){
+            if (scenarioName==lastScenarioNameSelected){
+                window.location = '../main_window/main_window.html?scenarioName='+scenarioName;
+            }
+            lastScenarioNameSelected = scenarioName
 			//empty list
 			var div = document.getElementById('machines');
 			while(div.firstChild){
@@ -55,7 +61,7 @@
 			//Needed Variables
 			var machineName, machineDes, machineOS, machineRAM, machineCPU, machineHDD, machineIP, machineNetName, machineNetType, machinePort;
 			
-			var scenarioDetails = widow.scenarios.getScenarioByName(scenario);
+			var scenarioDetails = widow.scenarios.getScenarioByName(scenarioName);
 			var machines = scenarioDetails.getMachineNamesList();
 			
 			machines.forEach((element) => {
@@ -106,7 +112,7 @@
 				
 				var btnEdit = document.createElement("button");
 				btnEdit.setAttribute('class', 'btn btn-primary btn-sm fa fa-edit');
-				btnEdit.setAttribute('id', scenario + '-' + machineName);
+				btnEdit.setAttribute('id', scenarioName + '-' + machineName);
 				btnEdit.setAttribute('onclick', 'editMachine(this)');
 				btnEdit.appendChild(document.createTextNode('Edit'));
 				
@@ -144,7 +150,7 @@
 			
 			<div class="row" id="content" style="padding-top:8px">
 				<div class="col-md-3" style="border-right: double;">
-					<button type="button" onClick="window.location='../newScenarioWindow/newScenario.html';" class="list-group-item list-group-item-action active fa fa-plus">
+					<button type="button" onClick="window.location='../dialogs/new_scenario/new_scenario.html';" class="list-group-item list-group-item-action active fa fa-plus">
 						New Scenario
 					</button>	
 					<div id="scenariosList" class="list-group">						

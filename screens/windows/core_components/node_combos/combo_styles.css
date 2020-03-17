@@ -1,0 +1,33 @@
+@font-face {
+    font-family: icons;
+    src: url(../css/webfonts/fa-solid-900.ttf);
+}
+
+.iconArea{
+    font-family: icons;
+    float: left;
+    min-width: 24px;
+    padding-right: 1px;
+}
+
+/* BOOTSTRAP STYLE OVERRIDES */
+/* Card */
+.card {
+    border: none;
+}
+
+.card-header {
+    padding: 0.20rem 1.25rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.card-body {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+
+/* Grid */
+.col{
+    margin-bottom: 0px;
+}

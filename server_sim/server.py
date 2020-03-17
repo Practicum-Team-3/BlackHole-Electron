@@ -81,7 +81,7 @@ def editScenario(scenario_name):
 
 @app.route('/scenarios/new/<scenario_name>')
 def createScenario(scenario_name):
-    return "cox"#jsonify(scenario_manager.createScenario(scenario_name))
+    return "cox"
 
 @app.route('/boxes/all')
 def getAvailableBoxes():
