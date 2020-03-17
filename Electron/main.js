@@ -11,7 +11,7 @@ function createWindow () {
   })
 
   // and load the index.html of the app.
-  win.loadFile('../Screens/Windows/WelcomeWindow/WelcomeWindow.html')
+  win.loadFile('../screens/windows/welcome_window/welcome_window.html')
 }
 
 app.on('ready', createWindow)
