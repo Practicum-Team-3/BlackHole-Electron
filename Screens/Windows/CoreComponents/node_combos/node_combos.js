@@ -36,13 +36,13 @@ function NodeCombos(parentNode){
     }
 }
 
-NodeCombos.prototype.addCollapsibleGroup = function(title, dataParent){
+NodeCombos.prototype.addCollapsibleGroup = function(title, iconLigature, dataParent){
     var groupId = generateUniqueId()
     
     //Make the title
     var group = addNode(this.currentNode, "div", "card")
     var header = addNode(group, "div", "card-header")
-    var link = addHyperlinkNode(header, "card-link", "#"+groupId, title)
+    var link = addHyperlinkNode(header, "card-link", "#"+groupId, getLinkHTML(title, iconLigature))
     link.setAttribute("data-toggle", "collapse")
     
     //Make a place for the content
@@ -54,6 +54,11 @@ NodeCombos.prototype.addCollapsibleGroup = function(title, dataParent){
     var body = addNode(collapse, "div", "card-body")
     
     this.selectNode(body)
+    
+    //Generates the html for inside the link
+    function getLinkHTML(title, iconLigature){
+        return (iconLigature==null ? "" : "<div class='iconArea'>"+iconLigature+"</div>")+title
+    }
 }
 
 /**
@@ -96,7 +101,7 @@ NodeCombos.prototype.addLabelAndInput = function(labelName, labelText, inputName
     
     var inputId = generateUniqueId()
     
-    var labelNode = addLabelNode(rowNode, "col-4 alignRight", labelText, inputId)
+    var labelNode = addLabelNode(rowNode, "col-5 alignRight", labelText, inputId)
     var inputNode = addInputNode(rowNode, "col form-control mb-1 mr-4", "text", inputText)
     
     inputNode.setAttribute("id", inputId)
@@ -110,7 +115,7 @@ NodeCombos.prototype.addLabelAndInput = function(labelName, labelText, inputName
 NodeCombos.prototype.addLabelAndSelect = function(labelName, labelText, selectName, selectOptions){
     var rowNode = this.getNewRow()
     
-    var labelNode = addLabelNode(rowNode, "col-4 alignRight", labelText)
+    var labelNode = addLabelNode(rowNode, "col-5 alignRight", labelText)
     var selectNode = addSelectNode(rowNode, "col form-control mb-1 mr-4", selectOptions)
     
     this.addReferenceToNode(labelName, labelNode)
@@ -122,7 +127,7 @@ NodeCombos.prototype.addLabelAndSelect = function(labelName, labelText, selectNa
 NodeCombos.prototype.addCheckbox = function(checkboxName, labelText){
     var rowNode = this.getNewRow()
     
-    var divNode = addNode(rowNode, "div", "col-4")
+    var divNode = addNode(rowNode, "div", "col-5")
     var checkBoxNode = addCheckboxNode(rowNode, "col form-check-label alignLeft", labelText)
     
     this.addReferenceToNode(checkboxName, checkBoxNode)

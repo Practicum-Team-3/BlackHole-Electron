@@ -1,5 +1,5 @@
 @font-face {
-    font-family: icon;
+    font-family: icons;
     src: url(./icons/icons_solid.otf);
 }
 
@@ -30,7 +30,7 @@ body {
 .toolBar{
     flex-grow: 0;
     font-size: 17pt;
-    font-family: icon;
+    font-family: icons;
 }
 .centralView{
     flex-grow: 1;
@@ -102,7 +102,7 @@ body {
 }
 
 .bigIcon{
-    font-size: 37pt;
-    font-family: icon;
+    font-size: 39pt;
+    font-family: icons;
     text-align: center;
 }

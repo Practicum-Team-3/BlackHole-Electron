@@ -1,5 +1,5 @@
 function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
-    this.scenario = scenario
+    var scenario = scenario
     var netGraph = null
     var machineInfo = null
     
@@ -40,7 +40,9 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         machineInfoNode.className = "machineInfoContainer"
         machineInfoNode.setAttribute("style", "flex: 0 0 300px")
         //create referencer object and save
-        machineInfo = new MachineInfo(this.scenario, machineInfoNode)
+        machineInfo = new MachineInfo(machineInfoNode)
+        
+        machineInfo.setMachine(scenario.getAllAttackerMachines()[0])
 
         //This gets real (Add to centralView's dom)
         scenarioViewNode.appendChild(machineInfoNode)

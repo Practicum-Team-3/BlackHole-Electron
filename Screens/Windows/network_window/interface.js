@@ -10,7 +10,8 @@ try{
 
 //Called when loaded. Opens a tab for the scenario from the url parameter
 window.onload = function(){
-    // TODO: Generate overview bar
+    // Toast setup
+    $('.toast').toast({delay: 2000});
     
     //Save references to nodes of tab bar and scenario views
     tabBarNode = document.getElementById("tabBar")
@@ -69,6 +70,11 @@ function openScenario(scenario){
     scenarioTabAndViews.push(scenarioTabAndView)
 }
 
+function showToast(title, message){
+    $('.toast').toast('show');
+    document.getElementById("toastHeader").innerHTML = title
+    document.getElementById("toastBody").innerHTML = message
+}
 
 // TODO: move this somewhere else
 /*

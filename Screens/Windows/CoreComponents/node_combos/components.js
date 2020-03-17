@@ -68,7 +68,7 @@ function addButtonNode(node, className, onClick, innerHTML){
     var buttonNode = document.createElement("button")
     buttonNode.className = className
     if (onClick!=null){
-        inputNode.setAttribute("onClick", onClick)
+        buttonNode.onclick = onClick
     }
     if (innerHTML!=null){
         buttonNode.innerHTML = innerHTML
