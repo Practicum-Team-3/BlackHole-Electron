@@ -2,16 +2,20 @@ var tabBarNode = null
 var scenarioViewsNode = null
 var idList = new Set()
 // To store references to central views indexed by scenario name
-var scenarioTabAndViews = []
+var scenarioTabAndViews = {}
+
 
 try{
     window.$ = window.jQuery = require("../../../Electron/node_modules/jquery/dist/jquery")
 }catch{}
 
-//Called when loaded. Opens a tab for the scenario from the url parameter
+//=========
+// Called when loaded. Opens a tab for the scenario from the url parameter
+//=========
 window.onload = function(){
     // Toast setup
-    $('.toast').toast({delay: 2000});
+    $('.toast').toast({delay: 2500});
+    
     
     //Save references to nodes of tab bar and scenario views
     tabBarNode = document.getElementById("tabBar")
@@ -26,9 +30,10 @@ window.onload = function(){
     }
 }
 
+
 /**
  * @function getCurrentScenario
- * @description Pull current scenario from widow based on the scenario name url parameter
+ * @description Pull current scenario from widow, based on the scenario name url parameter
  * @return {Scenario} Scenario object of current scenario
  * @throws No scenario found
  */
@@ -36,13 +41,11 @@ function getCurrentScenario(){
     var selectedScenario = null
     
     //Get name of scenario
-    var selectedScenarioName = getUrlVars()["scenario"]
+    var selectedScenarioName = getUrlVars()["scenarioName"]
     
     //Pull from widow
-    if (selectedScenarioName==null){//New scenario
-        selectedScenarioName = ""
-        selectedScenario = widow.scenarios.getScenarioBeingCreated()
-    }else{
+    if (selectedScenarioName!=null){
+        
         selectedScenarioName = selectedScenarioName
         selectedScenario = widow.scenarios.getScenarioByName(selectedScenarioName)
     }
@@ -56,7 +59,7 @@ function getCurrentScenario(){
 
 /**
  * @function openScenario
- * @description Makes the required ui elements
+ * @description Opens a scenario on a new tab
  * @param {Scenario} scenario Instance of Scenario to create a tab and view for
  */
 function openScenario(scenario){
@@ -65,27 +68,39 @@ function openScenario(scenario){
         return
     }
     
-    //Make the tabbed section for the scenario
+    //Make the tabbed section for the scenario and keep reference
     var scenarioTabAndView = new ScenarioTabAndView(scenario, tabBar, scenarioViewsNode)
-    scenarioTabAndViews.push(scenarioTabAndView)
+    scenarioTabAndViews[scenario.getName()] = scenarioTabAndView
 }
 
+/**
+ * @function showToast
+ * @description Shows a brief message to the user
+ * @param {string} title   Title of the message
+ * @param {string} message Content of the message
+ */
 function showToast(title, message){
     $('.toast').toast('show');
     document.getElementById("toastHeader").innerHTML = title
     document.getElementById("toastBody").innerHTML = message
 }
 
-// TODO: move this somewhere else
-/*
+
+/**
+ * @function runScenario
+ * @description Calls prepares machines and runs the scenario on widow
+ */
 function runScenario(){
+    if (activeTabAndView==null){
+        return
+    }
     console.log("Running...")
-    widow.scenarios.createVagrant(selectedScenarioName).then(function(){
+    widow.scenarios.prepareMachinesByScenarioName(activeTabAndView.getScenario().getName()).then(function(){
         console.log("Vagrant created")
-        return widow.scenarios.run(selectedScenarioName)
+        return widow.scenarios.runScenarioByName(activeTabAndView.getScenario().getName())
     }).then(function(){
         console.log("Running")
     })
 }
-*/
+
 

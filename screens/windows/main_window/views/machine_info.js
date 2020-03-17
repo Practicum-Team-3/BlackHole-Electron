@@ -1,18 +1,27 @@
+
+/**
+ * @class MachineInfo
+ * @description Model for the machine info panel
+ * @param   {object} machineInfoNode Node where the machine info components should get added
+ */
 function MachineInfo(machineInfoNode){
     
+    // Create a form to put all of the components in
     var formNode = document.createElement("form")
     formNode.setAttribute("onSubmit", "return false")
     
+    // Create a NodeCombos instance to add prepackaged components and keep a reference to them
     var interface = new NodeCombos(formNode)
     
     addInterfaceNodes()
     
-    // Generates the interface 
+    // Generates the interface by making calls to NodeCombos (interface)
     function addInterfaceNodes(){
     
-        //GENERATE INTERFACE
+        // Computer icon
         addNode(formNode, "div", "bigIcon", "desktop")
-
+        
+        // General details
         interface.addLabelPair(null, "Name:", "machineName", "")
         interface.addLabelPair(null, "OS:", "machineOs", "")
         interface.addLabelPair(null, "Type:", "machineType", "")
@@ -21,12 +30,14 @@ function MachineInfo(machineInfoNode){
         addBrNode(formNode)
 
         // === Network
+        // Create group, then add components into it
         interface.addCollapsibleGroup("Network", "network-wired")
 
         interface.addLabelAndInput(null, "Network:", "networkValue", "")
         interface.addLabelAndInput(null, "IP:", "ipValue", "")
 
         // === Collector
+        // Exit previous group, create new group, then add components into it
         interface.deselectNode()
         interface.addCollapsibleGroup("Collector", "inbox")
 
@@ -41,6 +52,7 @@ function MachineInfo(machineInfoNode){
         interface.addCheckbox("timeout", "Timeout")
 
         // === Program
+        // Exit previous group, create new group, then add components into it
         interface.deselectNode()
         interface.addCollapsibleGroup("Program", "code")
 

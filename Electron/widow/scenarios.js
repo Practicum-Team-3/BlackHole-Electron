@@ -3,7 +3,7 @@ const widowAddress = "http://localhost:5000/"
 
 /**
  * @class Scenarios
- * @version 1.2.1
+ * @version 1.2.2
  * @description Manager of scenarios and connection to Widow.
  *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
@@ -155,8 +155,9 @@ Scenarios.prototype.getScenarioBeingCreated = function(){
 }
 
 /**
- * @function addNewScenario
+ * @function completeScenarioCreation
  * @description Adds the scenario created after a call to createNewScenario() to the list of scenarios in widow
+ *              and saves the scenario back to the widow backend
  * @memberof Scenarios
  * @returns {Promise} Promise for the completion of the scenario creation process
  */
@@ -165,9 +166,12 @@ Scenarios.prototype.completeScenarioCreation = function(){
         if (this.scenarioLimbo!=null){
             this.addScenario(this.scenarioLimbo)
             .then(function(){
+                var scenarioName = this.scenarioLimbo.getName()
                 this.scenarioLimbo = null
+                return this.saveScenarioByName(scenarioName)
+            }.bind(this)).then(function(){
                 resolve()
-            }.bind(this)).catch(function(){
+            }).catch(function(){
                 reject()
             })
         }else{
@@ -298,20 +302,21 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
 Scenarios.prototype.saveScenarioByName = function(scenarioName){
     return new Promise(function(resolve, reject){
         var axios = require('axios')
-
+        
         //Check if the scenario exists and can be saved
         if (this.nameList.includes(scenarioName)){
             
-            axios.post(this.widowAddress+"scenarios/edit/"+encodeURIComponent(scenarioName), this.getScenarioByName("scenarioName").getDescriptorAsString())
+            axios.post(this.widowAddress+"scenarios/edit/"+encodeURIComponent(scenarioName), this.getScenarioByName(scenarioName).getDescriptorAsString())
             .then(function (response) {
-                console.log(response);
                 resolve()
             })
             .catch(function (error) {
+                console.log("F3")
                 console.log(error);
                 reject()
             });
         }else{
+            console.log("Scenario saving rejected")
             reject()
         }
     }.bind(this))

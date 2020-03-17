@@ -1,11 +1,21 @@
+var activeTabAndView = null
+
+/**
+ * @class ScenarioTabAndView
+ * @description Model class for a tab-controlled scenario view
+ * @param   {Scenario} scenario          Scenario to handle on the tab controlled view
+ * @param   {object} tabBarNode        Node of the tab bar
+ * @param   {object} scenarioViewsNode Node where scenario views get added
+ */
 function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
+    var self = this
     var scenario = scenario
     var netGraph = null
     var machineInfo = null
     
     //create a single scenario view (a div node)
     var scenarioViewNode = document.createElement("div")
-    scenarioViewNode.className = "tab-pane fade scenarioView"
+    scenarioViewNode.className = "tab-pane scenarioView"
     scenarioViewNode.id = generateUniqueId()
     
     //this gets real
@@ -17,13 +27,12 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
     //Go deeper into the creation for inner sections
     createMainSectionsForScenarioView()
     
-    //Fill machine info fields with the first victim machine for now
-    //TODO: Make this smarter
-//    if (scenario.getAllVictimMachines().length>0){
-//        var machine = scenario.getAllVictimMachines()[0]
-//
-//        fillMachineInfo(machine, centralView)
-//    }
+    
+    /**
+     * @function createMainSectionsForScenarioView
+     * @description Adds the inner sections for the scenario view
+     *                  such as the network graph and the machine info panel
+     */
     function createMainSectionsForScenarioView(){
         //Make network graph space===
         var netGraphNode = document.createElement("div")
@@ -48,6 +57,14 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         scenarioViewNode.appendChild(machineInfoNode)
     }
     
+    /**
+     * @function createTab
+     * @description Generates the tab for the scenario view on the tab bar
+     * @param   {object} tabBarNode Node of the tab bar (where tabs get added)
+     * @param   {string} label      Label of the new tab
+     * @param   {string} href       Link address for the tab
+     * @returns {object} The node of the new tab
+     */
     function createTab(tabBarNode, label, href){
         let tabNode = document.createElement("li")
         tabNode.className = "nav-item"
@@ -61,8 +78,21 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         tabNode.appendChild(tabLink)
         tabBarNode.appendChild(tabNode)
 
+        
+        $(tabLink).on('shown.bs.tab', function(event){
+            activeTabAndView = self
+        });
         $(tabLink).tab('show')
 
         return tabNode
+    }
+    
+    /**
+     * @function getScenario
+     * @description Returns the scenario assigned
+     * @returns {Scenario} Scenario object assigned to this tab and view
+     */
+    this.getScenario = function(){
+        return scenario
     }
 }

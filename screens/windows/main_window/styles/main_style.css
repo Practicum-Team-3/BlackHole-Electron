@@ -71,6 +71,7 @@ body {
     flex-grow: 1;
     width: 100%;
     overflow: hidden;
+    background-color: black;
 }
 /* single Central View (the view controlled by tabbing) */
 .scenarioView{
@@ -88,6 +89,7 @@ body {
     font-weight: bold;
     overflow-y: auto;
     overflow-x: hidden;
+    background-color: white;
 }
 
 /* Form elements */

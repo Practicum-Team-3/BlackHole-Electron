@@ -3,7 +3,7 @@
 <html>
     <head>
 		<script>
-			window.$ = window.jQuery = require('../../../Electron/node_modules/jquery/dist/jquery');
+			window.$ = window.jQuery = require('../../../../Electron/node_modules/jquery/dist/jquery');
 			var {remote} = require('electron');
 			var scenarios = remote.getGlobal('scenarios');
 			var boxes = remote.getGlobal('boxes');
@@ -29,14 +29,14 @@
 
 		</script>
 
-		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/bootstrap.css">	
-		<link rel="stylesheet" href="../CoreComponents/CSS/Bootstrap/site.css">	
-		<script src="../CoreComponents/CSS/Bootstrap/bootstrap.js"></script>
-		<link href="../CoreComponents/CSS/Bootstrap/all.css" rel="stylesheet">
+		<link rel="stylesheet" href="../../core_components/css/bootstrap/bootstrap.css">	
+		<link rel="stylesheet" href="../../core_components/css/bootstrap/site.css">	
+		<script src="../../core_components/css/bootstrap/bootstrap.js"></script>
+		<link href="../../core_components/css/bootstrap/all.css" rel="stylesheet">
 		
         <meta charset="UTF-8">
 		<title>Machine Settings</title>
-		<script src="../CoreComponents/CSS/Bootstrap/bootstrap.min.js"></script>
+		<script src="../../core_components/css/bootstrap/bootstrap.min.js"></script>
 	</head>
 	<h1>Machine Settings</h1>
 	<body>
@@ -503,12 +503,12 @@
 		$("#saveButton").click(function(){
 			updateBasicSetsInWidow();
 
-			window.location='../newScenarioWindow/newScenario.html';
+			window.location='../new_scenario/new_scenario.html';
 		});
 
 		$("#cancelButton").click(function(){
 
-			window.location='../MachineListWindow/machineList.html';
+			window.location='../machine_list/machine_list.html';
 		});
 	</script>
 </html>
