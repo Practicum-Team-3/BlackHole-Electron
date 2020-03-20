@@ -1,9 +1,11 @@
-
 /**
  * @class Overview
  * @description Model for the overview panel
  */
-function Overview(){
+function MachineListOverview(){
+
+    this.nameForTabLabel = "MachineList"
+
     // Create a form to put all of the components in
     var formNode = document.createElement("form")
     formNode.setAttribute("onSubmit", "return false")
@@ -25,5 +27,9 @@ function Overview(){
     
     this.getNode = function(nodeName){
         return this.getInterface().getNodes()[nodeName]
+    }
+
+    this.getTabLabel = function(){
+        return this.nameForTabLabel
     }
 }
