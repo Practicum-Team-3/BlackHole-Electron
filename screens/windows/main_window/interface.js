@@ -1,18 +1,24 @@
 var tabBarNode = null
 var scenarioViewsNode = null
 var idList = new Set()
+var overviewsPanel = null
 // To store references to central views indexed by scenario name
 var scenarioTabAndViews = {}
+//To store all the overviews to be used by the overviews panel
+var overviewsList = []
 
 
 try{
     window.$ = window.jQuery = require("../../../Electron/node_modules/jquery/dist/jquery")
-}catch{}
+}catch{
+    console.log("failed to load jquery")
+}
 
 //=========
 // Called when loaded. Opens a tab for the scenario from the url parameter
 //=========
 window.onload = function(){
+
     // Toast setup
     $('.toast').toast({delay: 2500});
     
@@ -20,6 +26,7 @@ window.onload = function(){
     //Save references to nodes of tab bar and scenario views
     tabBarNode = document.getElementById("tabBar")
     scenarioViewsNode = document.getElementById("scenarioViewsContainer")
+    overviewsPanelNode = document.getElementById("overviewsPanel")
     //TODO: open tabs for previously opened scenarios
     
     //Open tab for selected scenario
@@ -28,8 +35,14 @@ window.onload = function(){
     }catch(error){
         console.log(error)
     }
-}
 
+    //Add the overviews to be used on the OverviewsPanel and setup overviews panel
+    overviewsList.push(new MachineListOverview()); //Add more overviews here
+    overviewsList.push(new MachineListOverview()); //Add more overviews here
+    overviewsPanel = new OverviewsPanel(overviewsList, overviewsPanelNode)
+    console.log(overviewsPanel)
+    overviewsPanel.setWidth(0.3)
+}
 
 /**
  * @function getCurrentScenario
