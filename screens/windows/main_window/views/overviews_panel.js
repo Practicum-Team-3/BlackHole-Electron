@@ -6,21 +6,19 @@ function OverviewsPanel(overviewsPanelNode){
     this.navTabNodesList = {}
     
     this.overviewsPanelNode = overviewsPanelNode
-    this.overviewsPanelNode.style = "flex: 0 0 250px;"
+    this.overviewsPanelNode.className = this.overviewsPanelNode.className + " bg-secondary"
+    this.overviewsPanelNode.style = "height:100%; width:25%; border:5px solid #ffc107; border-radius:10px"
     
     // this.overviewsPanelNode.appendChild(this.overviewsPanelTabsBar)
 
     //----------------------------------------------------------------
 
 
-    //Create instance for ProgramListOverview
-
-
-    //Create instance of MachineListOverview for testing
-    this.machineListNode = document.createElement("div")
+    //Create instance for MachineListOverview
+    this.machineListNode = document.getElementById("machineListOverview")
     this.machineListNode.className = "machineListNode"
-    this.testPanel = new MachineListOverview(this.machineListNode)
-    this.overviewsPanelNode.appendChild(this.machineListNode)
+    this.machineListOverview = new MachineListOverview(this.machineListNode)
+    this.machineListOverview.setMachines()
 
 
     this.setWidth = function(percentWidth){
