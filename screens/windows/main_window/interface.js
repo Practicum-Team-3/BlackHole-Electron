@@ -4,8 +4,6 @@ var idList = new Set()
 var overviewsPanel = null
 // To store references to central views indexed by scenario name
 var scenarioTabAndViews = {}
-//To store all the overviews to be used by the overviews panel
-var overviewsList = []
 
 
 try{
@@ -36,12 +34,8 @@ window.onload = function(){
         console.log(error)
     }
 
-    //Add the overviews to be used on the OverviewsPanel and setup overviews panel
-    overviewsList.push(new MachineListOverview()); //Add more overviews here
-    overviewsList.push(new MachineListOverview()); //Add more overviews here
-    overviewsPanel = new OverviewsPanel(overviewsList, overviewsPanelNode)
-    console.log(overviewsPanel)
-    overviewsPanel.setWidth(0.3)
+    overviewsPanel = new OverviewsPanel(overviewsPanelNode)
+
 }
 
 /**

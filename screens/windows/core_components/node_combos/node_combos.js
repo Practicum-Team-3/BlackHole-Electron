@@ -78,7 +78,7 @@ NodeCombos.prototype.addCollapsibleGroup = function(title, iconLigature, dataPar
     link.setAttribute("data-toggle", "collapse")
     
     //Make a place for the content
-    var collapse = addNode(group, "div", "collapse show")
+    var collapse = addNode(group, "div", "collapse")
     collapse.setAttribute("id", groupId)
     if (dataParent!=null){
         collapse.setAttribute("data-parent", dataParent)
@@ -137,6 +137,18 @@ NodeCombos.prototype.addEditDeleteButtons = function(editName, editOnClick, dele
     
     this.addReferenceToNode(editName, editButtonNode)
     this.addReferenceToNode(deleteName, deleteButtonNode)
+    
+    this.currentNode.appendChild(rowNode)
+}
+
+
+NodeCombos.prototype.addDeleteAndIncludeButtons = function(deleteName, deleteOnClick, includeName, includeMachineOnClick){
+    var rowNode = this.getNewRow()
+    var deleteButtonNode = addButtonNode(rowNode, "col ml-5 mr-1 mt-2 btn btn-danger", deleteOnClick, "Delete")
+    var includeButtonNode = addButtonNode(rowNode, "col ml-1 mr-5 mt-2 btn btn-success", includeMachineOnClick, "Include")
+    
+    this.addReferenceToNode(deleteName, deleteButtonNode)
+    this.addReferenceToNode(includeName, includeButtonNode)
     
     this.currentNode.appendChild(rowNode)
 }
@@ -203,4 +215,35 @@ NodeCombos.prototype.addCheckbox = function(checkboxName, labelText){
     this.addReferenceToNode(checkboxName, checkBoxNode)
     
     this.currentNode.appendChild(rowNode)
+}
+
+
+NodeCombos.prototype.addMultipleSections = function(sectionsLabelsList){
+    for(var i=0; i<sectionsLabelsList.length;i++){
+        var rowNode = this.getNewRow()
+        rowNode.className = sectionsLabelsList[i]
+        this.addReferenceToNode(sectionsLabelsList[i], rowNode)
+        this.currentNode.appendChild(rowNode)
+    }
+}
+
+
+NodeCombos.prototype.addOverviewOptionsButtons = function(nameAndHandlerDictionary){
+
+    var keys = Object.keys(nameAndHandlerDictionary)
+
+    var currentNode = this.currentNode
+    var div = document.createElement("div")
+    div.style = "height:100%; padding-top:5px"
+    this.currentNode.appendChild(div)
+    this.currentNode = div
+
+    for(var i = 0; i<keys.length; i++){
+        var rowNode = this.getNewRow()
+        var placeholderBtn = addButtonNode(rowNode, "col mr-1 mt-2 btn btn-" + String(keys[i]).split("_")[1], nameAndHandlerDictionary[keys[i]], String(keys[i]).split("_")[0])
+        this.addReferenceToNode(keys[i], placeholderBtn)
+        this.currentNode.appendChild(placeholderBtn)
+    }
+
+    this.currentNode = currentNode
 }
