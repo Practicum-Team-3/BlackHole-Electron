@@ -6,11 +6,11 @@ function MachineListOverview(machineListNode){
 
     this.nameForTabLabel = "MachineList"
     this.machineListNode = machineListNode
-    this.machineListNode.style = "height:100%;"
+    // this.machineListNode.style = ""
 
     var sectionsContainer = document.createElement("div")
-    sectionsContainer.className = "MachineListOverviewSectionsContainer bg-dark"
-    sectionsContainer.style = "height:100%;"
+    sectionsContainer.className = "MachineListOverviewSectionsContainer"
+    sectionsContainer.style = "height:92%"
 
     var interface = new NodeCombos(sectionsContainer)
 
@@ -19,7 +19,7 @@ function MachineListOverview(machineListNode){
 
     //populate the collapsibles
     interface.selectNode(interface.getNodes()["machineListCollapsibles"])
-    interface.getNodes()["machineListCollapsibles"].style = "height:80%; overflow-y:scroll; overflow-x:hidden; margin-bottom:1px"
+    interface.getNodes()["machineListCollapsibles"].style = "height:80%; overflow-y:scroll; overflow-x:hidden; margin-bottom:2px"
     interface.getNodes()["machineListCollapsibles"].className = "machineListCollapsibles bg-light"
 
     // Create a form to put all of the components in
@@ -47,9 +47,9 @@ function MachineListOverview(machineListNode){
 
     interface.selectNode(interface.getNodes()["machineListOptions"])
     interface.getNodes()["machineListOptions"].style = "height:20%;"
-    interface.getNodes()["machineListOptions"].className = "container machineListOptions bg-white"
+    interface.getNodes()["machineListOptions"].className = "container machineListOptions bg-dark"
 
-    var optionButtons = {"Create Machine_outline-primary":null, "Upload Machine_outline-info":null}
+    var optionButtons = {"Create Machine_primary":null, "Upload Machine_info":null}
     interface.addOverviewOptionsButtons(optionButtons)
     
     this.machineListNode.appendChild(sectionsContainer)
