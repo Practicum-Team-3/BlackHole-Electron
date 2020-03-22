@@ -37,7 +37,7 @@ function MachineListOverview(machineListNode){
     for(var i = 0;i<10;i++){
         interface.addCollapsibleGroup("Machine " + (i+1), "server")
         // General details
-        interface.addLabelPair(null, "Name:", "machineName", "skjdh</br>fgsaj</br>dfkaj</br>shdfgk</br>sjdhf</br>ggfdhgf")
+        interface.addLabelPair(null, "Name:", "machineName", "")
         interface.addLabelPair(null, "OS:", "machineOs", "")
         interface.addLabelPair(null, "Exploits:", "machineInstalledExploits", "")
         interface.addLabelPair(null, "Programs:", "machineInstalledPrograms", "")
