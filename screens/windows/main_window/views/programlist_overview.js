@@ -9,7 +9,7 @@ function ProgramListOverview(programListNode){
 
     var sectionsContainer = document.createElement("div")
     sectionsContainer.className = "ProgramListOverviewSectionsContainer"
-    sectionsContainer.style = "height:92%;"
+    sectionsContainer.style = "height:92%; width: 293px;"
 
     // Make an instance of NodeCombos to include html elements
     var interface = new NodeCombos(sectionsContainer)
