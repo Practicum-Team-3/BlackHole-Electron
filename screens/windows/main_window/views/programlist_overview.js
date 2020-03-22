@@ -9,7 +9,7 @@ function ProgramListOverview(programListNode){
 
     var sectionsContainer = document.createElement("div")
     sectionsContainer.className = "ProgramListOverviewSectionsContainer"
-    sectionsContainer.style = "height:92%; width:187%"
+    sectionsContainer.style = "height:92%;"
 
     // Make an instance of NodeCombos to include html elements
     var interface = new NodeCombos(sectionsContainer)
@@ -42,8 +42,10 @@ function ProgramListOverview(programListNode){
         // General details of program
         interface.addLabelPair(null, "Name: ", "programName", "")
         interface.addLabelPair(null, "OS(s): ", "programOs", "")
+        interface.addLabelPair(null, "Vulnerability: ", "programVuln", "")
 
-        interface.addSingleButton("Delete Program", "col ml-1 mr-1 mt-2 btn btn-danger", function(){showToast("DeleteOnServer", "delete program from server was clicked")})
+        //interface.addSingleButton("Delete Program", "col ml-1 mr-1 mt-2 btn btn-danger", function(){showToast("DeleteOnServer", "delete program from server was clicked")})
+        interface.addEditDeleteButtons(null, function(){showToast("EditProgOnServer", "edit on server was clicked")}, null, function(){showToast("DeleteProgOnServer", "DeleteProgram was clicked")})
 
         // Select form again
         interface.selectNode(interface.getNodes()["programListCollapsiblesForm"])

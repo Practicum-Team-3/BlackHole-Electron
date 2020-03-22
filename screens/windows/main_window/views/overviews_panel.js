@@ -20,6 +20,12 @@ function OverviewsPanel(overviewsPanelNode){
     this.machineListOverview = new MachineListOverview(this.machineListNode)
     //this.machineListOverview.setMachines()
 
+    // Create instance for ExploitListOverview
+    this.exploitListNode = document.getElementById("exploitListOverview")
+    this.exploitListNode.className = "exploitListNode"
+    this.exploitListOverview = new ExploitListOverview(this.exploitListNode)
+    //this.exploitListOverview.setExploits()
+
     // Create instance for ProgramListOverview
     this.programListNode = document.getElementById("programListOverview")
     this.programListNode.className = "programListNode"
