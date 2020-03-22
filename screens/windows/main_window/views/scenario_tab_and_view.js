@@ -38,8 +38,16 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         var netGraphNode = document.createElement("div")
         netGraphNode.className = "networkGraphContainer"
         netGraphNode.setAttribute("style", "flex-grow: 3")
+
         //create referencer object and save
-        netGraph = new NetGraph(this.scenario, netGraphNode)
+
+        //temporary solution while i figure out how to put d3 in global
+        // netGraph = new NetGraph(this.scenario, netGraphNode)
+        startGraph(this.scenario, netGraphNode)
+
+        //dictionary of button names and their handlers
+        var footerButtons = {"Restart All_success":function(){showToast("Restart All Machines", "Not Implemented")}, "Shutdown All_danger":function(){showToast("Shutdown All Machines", "Not Implemented")}, "Pause/Resume All_success":function(){showToast("Pause/Resume All Machines", "Not Implemented")}}
+        addFloatingFooterButtons(netGraphNode, footerButtons)
 
         //This gets real (Add to centralView's node)
         scenarioViewNode.appendChild(netGraphNode)
