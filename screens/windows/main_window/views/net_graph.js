@@ -1,20 +1,18 @@
 
-// function NetGraph(scenario, netGraphNode){
+// function NetGraph(scenJSON, parent){
 
-    //This is for testing purposes only, must generate this with widow's 
-    //response on production version
-// }
+//     var scenario = scenJSON
+//     var parentNode = parent
 
-
-var width = "600";
-var height = "600";
-var attackerColor = "red";
+var width = "599";
+var height = "535";
+var attackerColor = "#f52549";
 var attackerColorFixed = "crimson";
-var victimColor = "blue";
+var victimColor = "#08e8de";
 var victimColorFixed = "dodgerblue"
 var nodesRadius = 15;
-var nodeHoverColor = "gold";
-var selectedColor = "springgreen";
+var nodeHoverColor = "springgreen";
+var selectedColor = "gold";
 
 var connectionCreateEnabled = false;
 var zoomAndPanEnabled = true;
@@ -26,12 +24,13 @@ var link = 0;
 var node = 0;
 var selectedJSON = 0;
 var graph = 0;
+var graphJSONString = 0
 
-function redrawGraph(graphJSON, netGraphNode){
+function redrawGraph(graphJSON, rootNode){
 
     graph = graphJSON
 
-    svg = d3.select(netGraphNode).append("svg").attr("id", "graphSVG")
+    svg = d3.select(rootNode).append("svg").attr("id", "graphSVG")
 
     //clear the svg children
     svg.selectAll("*").remove();
@@ -99,7 +98,7 @@ function resetGraphData(){
     link.attr("id", (d) => {
         return d.source.name + "_to_" + d.target.name;
     })
-    link.attr("stroke", "black");
+    link.attr("stroke", "#f8f9fa");
     link.attr("stroke-width", "6");
     link.on("click", deleteConnection);
 
@@ -159,6 +158,7 @@ function handleMouseOver(d) {
     }
 
     svg.append("text").attr({
+    fill:"white",
     id: "t" + d.name,  // Create an id for text so we can select it later for removing on mouseout
         x: function() { return d.x - 70; },
         y: function() { return d.y - 15; },
@@ -330,6 +330,45 @@ function testAddNew(){
     d = new Date();
     addNewNode("_" + d.getTime(), "_" + d.getTime())
 }
-// Get a JSON object of the graph.
-// graph = JSON.parse(graphJSONString);
-// redrawGraph(graph);
+
+
+function startGraph(scenario, netGraphNode){
+
+    graphJSONString = `{
+        "nodes": [
+            {"name":"attacker1","type":"attacker", "x": 469, "y": 410},
+            {"name":"victim1", "type":"victim", "x": 493, "y": 364},
+            {"name":"victim2", "type":"victim", "x": 442, "y": 365}
+        ],
+        "links": [
+            {"source":  0, "target":  1, "sName":"attacker1", "tName":"victim1"},
+            {"source":  1, "target":  2, "sName":"victim1", "tName":"victim2"},
+            {"source":  2, "target":  0, "sName":"victim2", "tName":"attacker1"}
+        ]
+    }`
+    test = JSON.parse(graphJSONString);
+    redrawGraph(test, netGraphNode)
+}
+
+
+// }
+
+//==================== floating buttons =======================
+function addFloatingFooterButtons(netGraphNode, footerButtonsNamesAndHandlers){
+
+    var buttonsContainer = document.createElement("div")
+    buttonsContainer.style = "position:absolute; bottom:40px; left:390px; z-index:1"
+    
+    var keys = Object.keys(footerButtonsNamesAndHandlers)
+
+    for(var i=0; i<keys.length; i++){
+        var placeholderButton = document.createElement("button")
+        placeholderButton.setAttribute("type", "button")
+        placeholderButton.className = String(keys[i]).split("_")[0] + "-button btn btn-" + String(keys[i]).split("_")[1]
+        placeholderButton.innerHTML = String(keys[i]).split("_")[0]
+        placeholderButton.style = "margin:10px"
+        placeholderButton.addEventListener("click", footerButtonsNamesAndHandlers[keys[i]])
+        buttonsContainer.appendChild(placeholderButton)
+    }
+    netGraphNode.appendChild(buttonsContainer)
+}
