@@ -15,26 +15,8 @@ function ProgramListOverview(programListNode){
     var interface = new NodeCombos(sectionsContainer)
 
     // Make sections of the program list overview panel
-    var sections = ["exploitHeader", "exploitListCollapsibles", "programHeader", "programListCollapsibles", "programListOptions"]
+    var sections = ["programListCollapsibles", "programListOptions"]
     interface.addMultipleSections(sections)
-
-    /*
-    // Make the header for exploits
-    interface.selectNode(interface.getNodes()["exploitHeader"])
-    interface.getNodes()["exploitHeader"].style = "height:5%;"
-    interface.getNodes()["exploitHeader"].className = "container exploit header bg-dark"
-    var rowNode = nodeCombos.getNewRow()
-    var exploitHeader = {"<h2> Exploits </h2>":null}
-    nodeCombos.addReferenceToNode(exploitHeader, rowNode)
-    interface.getNodes()["exploitHeader"].appendChild(rowNode)
-    */
-
-    
-
-
-
-
-
 
     // Populate the collapsibles
     interface.selectNode(interface.getNodes()["programListCollapsibles"])
@@ -75,7 +57,7 @@ function ProgramListOverview(programListNode){
 
     //var optionButtons = {"Add Program_primary":null}
     //interface.addOverviewOptionsButtons(optionButtons)
-    interface.addSingleButton("Upload Program", "col ml-1 mr-1 mt-2 btn btn-primary", function(){showToast("addProgram", "add program to server was clicked")})
+    interface.addSingleButton("Upload Program", "col ml-1 mr-1 mt-2 btn btn-primary", function(){showToast("uploadProgram", "updload program to server was clicked")})
 
     this.programListNode.appendChild(sectionsContainer)
 
