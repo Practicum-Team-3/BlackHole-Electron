@@ -1,13 +1,5 @@
-
-// function NetGraph(scenario, netGraphNode){
-
-    //This is for testing purposes only, must generate this with widow's 
-    //response on production version
-// }
-
-
-var width = "600";
-var height = "600";
+var width = 900;
+var height = 150;
 var attackerColor = "red";
 var attackerColorFixed = "crimson";
 var victimColor = "blue";
@@ -27,12 +19,11 @@ var node = 0;
 var selectedJSON = 0;
 var graph = 0;
 
-function redrawGraph(graphJSON, netGraphNode){
 
-    graph = graphJSON
+function redrawGraph(graph, nodeClassName){
 
-    svg = d3.select(netGraphNode).append("svg").attr("id", "graphSVG")
-
+    //Retrieve the svg element on the html and make it of specified width and height.
+    svg = d3.select(nodeClassName);
     //clear the svg children
     svg.selectAll("*").remove();
 
@@ -62,7 +53,6 @@ function redrawGraph(graphJSON, netGraphNode){
 
     resetGraphData();
     enableZoomAndPan(svg);
-
 }
 
 function enableZoomAndPan(svgElement){

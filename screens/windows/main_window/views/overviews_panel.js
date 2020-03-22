@@ -18,7 +18,7 @@ function OverviewsPanel(overviewsPanelNode){
     this.machineListNode = document.getElementById("machineListOverview")
     this.machineListNode.className = "machineListNode"
     this.machineListOverview = new MachineListOverview(this.machineListNode)
-    this.machineListOverview.setMachines()
+    // this.machineListOverview.setMachines()
 
 
     this.setWidth = function(percentWidth){

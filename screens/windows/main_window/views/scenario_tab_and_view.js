@@ -38,8 +38,25 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         var netGraphNode = document.createElement("div")
         netGraphNode.className = "networkGraphContainer"
         netGraphNode.setAttribute("style", "flex-grow: 3")
+
         //create referencer object and save
-        netGraph = new NetGraph(this.scenario, netGraphNode)
+        // netGraph = new NetGraph(this.scenario, netGraphNode)
+
+        //temporary solution while i figure out how to put d3 in global
+        var graphJSONString = `{
+            "nodes": [
+                {"name":"attacker1","type":"attacker", "x": 469, "y": 410},
+                {"name":"victim1", "type":"victim", "x": 493, "y": 364},
+                {"name":"victim2", "type":"victim", "x": 442, "y": 365}
+            ],
+            "links": [
+                {"source":  0, "target":  1, "sName":"attacker1", "tName":"victim1"},
+                {"source":  1, "target":  2, "sName":"victim1", "tName":"victim2"},
+                {"source":  2, "target":  0, "sName":"victim2", "tName":"attacker1"}
+            ]
+        }`
+        test = JSON.parse(graphJSONString);
+        redrawGraph(test, netGraphNode);
 
         //This gets real (Add to centralView's node)
         scenarioViewNode.appendChild(netGraphNode)
