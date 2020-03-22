@@ -18,7 +18,20 @@ function OverviewsPanel(overviewsPanelNode){
     this.machineListNode = document.getElementById("machineListOverview")
     this.machineListNode.className = "machineListNode"
     this.machineListOverview = new MachineListOverview(this.machineListNode)
-    // this.machineListOverview.setMachines()
+
+    //this.machineListOverview.setMachines()
+
+    // Create instance for ExploitListOverview
+    this.exploitListNode = document.getElementById("exploitListOverview")
+    this.exploitListNode.className = "exploitListNode"
+    this.exploitListOverview = new ExploitListOverview(this.exploitListNode)
+    //this.exploitListOverview.setExploits()
+
+    // Create instance for ProgramListOverview
+    this.programListNode = document.getElementById("programListOverview")
+    this.programListNode.className = "programListNode"
+    this.programListOverview = new ProgramListOverview(this.programListNode)
+    //this.programListOverview.setPrograms()
 
 
     this.setWidth = function(percentWidth){
