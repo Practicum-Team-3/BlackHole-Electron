@@ -6,27 +6,44 @@ function ProgramListOverview(programListNode){
     
     this.nameForTabLabel = "ProgramList"
     this.programListNode = programListNode
-    console.log(programListNode)
 
     var sectionsContainer = document.createElement("div")
     sectionsContainer.className = "ProgramListOverviewSectionsContainer"
-    sectionsContainer.style = "height:92%"
+    sectionsContainer.style = "height:92%; width:187%"
 
     // Make an instance of NodeCombos to include html elements
     var interface = new NodeCombos(sectionsContainer)
 
     // Make sections of the program list overview panel
-    var sections = ["programListCollapsibles", "programListOptions"]
+    var sections = ["exploitHeader", "exploitListCollapsibles", "programHeader", "programListCollapsibles", "programListOptions"]
     interface.addMultipleSections(sections)
+
+    /*
+    // Make the header for exploits
+    interface.selectNode(interface.getNodes()["exploitHeader"])
+    interface.getNodes()["exploitHeader"].style = "height:5%;"
+    interface.getNodes()["exploitHeader"].className = "container exploit header bg-dark"
+    var rowNode = nodeCombos.getNewRow()
+    var exploitHeader = {"<h2> Exploits </h2>":null}
+    nodeCombos.addReferenceToNode(exploitHeader, rowNode)
+    interface.getNodes()["exploitHeader"].appendChild(rowNode)
+    */
+
+    
+
+
+
+
+
 
     // Populate the collapsibles
     interface.selectNode(interface.getNodes()["programListCollapsibles"])
-    interface.getNodes()["programListCollapsibles"].style = "height:80%; overflow-y:scroll; overflow-x:hidden; margin-bottom:2px"
+    interface.getNodes()["programListCollapsibles"].style = "height:85%; overflow-y:scroll; overflow-x:hidden; margin-bottom:2px;"
     interface.getNodes()["programListCollapsibles"].className = "programListCollapsibles bg-light"
 
     // Create a form to put all of the components in
     var formNode = document.createElement("form")
-    formNode.style ="background-color:red"
+    //formNode.style ="background-color:red"
     formNode.className = "programListCollapsiblesForm"
     formNode.setAttribute("onSubmit", "return false")
 
@@ -44,21 +61,21 @@ function ProgramListOverview(programListNode){
         interface.addLabelPair(null, "Name: ", "programName", "")
         interface.addLabelPair(null, "OS(s): ", "programOs", "")
 
-
+        interface.addSingleButton("Delete Program", "col ml-1 mr-1 mt-2 btn btn-danger", function(){showToast("DeleteOnServer", "delete program from server was clicked")})
 
         // Select form again
         interface.selectNode(interface.getNodes()["programListCollapsiblesForm"])
-
     }
 
 
     // section at bottom of overview column
     interface.selectNode(interface.getNodes()["programListOptions"])
-    interface.getNodes()["programListOptions"].style = "height:20%;"
+    interface.getNodes()["programListOptions"].style = "height:15%;"
     interface.getNodes()["programListOptions"].className = "container programListOptions bg-dark"
 
-    var optionButtons = {"Add Program_primary":null}
-    interface.addOverviewOptionsButtons(optionButtons)
+    //var optionButtons = {"Add Program_primary":null}
+    //interface.addOverviewOptionsButtons(optionButtons)
+    interface.addSingleButton("Upload Program", "col ml-1 mr-1 mt-2 btn btn-primary", function(){showToast("addProgram", "add program to server was clicked")})
 
     this.programListNode.appendChild(sectionsContainer)
 
