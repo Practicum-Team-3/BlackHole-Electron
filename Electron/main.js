@@ -29,8 +29,8 @@ app.on('ready', createWidowAddressDialog)
 ipcMain.on('primaryLoad', (event, arg) => {
     //currentHeadWindow.on('closed', null)
     addressDialog.removeAllListeners()
-    addressDialog.destroy()
     createWindow()
+    addressDialog.destroy()
 })
 
 function createWindow () {
