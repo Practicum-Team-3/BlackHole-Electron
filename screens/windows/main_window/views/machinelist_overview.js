@@ -41,7 +41,7 @@ function MachineListOverview(machineListNode){
         interface.addLabelPair(null, "OS:", "machineOs", "")
         interface.addLabelPair(null, "Exploits:", "machineInstalledExploits", "")
         interface.addLabelPair(null, "Programs:", "machineInstalledPrograms", "")
-        interface.addDeleteAndIncludeButtons(null, function(){showToast("DeleteOnServer", "delete from server was clicked")}, null, function(){showToast("AddVM", "Add VM was clicked")}, "Delete")
+        interface.addDeleteAndIncludeButtons(null, function(){showToast("DeleteOnServer", "delete from server was clicked")}, null, function(){netGraph.testAddNew()})
         interface.selectNode(interface.getNodes()["machineListCollapsiblesForm"])
     }
 
