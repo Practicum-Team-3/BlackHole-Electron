@@ -30,10 +30,17 @@ function NetGraph(scenJSON, parent){
 
         this.graph = graphJSON
 
-        this.svg = d3.select(this.parentNode).append("svg").attr("id", "graphSVG")
+        var children = this.parentNode.children
+        if(children.length > 0){
+            //only remove the svg, keep everything else in order.
+            for(var i = 0; i<children.length; i++){
+                if(children[i].id == "graphSVG"){
+                    this.parentNode.removeChild(children[i])
+                }
+            }
+        }
 
-        //clear the svg children
-        this.svg.selectAll("*").remove();
+        this.svg = d3.select(this.parentNode).append("svg").attr("id", "graphSVG")
 
         this.svg.attr("width", this.width);
         this.svg.attr("height", this.height);
@@ -230,15 +237,59 @@ function NetGraph(scenJSON, parent){
         }
 
         if(index >= 0){
-            
             this.graph.links.splice(index, 1);
             d3.select("#" + d.sName + "_to_" + d.tName).remove()
             this.updateJSONModel(this.graph);
-            
             this.resetGraphData()
             this.selectedJSON = 0;
         }else{
             console.log("Element does not exist");
+        }
+    }
+
+    this.deleteNode = function(nodeName){
+        //i hate this function, its ugly, 'document.getElementById()' doesn't work on svg elements, thats why
+
+        //find node with id
+        var children = this.parentNode.children
+        var svgElem = 0
+        
+        for(var i = 0; i<children.length; i++){
+            if(children[i].id == "graphSVG"){
+                svgElem = children[i]
+            }
+        }
+        
+        var elem = 0
+        if(svgElem != 0){
+            children = svgElem.children
+            for(var i = 0; i<children.length; i++){
+                if(children[i].id == nodeName){
+                    elem = children[i]
+                    d3.select(elem).remove()
+                }
+            }
+
+            if(elem != 0){
+                for(var i = 0; i<this.graph.nodes.length; i++){
+                    if(this.graph.nodes[i].name == elem.id){
+                        this.graph.nodes.splice(i, 1)
+                    }
+                }
+            }
+
+
+            //remove all link
+            var linksToRemove = []
+            for(var i = 0; i<this.graph.links.length; i++){
+                if((this.graph.links[i].sName == nodeName) || (this.graph.links[i].tName == nodeName)){
+                    linksToRemove.push(this.graph.links[i])
+                }
+            }
+
+            for(var i = 0; i<linksToRemove.length; i++){
+                this.deleteConnection(linksToRemove[i])
+            }
         }
     }
 
@@ -316,11 +367,11 @@ function NetGraph(scenJSON, parent){
     }
 
     this.getJSONStringGraph = function(){
-        document.getElementById("textarea").innerHTML = this.graphJSONString;
+        console.log(this.graphJSONString)
+        return this.graphJSONString
     }
 
     this.restartGraph = function(){
-        console.log("called")
         this.graph = JSON.parse(this.graphJSONString);
         this.redrawGraph(this.graph);  
     }       
@@ -372,15 +423,15 @@ function NetGraph(scenJSON, parent){
         toggleConnectButton.addEventListener("click", this.toggleConnect.bind(this))
         this.parentNode.appendChild(toggleConnectButton)
 
-        // //reposition button
-        // var repositionButton = document.createElement("button")
-        // repositionButton.setAttribute("type", "button")
-        // repositionButton.className = "repositionButton button btn btn-outline-light"
-        // repositionButton.id = "repositionButton"
-        // repositionButton.innerHTML = "Re-center"
-        // repositionButton.style = "position:absolute; top: 200px; left:315px; z-index:1"
-        // repositionButton.addEventListener("click", this.restartGraph.bind(this))
-        // this.parentNode.appendChild(repositionButton)
+        //reposition button
+        var repositionButton = document.createElement("button")
+        repositionButton.setAttribute("type", "button")
+        repositionButton.className = "repositionButton button btn btn-outline-light"
+        repositionButton.id = "repositionButton"
+        repositionButton.innerHTML = "Re-center"
+        repositionButton.style = "position:absolute; top: 200px; left:315px; z-index:1"
+        repositionButton.addEventListener("click", this.restartGraph.bind(this))
+        this.parentNode.appendChild(repositionButton)
     }
 
     this.startGraph = function(){

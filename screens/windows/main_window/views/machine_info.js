@@ -26,7 +26,7 @@ function MachineInfo(machineInfoNode){
         interface.addLabelPair(null, "OS:", "machineOs", "")
         interface.addLabelPair(null, "Type:", "machineType", "")
         interface.addLabelPair(null, "GUI:", "machineGui", "")
-        interface.addEditDeleteButtons(null, function(){showToast("Edit", "Edit was clicked")}, null, function(){showToast("Delete", "Delete was clicked")})
+        interface.addEditDeleteButtons(null, function(){showToast("Edit", "Edit was clicked")}, null, function(){netGraph.deleteNode("attacker1")})
         addBrNode(formNode)
 
         // === Network
