@@ -31,6 +31,8 @@
         <script src="./views/scenario_tab_and_view.js"></script>
         <script src="./views/overviews_panel.js"></script>
         <script src="./views/machinelist_overview.js"></script>
+        <script src="./views/exploitlist_overview.js"></script>
+        <script src="./views/programlist_overview.js"></script>
         
         <link rel="stylesheet" href="./styles/bootstrap_override.css">
         <link rel="stylesheet" href="./styles/main_style.css">
@@ -83,9 +85,13 @@
                                 aria-selected="false">Scenarios</a>
                             </li>
                             <li class="nav-item">
-                            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact"
+                            <a class="nav-link" id="panel-3-tab" data-toggle="tab" href="#panel-3" role="tab" aria-controls="contact"
                                 aria-selected="false">P3</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="panel-4-tab" data-toggle="tab" href="#panel-4" role="tab" aria-controls="contact"
+                                    aria-selected="false">P4</a>
+                                </li>
                         </ul>
 
                         <!-- === Content of the overviews panel === -->
@@ -101,10 +107,16 @@
                                     
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                            <div class="tab-pane fade" id="panel-3" role="tabpanel" aria-labelledby="panel-3-tab">
                                 <div id="exploitListOverview">
-                                    <!-- == Aaron's Panel == -->
-                                    
+                                    <!-- == Aaron's 1st Panel == -->
+
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="panel-4" role="tabpanel" aria-labelledby="panel-4-tab">
+                                <div id="programListOverview">
+                                    <!-- == Aaron's 2nd Panel == -->
+                                                                        
                                 </div>
                             </div>
                         </div>
