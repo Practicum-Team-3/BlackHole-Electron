@@ -5,6 +5,8 @@
  * @param   {object} machineInfoNode Node where the machine info components should get added
  */
 function MachineInfo(machineInfoNode){
+    var self = this
+    this.machine = null
     
     // Create a form to put all of the components in
     var formNode = document.createElement("form")
@@ -21,9 +23,12 @@ function MachineInfo(machineInfoNode){
         // Computer icon
         addNode(formNode, "div", "bigIcon", "desktop")
         
+        // Setup change event
+        interface.setOnchangeCallback(self.onchange)
+        
         // General details
-        interface.addLabelPair(null, "Name:", "machineName", "")
-        interface.addLabelPair(null, "OS:", "machineOs", "")
+        interface.addLabelPair(null, "Name:", "name", "")
+        interface.addLabelPair(null, "OS:", "os", "")
         interface.addLabelPair(null, "Type:", "machineType", "")
         interface.addLabelPair(null, "GUI:", "machineGui", "")
         interface.addEditDeleteButtons(null, function(){showToast("Edit", "Edit was clicked")}, null, function(){showToast("Delete", "Delete was clicked")})
@@ -39,7 +44,7 @@ function MachineInfo(machineInfoNode){
         // === Collector
         // Exit previous group, create new group, then add components into it
         interface.deselectNode()
-        interface.addCollapsibleGroup("Collector", "inbox")
+        interface.addCollapsibleGroup("Collectors", "inbox")
 
         interface.addLabelAndSelect(null, "Collector:", "collectorValue", ["ECELd"])
 
@@ -54,7 +59,7 @@ function MachineInfo(machineInfoNode){
         // === Program
         // Exit previous group, create new group, then add components into it
         interface.deselectNode()
-        interface.addCollapsibleGroup("Program", "code")
+        interface.addCollapsibleGroup("Programs", "code")
 
         interface.addLabelAndSelect(null, "Program:", "program", [""])
         interface.addLabelAndInput(null, "Path:", "path", "")
@@ -76,11 +81,40 @@ function MachineInfo(machineInfoNode){
 /**
  * @function setMachine
  * @description Take the information of a machine and fill the machine info section with it
- * @param {object} centralView [[Description]]
+ * @param {Machine} machine Machine object to use
  */
 MachineInfo.prototype.setMachine = function(machine){
-    this.getNode("machineName").innerHTML = machine.getName()
-    this.getNode("machineOs").innerHTML = machine.getOs()
+    this.clear()
+    this.machine = machine
+    this.machine.onModified(this.update.bind(this))
+    this.update()
+}
+
+/**
+ * @function clear
+ * @description Call to unassign the scenario from the machine info
+ */
+MachineInfo.prototype.clear = function(){
+    if (this.machine==null){
+        return
+    }
+    this.machine.removeOnModifiedListener(this.update)
+    this.machine = null
+}
+
+MachineInfo.prototype.update = function(){
+    if (this.machine==null){
+        return
+    }
+    var machine = this.machine
+    this.getNode("name").innerHTML = machine.getName()
+    this.getNode("os").innerHTML = machine.getOs()
     this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
     this.getNode("machineGui").innerHTML = machine.getGui()
+    
+    this.getNode("networkValue").value = ""
+}
+
+MachineInfo.prototype.onchange = function(nodeName, node){
+    console.log(nodeName)
 }

@@ -1,22 +1,3 @@
-module.exports.machineDescriptor = '{\
-    "os": "windows",\
-    "name": "default",\
-    "is_attacker": false,\
-    "shared_folders": [],\
-    "network_settings": {\
-        "network_name": "",\
-        "network_type": "",\
-        "ip_address": "",\
-        "auto_config": true\
-    },\
-    "provisions": {\
-        "name": "",\
-        "provision_type": "",\
-        "commands": []\
-    },\
-    "gui": false\
-}'
-
 module.exports.scenarioDescriptor = '{\
     "scenario_name": "",\
     "scenario_id": "",\
@@ -35,4 +16,23 @@ module.exports.scenarioDescriptor = '{\
         "download_link": ""\
     },\
     "machines": {}\
+}'
+
+module.exports.machineDescriptor = '{\
+    "os": "windows",\
+    "name": "default",\
+    "is_attacker": false,\
+    "shared_folders": [],\
+    "network_settings": {\
+        "network_name": "",\
+        "network_type": "",\
+        "ip_address": "",\
+        "auto_config": true\
+    },\
+    "provisions": {\
+        "name": "",\
+        "provision_type": "",\
+        "commands": []\
+    },\
+    "gui": false\
 }'

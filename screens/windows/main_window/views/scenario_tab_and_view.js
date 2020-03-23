@@ -100,4 +100,13 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
     this.getScenario = function(){
         return scenario
     }
+    
+    /**
+     * @function close
+     * @description Call to perform cleanup before closing the tab and view
+     */
+    this.close = function(){
+        
+        machineInfo.clear()
+    }
 }

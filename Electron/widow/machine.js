@@ -1,12 +1,15 @@
+var Modifiable = require('./modifiable.js').Modifiable
 
 /**
  * @class Machine
- * @version 1.0.0
+ * @version 1.1.0
  * @description Machine properties
  *              
  * @param {string} descriptor Machine descriptor (JSON)
  */
 function Machine(descriptor){
+    Modifiable.call(this)
+    
     this.descriptor = descriptor==null ? JSON.parse(require('./defaults.js').machineDescriptor) : descriptor
     
     /**
@@ -26,7 +29,10 @@ function Machine(descriptor){
     // Special properties
     this.sharedFolders = new Set()
     this.extractSharedFoldersFromDescriptor()
+    
 }
+
+
 
 /**
  * @function getDescriptorAsString

@@ -1,0 +1,94 @@
+<!doctype html>
+<!-- Network view window -->
+<html style="height:100%; max-height:100%" lang="en-US">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <meta charset="UTF-8">
+        <title>Connect</title>
+    
+        <script src="../../../../Electron/widow/widow.js"></script>
+        <script>
+            try{
+                window.$ = window.jQuery = require("../../../../Electron/node_modules/jquery/dist/jquery")
+            }catch{}
+            
+            function init(){
+                document.getElementById("address").value = widow.defaultAddress
+            }
+            
+            function setDisabled(disabled){
+                var formElements = document.getElementsByClassName("disableable")
+                for (var i=0; i<formElements.length; i++){
+                    formElements[i].disabled = disabled
+                }
+            }
+            
+            function setAddress(){
+                setDisabled(true)
+                setProgress(0)
+                setProgressHasError(false)
+                
+                widow.linkAndSync(document.getElementById("address").value, setProgress).then(function(){
+                    electron.ipcRenderer.send("primaryLoad")
+                    
+                }).catch(function(error){
+                    setDisabled(false)
+                    setProgressHasError(true)
+                    console.log(error)
+                    
+                })
+                
+            }
+            
+            function setProgress(value){
+                document.getElementById("progressBar").style.width = value+"%"
+            }
+            
+            function setProgressHasError(hasError){
+                if (hasError){
+                    document.getElementById("progressBar").classList.add("bg-danger")
+                }else{
+                    document.getElementById("progressBar").classList.remove("bg-danger")
+                }
+            }
+            
+        </script>
+        
+        <!-- -->
+        <script src="../../../../Electron/node_modules/jquery/dist/jquery.js"></script>
+		<link rel="stylesheet" href="../../core_components/css/Bootstrap/bootstrap.css">
+		<script src="../../core_components/css/bootstrap/bootstrap.js"></script>
+        <style type="text/css">
+            body{
+                text-align: center;
+            }
+            .form-group{
+                text-align: left;
+            }
+            .progress{
+                height: 6px;
+                border-top-right-radius: 0;
+                border-top-left-radius: 0; 
+            }
+        </style>
+        
+        
+    </head>
+    
+    <body onload="init()">
+        <div class="container">
+            <br>
+            <h1>BlackHole</h1>
+            <form onsubmit="setAddress(); return false">
+                <div class="form-group" id="rosvox">
+                    <label for="address">Address:</label>
+                    <input type="text" class="form-control disableable" id="address" required>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped" style="width:0" id="progressBar"></div>
+                    </div>
+                </div>
+                <button class="btn btn-primary disableable" type="submit" id="subm">Connect</button>
+            </form>
+        </div>
+    </body>
+</html>

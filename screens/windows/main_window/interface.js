@@ -110,4 +110,17 @@ function runScenario(){
     })
 }
 
+/**
+ * @function saveScenario
+ * @description Saves the scenario of the current tab
+ */
+function saveScenario(){
+    if (activeTabAndView==null){
+        return
+    }
+    console.log("Saving...")
+    widow.scenarios.saveScenarioByName(activeTabAndView.getScenario().getName()).then(function(){
+        console.log("Saved")
+    })
+}
 

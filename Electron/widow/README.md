@@ -1,9 +1,9 @@
 # Widow 0317220714
 Back-end communication handlers and data abstractions.
 
-To adopt the usage of widow in an html document add:
+To adopt the usage of widow in an html document, add:
 
-    <script src="../../../Electron/widow/scenarios.js"></script>
+    <script src="../../../Electron/widow/widow.js"></script>
     
 ## Documentation
 http://widow.repixen.com

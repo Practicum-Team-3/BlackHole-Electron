@@ -151,10 +151,10 @@ function addSelectNode(node, className, optionsList){
  * @function addCheckbosNode
  * @param   {object}   node      Node to add the checkbox to
  * @param   {string}   className Style classes to give the checkbox node
- * @param   {string}   innerHTML HTML to place inside the checkbox. Can be just the text of the checkbox
+ * @param   {string}   labelText Text next to the checkbox
  * @returns {object}   The checkbox node that was added
  */
-function addCheckboxNode(node, className, innerHTML){
+function addCheckboxNode(node, className, labelText){
     var checkboxId = generateUniqueId()
     
     var checkboxLabelNode = document.createElement("label")
@@ -167,7 +167,7 @@ function addCheckboxNode(node, className, innerHTML){
     checkboxNode.setAttribute("id", checkboxId)
     
     checkboxLabelNode.appendChild(checkboxNode)
-    checkboxLabelNode.innerHTML += innerHTML
+    checkboxLabelNode.appendChild(document.createTextNode(labelText))
     
     node.appendChild(checkboxLabelNode)
     return checkboxNode

@@ -2,7 +2,7 @@ var Machine = require('./machine.js').Machine
 
 /**
  * @class Scenario
- * @version 1.1.0
+ * @version 1.2.0
  * @description Single scenario properties
  *              
  * @param {string} descriptor Scenario descriptor (JSON)
@@ -374,7 +374,7 @@ Scenario.prototype.renameMachine = function(oldName, newName){
  * @returns {Machine[]} Array of attacker machines
  */
 Scenario.prototype.getAllAttackerMachines = function(){
-    return this.getMachinesByTypeAttacker(true)
+    return this.getMachinesByAttackerType(true)
 }
 
 /**
@@ -384,7 +384,17 @@ Scenario.prototype.getAllAttackerMachines = function(){
  * @returns {Machine[]} Array of victim machines
  */
 Scenario.prototype.getAllVictimMachines = function(){
-    return this.getMachinesByTypeAttacker(false)
+    return this.getMachinesByAttackerType(false)
+}
+
+/**
+ * @function getAllMachines
+ * @description Returns a list of all machine objects
+ * @memberof Scenarios
+ * @returns {Machine[]} Array of all machines
+ */
+Scenario.prototype.getAllMachines = function(){
+    return this.getMachinesByAttackerType(null)
 }
 
 /**
@@ -431,17 +441,12 @@ Scenario.prototype.removeMachineByName = function(machineName){
     }
 }
 
-// Remove machine
-Scenario.prototype.removeMachineByName = function(machineName){
-    delete this.machines[machineName]
-}
-
-// Get all machines of a certain type. Pass true for attacker type, otherwise pass false
-Scenario.prototype.getMachinesByTypeAttacker = function(shouldBeAttacker){
+// Get all machines of a certain type. Pass true for attacker type, pass false for victim, pass null for all machines
+Scenario.prototype.getMachinesByAttackerType = function(shouldBeAttacker){
     let extracted = []
     
     for (machineName in this.machines){
-        if (this.machines[machineName].getIsAttacker()==shouldBeAttacker){
+        if (shouldBeAttacker==null || this.machines[machineName].getIsAttacker()==shouldBeAttacker){
             extracted.push(this.machines[machineName])
         }
     }

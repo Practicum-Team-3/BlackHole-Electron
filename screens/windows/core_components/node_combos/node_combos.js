@@ -2,7 +2,9 @@
  * @class NodeCombos
  * @description Prepackaged components for using on a webpage
  *              Instantiate NodeCombos by passing a reference to the parent node
- *              and use methods to generate child nodes (components)
+ *              and use methods to generate child nodes (components).
+ *              Some child nodes are added listeners to upon creation.
+ *              To destroy NodeCombos, but keep orphan components, call turnToOrphans()
  * @param   {object} parentNode Node to add elements to
  */
 function NodeCombos(parentNode){
@@ -13,6 +15,20 @@ function NodeCombos(parentNode){
     // Place to keep reference to generated components used to make combos
     var nodes = {}
     this.collapsibleGroups = []
+    
+    // Callback for edit events
+    var onchangeCallback = null
+    
+    /**
+     * @function turnToOrphans
+     * @description Unbind NodeCombos from created nodes in every way
+     */
+    this.turnToOrphans = function(){
+        for (nodeName in nodes){
+            //Unbind from possible onchange listener
+            nodes[nodeName].removeEventListener("change", this.onchange);
+        }
+    }
     
     this.getNodes = function(){
         return nodes
@@ -28,19 +44,42 @@ function NodeCombos(parentNode){
         rowNode.className = "form-row"
         return rowNode
     }
-    
+    //========================
+    //=== Internal reference adding
+    //========================
     /**
      * @function addReferenceToNode
-     * @description Internal use. Just a fast way to store references to generated components into this.nodes
+     * @private
+     * @description Internal use. Fast way to store references to generated components into this.nodes
      * @param {string} nodeName Name to reference the component by
      * @param {object} node     Node to keep the reference of
      */
     this.addReferenceToNode = function(nodeName, node){
         if (nodeName!=null && nodeName!=""){
             nodes[nodeName] = node
+            node.setAttribute("comboname", nodeName)
         }
     }
     
+    /**
+     * @function addReferenceAndListenerToNode
+     * @private
+     * @description Internal use. Fast way to store references to generated components into this.nodes
+     *                  and to add listener for the change event
+     * @param {string} nodeName Name to reference the component by
+     * @param {object} node     Node to keep the reference of
+     */
+    this.addReferenceAndListenerToNode = function(nodeName, node){
+        this.addReferenceToNode(nodeName, node)
+        //Add listener
+        //Warning: Persistent reference to "this"
+        //No problem if destroying both NodeCombos and related nodes
+        //If just destroying NodeCombos, call .turnToOrphans() first
+        node.addEventListener("change", this.onchange);
+    }
+    //========================
+    //=== Node Selection
+    //========================
     /**
      * @function selectNode
      * @description Sets the node to where all subsecuent created combos will be added
@@ -58,6 +97,29 @@ function NodeCombos(parentNode){
     this.deselectNode = function(){
         this.currentNode = this.parentNode
     }
+    //========================
+    //=== onchange
+    //========================
+    /**
+     * @function setOnchangeCallback
+     * @description Add a callback for when an element triggers an onchange event
+     * @param {function} callback Function that takes one parameter for the name of the element that triggered the onchange event
+     */
+    this.setOnchangeCallback = function(callback){
+        onchangeCallback = callback
+    }
+    
+    /**
+     * @function onchange
+     * @private
+     * @description Receiver for onchange events. Identifies the node that generated the event and emits the event on the callback.
+     * @param {Event} event Event information
+     */
+    this.onchange = (function(event){
+        if (onchangeCallback!=null){
+            onchangeCallback(event.target.getAttribute("comboname"), event.target)
+        }
+    }).bind(this)
 }
 
 /**
@@ -192,7 +254,7 @@ NodeCombos.prototype.addLabelAndInput = function(labelName, labelText, inputName
     inputNode.setAttribute("id", inputId)
     
     this.addReferenceToNode(labelName, labelNode)
-    this.addReferenceToNode(inputName, inputNode)
+    this.addReferenceAndListenerToNode(inputName, inputNode)
     
     this.currentNode.appendChild(rowNode)
 }
@@ -213,7 +275,7 @@ NodeCombos.prototype.addLabelAndSelect = function(labelName, labelText, selectNa
     var selectNode = addSelectNode(rowNode, "col form-control mb-1 mr-4", selectOptions)
     
     this.addReferenceToNode(labelName, labelNode)
-    this.addReferenceToNode(selectName, selectNode)
+    this.addReferenceAndListenerToNode(selectName, selectNode)
     
     this.currentNode.appendChild(rowNode)
 }
@@ -229,9 +291,9 @@ NodeCombos.prototype.addCheckbox = function(checkboxName, labelText){
     var rowNode = this.getNewRow()
     
     var divNode = addNode(rowNode, "div", "col-5")
-    var checkBoxNode = addCheckboxNode(rowNode, "col form-check-label alignLeft", labelText)
+    var checkboxNode = addCheckboxNode(rowNode, "col form-check-label alignLeft", labelText)
     
-    this.addReferenceToNode(checkboxName, checkBoxNode)
+    this.addReferenceAndListenerToNode(checkboxName, checkboxNode)
     
     this.currentNode.appendChild(rowNode)
 }
