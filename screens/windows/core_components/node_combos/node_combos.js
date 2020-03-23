@@ -121,6 +121,25 @@ NodeCombos.prototype.addLabelPair = function(leftLabelName, leftLabelText, right
 }
 
 /**
+ * @function addSingleButton
+ * @author Aaron Himan
+ * @description Adds one single button
+ * @param {string} buttonName Name to give the button
+ * @param {string} style Style classes to give the button
+ * @param {function} functionOnClick Reference to a function to call when the button gets clicked * 
+ */
+NodeCombos.prototype.addSingleButton = function(buttonName, style, functionOnClick){
+    var rowNode = this.getNewRow()
+
+    var buttonNode = addButtonNode(rowNode, style, functionOnClick, buttonName)
+
+    this.addReferenceToNode(buttonName, buttonNode)
+
+    this.currentNode.appendChild(rowNode)
+}
+
+
+/**
  * @function addEditDeleteButtons
  * @author Jose Guillen
  * @description Adds two buttons side by side, one for an edit operation, the other for a delete operation
