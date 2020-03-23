@@ -1,16 +1,18 @@
-const electron = require('electron')
-const widowAddress = "http://localhost:5000/"
-
 /**
  * @class Scenarios
- * @version 1.2.2
- * @description Manager of scenarios and connection to Widow.
+ * @version 2.0.0
+ * @description Manager of scenarios.
  *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
- * @param {string} widowAddress Address to back-end "Widow"
+ * @param {WidowSettings} widowSettings Connection details to Widow backend
  */
-function Scenarios(widowAddress){
-    this.widowAddress = widowAddress
+function Scenarios(widowSettings){
+    var widowSettings = widowSettings
+    
+    this.getAddress = function(){
+        return widowSettings.getAddress()
+    }
+    
     //Name list should only contain scenarios known by Widow
     this.nameList = []
     //Keep Scenario objects, known and not known by Widow
@@ -211,7 +213,7 @@ Scenarios.prototype.loadScenarios = function(){
         
         var axios = require('axios')
         
-        axios.get(this.widowAddress+"scenarios/all")
+        axios.get(this.getAddress()+"/scenarios/all")
         .then(function (response) {
             // Keep list locally
             this.nameList = response.data.scenarios
@@ -232,7 +234,7 @@ Scenarios.prototype.loadScenarioByName = function(scenarioName){
         var Scenario = require('./scenario.js').Scenario
         var axios = require('axios')
         
-        axios.get(this.widowAddress+"scenarios/"+encodeURIComponent(scenarioName))
+        axios.get(this.getAddress()+"/scenarios/"+encodeURIComponent(scenarioName))
         .then(function (response) {
             // Add to the loaded object
             this.loaded[scenarioName] = new Scenario(response.data)
@@ -274,7 +276,7 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
         if (!this.nameList.includes(scenarioName)){
             var axios = require('axios')
             
-            axios.get(this.widowAddress+"scenarios/new/"+encodeURIComponent(scenarioName))
+            axios.get(this.getAddress()+"/scenarios/new/"+encodeURIComponent(scenarioName))
             .then(function (response) {
                 // Add to the loaded dictionary
                 resolve()
@@ -306,7 +308,7 @@ Scenarios.prototype.saveScenarioByName = function(scenarioName){
         //Check if the scenario exists and can be saved
         if (this.nameList.includes(scenarioName)){
             
-            axios.post(this.widowAddress+"scenarios/edit/"+encodeURIComponent(scenarioName), this.getScenarioByName(scenarioName).getDescriptorAsString())
+            axios.post(this.getAddress()+"/scenarios/edit/"+encodeURIComponent(scenarioName), this.getScenarioByName(scenarioName).getDescriptorAsString())
             .then(function (response) {
                 resolve()
             })
@@ -328,7 +330,7 @@ Scenarios.prototype.saveScenarioByName = function(scenarioName){
 
 /**
  * @function prepareMachinesByScenarioName
- * @description Tells Widow backend to have the VMs ready
+ * @description Tells Widow backend to have the VMs ready for running
  * @memberof Scenarios
  * @param   {string} scenarioName Name of the scenario to prepare the machines for
  * @returns {Promise} Promise for the preparation of the machines
@@ -339,7 +341,7 @@ Scenarios.prototype.prepareMachinesByScenarioName = function(scenarioName){
         if (this.nameList.includes(scenarioName)){
             var axios = require('axios')
             
-            axios.get(this.widowAddress+"vagrantFiles/"+encodeURIComponent(scenarioName)+"/all")
+            axios.get(this.getAddress()+"/vagrantFiles/"+encodeURIComponent(scenarioName)+"/all")
             .then(function (response) {
                 resolve()
 
@@ -370,7 +372,7 @@ Scenarios.prototype.runScenarioByName = function(scenarioName){
         if (this.nameList.includes(scenarioName)){
             var axios = require('axios')
             
-            axios.get(this.widowAddress+"vagrantFiles/"+encodeURIComponent(scenarioName)+"/run")
+            axios.get(this.getAddress()+"/vagrantFiles/"+encodeURIComponent(scenarioName)+"/run")
             .then(function (response) {
                 // Add to the loaded dictionary
                 resolve()
@@ -388,102 +390,5 @@ Scenarios.prototype.runScenarioByName = function(scenarioName){
     }.bind(this))
 }
 
-//========================
-//=== Boxes
-//========================
 
-/**
- * @class Boxes
- * @version 1.0.0
- * @description Available VM boxes
- *              No need to instantiate, just reference the shared instance on widow.boxes
- *              
- * @param {string} widowAddress Address to back-end "Widow"
- */
-function Boxes(widowAddress){
-    this.widowAddress = widowAddress
-    this.boxes = {}
-}
-
-/**
- * @function loadBoxes
- * @description Pulls available boxes from Widow
- * @see getBoxesList
- * @memberof Boxes
- * @returns {Promise} Promise for the completion of the loading
- */
-Boxes.prototype.loadBoxes = function(){
-    return new Promise(function(resolve, reject){
-        
-        var axios = require('axios')
-        
-        axios.get(this.widowAddress+"boxes/all")
-        .then(function (response) {
-            // Keep list locally
-            this.boxes = response.data
-            resolve()
-            
-        }.bind(this)).catch(function (error) {
-            // handle error
-            console.log(error);
-            reject()
-            
-        })
-    }.bind(this))
-}
-
-/**
- * @function getBoxesList
- * @description Returns an array with strings of the box names
- * @memberof Boxes
- * @returns {string[]} Array with box names as strings
- */
-Boxes.prototype.getBoxesList = function(){
-    var boxesList = []
-    for (boxNum in this.boxes){
-        boxesList.push(this.boxes[boxNum])
-    }
-    return boxesList
-}
-
-//======================================================
-//=== Automatic instance for shared Electron runtime ===
-//======================================================
-try{
-    var widow = {}
-    
-    // Try to get existing scenarios instance from electron.remote
-    widow.scenarios = electron.remote.getGlobal('scenarios')
-    
-    //Get existing boxes instance
-    widow.boxes = electron.remote.getGlobal('boxes')
-    
-    //Check if scenarios have been loaded
-    if (!widow.scenarios.hasDoneInitialLoad){
-        // Load scenario list
-        widow.scenarios.loadScenarios()
-        .then(function(){
-            // Load all the scenarios from the list
-            return widow.scenarios.loadAllScenarios()
-        })
-        .then(function(){
-            //Load available boxes
-            return widow.boxes.loadBoxes()
-        })
-        .then(function(){
-            //Set flag
-            widow.scenarios.hasDoneInitialLoad = true
-            console.log("Primary load finished")
-        })
-    }
-}catch{
-    // Create a new instance and put on exports for main to pick up and put on electron.remote
-    try{
-        exports.scenarios = new Scenarios(widowAddress)
-        exports.boxes = new Boxes(widowAddress)
-    }catch{
-        console.log("Automatic instance of widow.scenarios failed to start")
-    }
-}
-
-
+module.exports.Scenarios = Scenarios
