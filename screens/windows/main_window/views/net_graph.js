@@ -1,374 +1,408 @@
 
-// function NetGraph(scenJSON, parent){
+function NetGraph(scenJSON, parent){
 
-//     var scenario = scenJSON
-//     var parentNode = parent
+    this.scenario = scenJSON
+    this.parentNode = parent
 
-var width = "599";
-var height = "535";
-var attackerColor = "#f52549";
-var attackerColorFixed = "crimson";
-var victimColor = "#08e8de";
-var victimColorFixed = "dodgerblue"
-var nodesRadius = 15;
-var nodeHoverColor = "springgreen";
-var selectedColor = "gold";
+    this.width = "599";
+    this.height = "535";
+    this.attackerColor = "#f52549";
+    this.attackerColorFixed = "crimson";
+    this.victimColor = "#08e8de";
+    this.victimColorFixed = "dodgerblue"
+    this.nodesRadius = 15;
+    this.nodeHoverColor = "springgreen";
+    this.selectedColor = "gold";
 
-var connectionCreateEnabled = false;
-var zoomAndPanEnabled = true;
+    this.connectionCreateEnabled = false;
+    this.zoomAndPanEnabled = true;
 
-var svg = 0;
-var force = 0;
-var drag = 0;
-var link = 0;
-var node = 0;
-var selectedJSON = 0;
-var graph = 0;
-var graphJSONString = 0
+    this.svg = 0;
+    this.force = 0;
+    this.drag = 0;
+    this.link = 0;
+    this.node = 0;
+    this.selectedJSON = 0;
+    this.graph = 0;
+    this.graphJSONString = 0
 
-function redrawGraph(graphJSON, rootNode){
+    this.redrawGraph = function(graphJSON){
 
-    graph = graphJSON
+        this.graph = graphJSON
 
-    svg = d3.select(rootNode).append("svg").attr("id", "graphSVG")
+        this.svg = d3.select(this.parentNode).append("svg").attr("id", "graphSVG")
 
-    //clear the svg children
-    svg.selectAll("*").remove();
+        //clear the svg children
+        this.svg.selectAll("*").remove();
 
-    svg.attr("width", width);
-    svg.attr("height", height);
+        this.svg.attr("width", this.width);
+        this.svg.attr("height", this.height);
 
-    for(var i = 0; i<graph.nodes.length; i++){
-        graph.nodes[i]["selected"] = "false";
+        for(var i = 0; i<this.graph.nodes.length; i++){
+            this.graph.nodes[i]["selected"] = "false";
+        }
+
+        //deselect any selected node
+        if(this.selectedJSON != 0){
+            this.selectedJSON.selected = "false";
+        }
+        this.selectedJSON = 0;
+
+        //Instantiate a force object which will encompass the same size as the svg.
+        this.force = d3.layout.force();
+        this.force.size([this.width, this.height]);
+        this.force.charge(-400);
+        this.force.linkDistance(80);
+        this.force.on("tick", this.tick.bind(this));
+
+        //Instantiate a drag object and set the callback function 'dragstart'.
+        this.drag = this.force.drag();
+        this.drag.on("dragstart", this.dragstart.bind(this));
+
+        this.resetGraphData();
+        this.enableZoomAndPan(this.svg);
+
     }
 
-    //deselect any selected node
-    if(selectedJSON != 0){
-        selectedJSON.selected = "false";
+    this.enableZoomAndPan = function(svgElement){
+        svgElement.call(
+            d3.behavior.zoom().on("zoom", this.zoomAndPanHandler.bind(this))
+        ).append("g");
     }
-    selectedJSON = 0;
 
-    //Instantiate a force object which will encompass the same size as the svg.
-    force = d3.layout.force();
-    force.size([width, height]);
-    force.charge(-400);
-    force.linkDistance(80);
-    force.on("tick", tick);
+    this.zoomAndPanHandler = function(){
+        if(this.zoomAndPanEnabled){
+            this.link.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+            this.node.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+        }
+    }
 
-    //Instantiate a drag object and set the callback function 'dragstart'.
-    drag = force.drag();
-    drag.on("dragstart", dragstart);
+    this.resetGraphData = function(){
 
-    resetGraphData();
-    enableZoomAndPan(svg);
+        //Set the global link object to point to all the 'link' class elements inside the svg.
+        this.link = this.svg.selectAll(".link");//line svg elements
+        this.node = this.svg.selectAll(".node");//circle svg elements
 
-}
+        //pass the node elements to the force object.
+        this.force.nodes(this.graph.nodes);
 
-function enableZoomAndPan(svgElement){
-    svgElement.call(
-        d3.behavior.zoom().on("zoom", function(){
-            if(zoomAndPanEnabled){
-                link.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
-                node.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
-                document.getElementById("textarea").innerHTML = "Pan: " + d3.event.translate + " | Zoom: " + d3.event.scale;
-            }
+        //pass the link elements to the force object.
+        this.force.links(this.graph.links);
+
+        this.force.start();
+
+        //create the link objects and set thier common behavior.
+        this.link = this.link.data(this.graph.links);
+
+        this.link.enter().append("line");
+        this.link.attr("class", "link");
+        this.link.attr("id", (d) => {
+            return d.source.name + "_to_" + d.target.name;
         })
-    ).append("g");
-}
-
-function resetGraphData(){
-
-    //Set the global link object to point to all the 'link' class elements inside the svg.
-    link = svg.selectAll(".link");//line svg elements
-    node = svg.selectAll(".node");//circle svg elements
-
-    //pass the node elements to the force object.
-    force.nodes(graph.nodes);
-
-    //pass the link elements to the force object.
-    force.links(graph.links);
-
-    force.start();
-
-    //create the link objects and set thier common behavior.
-    link = link.data(graph.links);
-
-    link.enter().append("line");
-    link.attr("class", "link");
-    link.attr("id", (d) => {
-        return d.source.name + "_to_" + d.target.name;
-    })
-    link.attr("stroke", "#f8f9fa");
-    link.attr("stroke-width", "6");
-    link.on("click", deleteConnection);
+        this.link.attr("stroke", "#f8f9fa");
+        this.link.attr("stroke-width", "6");
+        this.link.on("click", this.deleteConnection.bind(this));
 
 
-    //create the node objects and set their common behavior.
-    node = node.data(graph.nodes);
+        //create the node objects and set their common behavior.
+        this.node = this.node.data(this.graph.nodes);
 
-    node.enter().append("circle");
-    node.attr("class", "node");
-    node.attr("id", (d) => {return d.name;});
-    node.attr("r", nodesRadius);
-    node.attr("stroke-width", "4");
-    node.attr("stroke", VMColor);
-    node.attr("fill", VMColor);
-    node.on("mouseover", handleMouseOver);
-    node.on("mouseout", handleMouseOut);
-    node.on("dblclick", dblclick);
-    node.on("click", selectAndConnect);
-    node.call(drag);
-}
+        this.node.enter().append("circle");
+        this.node.attr("class", "node");
+        this.node.attr("id", (d) => {return d.name;});
+        this.node.attr("r", this.nodesRadius);
+        this.node.attr("stroke-width", "4");
+        this.node.attr("stroke", this.VMColor.bind(this));
+        this.node.attr("fill", this.VMColor.bind(this));
+        this.node.on("mouseover", this.handleMouseOver.bind(this));
+        this.node.on("mouseout", this.handleMouseOut.bind(this));
+        this.node.on("dblclick", this.dblclick.bind(this));
+        this.node.on("click", this.selectAndConnect.bind(this));
+        this.node.call(this.drag);
+    }
 
-function VMColor(d){
-    if(d.type == "attacker"){
+    this.VMColor = function(d){
+        if(d.type == "attacker"){
+            if(d.fixed){
+                return this.attackerColorFixed;
+            }else{
+                return this.attackerColor;
+            }
+        }
+        // console.log(d.fixed)
         if(d.fixed){
-            return attackerColorFixed;
+            return this.victimColorFixed;
         }else{
-            return attackerColor;
+            return this.victimColor;
         }
     }
 
-    if(d.fixed){
-        return victimColorFixed;
-    }else{
-        return victimColor;
-    }
-}
-
-function strokeColor(d){
-    if(d.selected == "true"){
-        return selectedColor;
-    }else{
-        return nodeHoverColor;
-    }
-}
-
-//PHYSICS CALLBACK FUNCTIONS///////////////////////////////////////////////
-function handleMouseOver(d) {
-    
-    zoomAndPanEnabled = false;
-    if(d.selected == "false"){
-        // Use D3 to select element, change color and size
-        d3.select("#" + d.name).attr({
-        fill: VMColor(d),
-        r: nodesRadius * 1.2,
-        stroke: strokeColor(d)
-        });
+    this.strokeColor = function(d){
+        if(d.selected == "true"){
+            return this.selectedColor;
+        }else{
+            return this.nodeHoverColor;
+        }
     }
 
-    svg.append("text").attr({
-    fill:"white",
-    id: "t" + d.name,  // Create an id for text so we can select it later for removing on mouseout
-        x: function() { return d.x - 70; },
-        y: function() { return d.y - 15; },
-    })
-    .text(function() {
-    return d.name;  // Value of the text
-    });
-}
-
-function handleMouseOut(d) {
-
-    zoomAndPanEnabled = true;
-    if(d.selected == "false"){
-        // Use D3 to select element, change color back to normal
-        d3.select("#" + d.name).attr({
-        fill: VMColor(d),
-        r: nodesRadius,
-        stroke: VMColor(d)
-        });
-    }
-
-    // Select text by id and then remove
-    d3.select("#t" + d.name).remove();  // Remove text location
-}
-
-function tick() {
+    //PHYSICS CALLBACK FUNCTIONS///////////////////////////////////////////////
+    this.handleMouseOver = function(d) {
         
-    link.attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
+        this.zoomAndPanEnabled = false;
+        if(d.selected == "false"){
+            // Use D3 to select element, change color and size
+            d3.select("#" + d.name).attr({
+            fill: this.VMColor(d),
+            r: this.nodesRadius * 1.2,
+            stroke: this.strokeColor(d)
+            });
+        }
+        
+        this.svg.append("text").attr({
+        fill:"white",
+        id: "t" + d.name,  // Create an id for text so we can select it later for removing on mouseout
+            x: function() {return d.x - 70; },
+            y: function() {return d.y - 15; },
+        })
+        .text(function() {
+        return d.name;  // Value of the text
+        });
+    }
 
-    node.attr("cx", 
-                    function(d) {
-                        d3.select("#t" + d.name).attr("x", d.x - 70);
-                        return d.x; 
-                    });
-    node.attr("cy", 
-                    function(d) {
-                        d3.select("#t" + d.name).attr("y", d.y - 15);
-                        return d.y; 
-                    });
-}
+    this.handleMouseOut = function(d) {
 
-function dblclick(d) {
-    d3.select(this).classed("fixed", d.fixed = false);
-    d3.select(this).attr("fill", VMColor)
-}
+        this.zoomAndPanEnabled = true;
+        if(d.selected == "false"){
+            // Use D3 to select element, change color back to normal
+            d3.select("#" + d.name).attr({
+            fill: this.VMColor(d),
+            r: this.nodesRadius,
+            stroke: this.VMColor(d)
+            });
+        }
 
-function dragstart(d) {
-    d3.select(this).classed("fixed", d.fixed = true);
-    d3.select(this).attr("fill", VMColor);
-}
+        // Select text by id and then remove
+        d3.select("#t" + d.name).remove();  
+    }
 
-function deleteConnection(d){
-    //search for link in graph and delete
-    var index = -1;
-    for(var i = 0; i<graph.links.length; i++){
-        if((graph.links[i].source.name == d.source.name)&&(graph.links[i].target.name == d.target.name)){
-            var index = i;
+    this.tick = function() {
+
+        this.link.attr("x1", function(d) { return d.source.x; })
+        this.link.attr("y1", function(d) { return d.source.y; })
+        this.link.attr("x2", function(d) { return d.target.x; })
+        this.link.attr("y2", function(d) { return d.target.y; });
+
+        this.node.attr("cx", 
+                        function(d) {
+                            d3.select("#t" + d.name).attr("x", d.x - 70);
+                            return d.x; 
+                        });
+        this.node.attr("cy", 
+                        function(d) {
+                            d3.select("#t" + d.name).attr("y", d.y - 15);
+                            return d.y; 
+                        });
+    }
+
+    this.dblclick = function(d) {
+        
+        d.fixed = false
+        var elem = document.getElementById(d.name)
+        elem.setAttribute("fixed", d.fixed)
+        elem.setAttribute("fill", this.VMColor(d))
+    }
+
+    this.dragstart = function(d) {
+
+        d.fixed = true
+        var elem = document.getElementById(d.name)
+        elem.setAttribute("fixed", d.fixed)
+        elem.setAttribute("fill", this.VMColor(d))
+    }
+
+    this.deleteConnection = function(d){
+        //search for link in graph and delete
+        var index = -1;
+        for(var i = 0; i<this.graph.links.length; i++){
+            if((this.graph.links[i].source.name == d.source.name)&&(this.graph.links[i].target.name == d.target.name)){
+                var index = i;
+            }
+        }
+
+        if(index >= 0){
+            
+            this.graph.links.splice(index, 1);
+            d3.select("#" + d.sName + "_to_" + d.tName).remove()
+            this.updateJSONModel(this.graph);
+            
+            this.resetGraphData()
+            this.selectedJSON = 0;
+        }else{
+            console.log("Element does not exist");
         }
     }
 
-    if(index >= 0){
-        graph.links.splice(index, 1);
-        d3.select(this).remove()
-        updateJSONModel(graph);
-        resetGraphData()
-        selectedJSON = 0;
-    }else{
-        console.log("Element does not exist");
-    }
-}
+    this.selectAndConnect = function(d){
+        //TODO: handle when slectedJSON is null, at start of graph
+        if(this.selectedJSON != 0){
+            if(this.selectedJSON != d){
+                this.selectedJSON.selected = "false";
+                d3.select("#" + this.selectedJSON.name)
+                .attr("stroke", this.VMColor(this.selectedJSON))
+                .attr("r", this.nodesRadius);
 
-function selectAndConnect(d){
-
-    //TODO: handle when slectedJSON is null, at start of graph
-    if(selectedJSON != 0){
-        if(selectedJSON != d){
-            selectedJSON.selected = "false";
-            d3.select("#" + selectedJSON.name)
-            .attr("stroke", VMColor(selectedJSON))
-            .attr("r", nodesRadius);
-
-            if(connectionCreateEnabled){
-                //links are bididerctional for now
-                if((d3.select("#" + selectedJSON.name + "_to_" + d.name)[0][0] == null) && (d3.select("#" + d.name + "_to_" + selectedJSON.name)[0][0] == null)){
-                    newLink = {"source":selectedJSON, "target":d}
-                    graph.links.push(newLink);
-                    updateJSONModel(graph);
-                    svg.selectAll("*").remove();
-                    resetGraphData();
+                if(this.connectionCreateEnabled){
+                    //links are bididerctional for now
+                    if((d3.select("#" + this.selectedJSON.name + "_to_" + d.name)[0][0] == null) && (d3.select("#" + d.name + "_to_" + this.selectedJSON.name)[0][0] == null)){
+                        newLink = {"source":this.selectedJSON, "target":d, "sName":this.selectedJSON.name, "tName":d.name}
+                        this.graph.links.push(newLink);
+                        this.updateJSONModel(this.graph);
+                        this.svg.selectAll("*").remove();
+                        this.resetGraphData();
+                    }
                 }
             }
         }
+
+        d.selected = "true";
+        d3.select("#" + d.name).attr("stroke", this.strokeColor(d))
+        d3.select("#" + d.name).attr("fill", this.VMColor(d))
+        this.selectedJSON = d;
     }
 
-    d.selected = "true";
-    d3.select("#" + d.name).attr("stroke", strokeColor(d))
-    selectedJSON = d;
-}
+    this.addNewNode = function(machineName, machineType){
+        //Clone an element from the graph.
+        newNode = {
+            "name":machineName, 
+            "type":machineType, 
+            "x":0, 
+            "y":0, 
+            "px":0, 
+            "py":0, 
+            "fixed":0,
+            "selected":false
+            }
 
-function addNewNode(machineName, machineType){
-    //Clone an element from the graph.
-    newNode = {
-        "name":machineName, 
-        "type":machineType, 
-        "x":0, 
-        "y":0, 
-        "px":0, 
-        "py":0, 
-        "fixed":0,
-        "selected":false
+        this.graph["nodes"].push(newNode);
+        this.updateJSONModel(this.graph);
+        this.resetGraphData();
+    }
+
+    this.updateJSONModel = function(graphJSONObject){
+        updatedModelObject = {"nodes":[], "links":[]};
+        
+        var currentNodes = graphJSONObject["nodes"];
+        for(var i = 0; i<currentNodes.length; i++){
+            var newNode = {
+                "name": currentNodes[i]["name"],
+                "x": currentNodes[i]["x"],
+                "y": currentNodes[i]["y"],
+                "type": currentNodes[i]["type"]
+            }
+            updatedModelObject["nodes"].push(newNode);
         }
 
-    graph["nodes"].push(newNode);
-    updateJSONModel(graph);
-    resetGraphData();
-}
+        var currentLinks = graphJSONObject["links"];
+        for(var i = 0; i<currentLinks.length; i++){
+            var newLink = {
+                "source":currentLinks[i]["source"]["index"],
+                "target":currentLinks[i]["target"]["index"],
+                "sName":currentLinks[i]["source"]["name"],
+                "tName":currentLinks[i]["target"]["name"]
+            }
+            updatedModelObject["links"].push(newLink);
+        }
+        this.graphJSONString = JSON.stringify(updatedModelObject);
+    }
 
-function updateJSONModel(graphJSONObject){
-    updatedModelObject = {"nodes":[], "links":[]};
+    this.getJSONStringGraph = function(){
+        document.getElementById("textarea").innerHTML = this.graphJSONString;
+    }
+
+    this.restartGraph = function(){
+        console.log("called")
+        this.graph = JSON.parse(this.graphJSONString);
+        this.redrawGraph(this.graph);  
+    }       
+
+    this.testAddNew = function(){
+        d = new Date();
+        this.addNewNode("_" + d.getTime(), "victim")
+    }
+
+    this.addFloatingFooterButtons = function(footerButtonsNamesAndHandlers){
+        var buttonsContainer = document.createElement("div")
+        buttonsContainer.style = "position:absolute; bottom:40px; left:390px; z-index:1"
+        
+        var keys = Object.keys(footerButtonsNamesAndHandlers)
     
-    var currentNodes = graphJSONObject["nodes"];
-    for(var i = 0; i<currentNodes.length; i++){
-        var newNode = {
-            "name": currentNodes[i]["name"],
-            "x": currentNodes[i]["x"],
-            "y": currentNodes[i]["y"],
-            "type": currentNodes[i]["type"]
+        for(var i=0; i<keys.length; i++){
+            var placeholderButton = document.createElement("button")
+            placeholderButton.setAttribute("type", "button")
+            placeholderButton.className = String(keys[i]).split("_")[0] + "-button btn btn-" + String(keys[i]).split("_")[1]
+            placeholderButton.innerHTML = String(keys[i]).split("_")[0]
+            placeholderButton.style = "margin:10px"
+            placeholderButton.addEventListener("click", footerButtonsNamesAndHandlers[keys[i]])
+            buttonsContainer.appendChild(placeholderButton)
         }
-        updatedModelObject["nodes"].push(newNode);
+        this.parentNode.appendChild(buttonsContainer)
     }
 
-    var currentLinks = graphJSONObject["links"];
-    for(var i = 0; i<currentLinks.length; i++){
-        var newLink = {
-            "source":currentLinks[i]["source"]["index"],
-            "target":currentLinks[i]["target"]["index"],
-            "sName":currentLinks[i]["source"]["name"],
-            "tName":currentLinks[i]["target"]["name"]
+    this.toggleConnect = function(){
+        this.connectionCreateEnabled = !this.connectionCreateEnabled;
+        
+        var toggleButton = document.getElementById("toggleConnectButton")
+        if(!this.connectionCreateEnabled){
+            toggleButton.className = "toggleConnectButton button btn btn-light"
+            toggleButton.innerHTML = "Linking Off"
+        }else{
+            toggleButton.className = "toggleConnectButton button btn btn-success"
+            toggleButton.innerHTML = "Linking On"
         }
-        updatedModelObject["links"].push(newLink);
     }
-    graphJSONString = JSON.stringify(updatedModelObject);
-}
 
-function getJSONStringGraph(){
-    document.getElementById("textarea").innerHTML = graphJSONString;
-}
+    this.drawGraphOptionButtons = function(){
+        //toggle-connect button
+        var toggleConnectButton = document.createElement("button")
+        toggleConnectButton.setAttribute("type", "button")
+        toggleConnectButton.className = "toggleConnectButton button btn btn-light"
+        toggleConnectButton.id = "toggleConnectButton"
+        toggleConnectButton.innerHTML = "Linking Off"
+        toggleConnectButton.style = "position:absolute; top: 150px; left:315px; z-index:1"
+        toggleConnectButton.addEventListener("click", this.toggleConnect.bind(this))
+        this.parentNode.appendChild(toggleConnectButton)
 
-function restartGraph(){
-    graph = JSON.parse(graphJSONString);
-    redrawGraph(graph);  
-}
-
-function toggleEnableConnect(){
-    connectionCreateEnabled = !connectionCreateEnabled;
-    button = document.getElementById("toggleConnectButton");
-    if(connectionCreateEnabled){
-        button.innerHTML = "Connect Enabled";
-    }else{
-        button.innerHTML = "Connect Disabled";
+        // //reposition button
+        // var repositionButton = document.createElement("button")
+        // repositionButton.setAttribute("type", "button")
+        // repositionButton.className = "repositionButton button btn btn-outline-light"
+        // repositionButton.id = "repositionButton"
+        // repositionButton.innerHTML = "Re-center"
+        // repositionButton.style = "position:absolute; top: 200px; left:315px; z-index:1"
+        // repositionButton.addEventListener("click", this.restartGraph.bind(this))
+        // this.parentNode.appendChild(repositionButton)
     }
-}        
 
+    this.startGraph = function(){
 
-function testAddNew(){
-    d = new Date();
-    addNewNode("_" + d.getTime(), "_" + d.getTime())
-}
-
-
-function startGraph(scenario, netGraphNode){
-
-    graphJSONString = `{
-        "nodes": [
-            {"name":"attacker1","type":"attacker", "x": 469, "y": 410},
-            {"name":"victim1", "type":"victim", "x": 493, "y": 364},
-            {"name":"victim2", "type":"victim", "x": 442, "y": 365}
-        ],
-        "links": [
-            {"source":  0, "target":  1, "sName":"attacker1", "tName":"victim1"},
-            {"source":  1, "target":  2, "sName":"victim1", "tName":"victim2"},
-            {"source":  2, "target":  0, "sName":"victim2", "tName":"attacker1"}
-        ]
-    }`
-    test = JSON.parse(graphJSONString);
-    redrawGraph(test, netGraphNode)
-}
-
-
-// }
-
-//==================== floating buttons =======================
-function addFloatingFooterButtons(netGraphNode, footerButtonsNamesAndHandlers){
-
-    var buttonsContainer = document.createElement("div")
-    buttonsContainer.style = "position:absolute; bottom:40px; left:390px; z-index:1"
-    
-    var keys = Object.keys(footerButtonsNamesAndHandlers)
-
-    for(var i=0; i<keys.length; i++){
-        var placeholderButton = document.createElement("button")
-        placeholderButton.setAttribute("type", "button")
-        placeholderButton.className = String(keys[i]).split("_")[0] + "-button btn btn-" + String(keys[i]).split("_")[1]
-        placeholderButton.innerHTML = String(keys[i]).split("_")[0]
-        placeholderButton.style = "margin:10px"
-        placeholderButton.addEventListener("click", footerButtonsNamesAndHandlers[keys[i]])
-        buttonsContainer.appendChild(placeholderButton)
+        //this graph should be generated from the scenario passed on constructor
+        this.graphJSONString = `{
+            "nodes": [
+                {"name":"attacker1","type":"attacker", "x": 469, "y": 410},
+                {"name":"victim1", "type":"victim", "x": 493, "y": 364},
+                {"name":"victim2", "type":"victim", "x": 442, "y": 365}
+            ],
+            "links": [
+                {"source":  0, "target":  1, "sName":"attacker1", "tName":"victim1"},
+                {"source":  1, "target":  2, "sName":"victim1", "tName":"victim2"},
+                {"source":  2, "target":  0, "sName":"victim2", "tName":"attacker1"}
+            ]
+        }`
+        test = JSON.parse(this.graphJSONString)
+        this.redrawGraph(test)
     }
-    netGraphNode.appendChild(buttonsContainer)
+
 }
+
+
+

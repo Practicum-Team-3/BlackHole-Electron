@@ -7,10 +7,10 @@ function OverviewsPanel(overviewsPanelNode){
     
     this.overviewsPanelNode = overviewsPanelNode
     this.overviewsPanelNode.className = this.overviewsPanelNode.className + " bg-secondary"
-    this.overviewsPanelNode.style = "height:100%; width:25%; border:5px solid #ffc107; border-radius:10px"
+    this.overviewsPanelNode.style = "height:100%; width:25%; border:5px solid #b1b1b1; border-radius:10px"
     
     // this.overviewsPanelNode.appendChild(this.overviewsPanelTabsBar)
-
+    //#ffc107
     //----------------------------------------------------------------
 
 
