@@ -1,8 +1,8 @@
 
-function NetGraph(scenJSON, parent){
+function NetGraph(scenario, parent){
 
-    this.scenario = scenJSON
     this.parentNode = parent
+    this.scenario = scenario
 
     this.width = "599";
     this.height = "535";
@@ -23,12 +23,136 @@ function NetGraph(scenJSON, parent){
     this.link = 0;
     this.node = 0;
     this.selectedJSON = 0;
-    this.graph = 0;
-    this.graphJSONString = 0
+    this.graphJSON = 0;
 
+    // use for machine info panel
+    this.onSelectedNodeChangedCallback = 0
+
+
+    /**
+     * @function setOnSelectedNodeChangedCallback
+     * @description Set function used to notify other panels when a different node is selected, function will be passed the machine's name.
+     * @param callbackFunction Callback function.
+     */
+    this.setOnSelectedNodeChangedCallback = function(callbackFunction){
+        if(callbackFunction != null){
+            this.onSelectedNodeChangedCallback = callbackFunction
+        }
+    }
+
+
+    /**
+     * @function onScenarioChanged
+     * @description Callback function for other objects to update graph whenever the scenario object changes. 
+     * @param {Scenario} modifiedScenarioJSON Scenario object to use for update.
+     */
+    this.onScenarioChanged = function(modifiedScenarioJSON){
+        this.graphJSON = this.getGraphJSONFromScenario(modifiedScenarioJSON)
+        this.graphJSONString = JSON.stringify(this.graphJSON);
+        this.startGraph()
+    }
+
+    /**
+     * @function getGraphJSONFromScenario
+     * @description Takes a senario object and returns a graphJSON object based on IP/24 masks
+     * @param {Scenario} scenarioObject Scenario object to use.
+     */
+    this.getGraphJSONFromScenario = function(scenarioObject){
+
+        var machines = scenarioObject.getAllMachines()
+
+        //check that machines have unique names
+        var names = {}
+        for(var i = 0; i<machines.length; i++){
+            names[machines[i].getName()] = 0
+        }
+        for(var i = 0; i<machines.length; i++){
+            names[machines[i].getName()] += 1
+            if(names[machines[i].getName()] > 1){
+                showToast("Duplicate Machine Names", "This scenario contains machine with duplicate names, can't show graph.")
+                return
+            }
+        }
+
+        var JSONObj = {"nodes":[], "links":[]}
+
+        //create nodes
+        var nameIndex = {}
+        for(var i = 0; i<machines.length; i++){
+            var machinePlaceholder = {"name":machines[i].getName(), "type": machines[i].getIsAttacker() ? "attacker" : "victim", "x": 442, "y": 365}
+            JSONObj["nodes"].push(machinePlaceholder)
+            nameIndex[machines[i].getName()] = i
+        }
+
+        //This implementation is net mask /24 hardcoded, in future must support any netmasks 
+        var groupings = {}
+        for(var i = 0; i<machines.length; i++){
+            var ip = machines[i].networkSettings.getIpAddress().split(".")
+            var netMask24 = ip[0] + "." + ip[1] + "." + ip[2]
+            groupings[netMask24] = []
+        }
+
+        for(var i = 0; i<machines.length; i++){
+            var ip = machines[i].networkSettings.getIpAddress().split(".")
+            var netMask24 = ip[0] + "." + ip[1] + "." + ip[2]
+            groupings[netMask24].push(machines[i])
+        }
+
+        //horrendous
+        var pairings = []
+        var netMasks = Object.keys(groupings)
+        for(var i = 0; i<netMasks.length; i++){
+            var netMachines = groupings[netMasks[i]]
+            for(var j = 0; j<netMachines.length; j++){
+                for(var k = 0; k<netMachines.length; k++){
+                    if(j != k){
+                        if(pairings.indexOf([netMachines[j].getName(), netMachines[k].getName()].sort().join()) < 0){
+                            pairings.push([netMachines[j].getName(), netMachines[k].getName()].sort().join())
+                            JSONObj["links"].push({
+                                "source": nameIndex[[netMachines[j].getName(), netMachines[k].getName()].sort()[0]],
+                                "target": nameIndex[[netMachines[j].getName(), netMachines[k].getName()].sort()[1]],
+                                "sName": [netMachines[j].getName(), netMachines[k].getName()].sort()[0],
+                                "tName": [netMachines[j].getName(), netMachines[k].getName()].sort()[1],
+                                "netMask": netMasks[i]
+                            })
+                        }
+                    }
+                }
+            }
+        }
+        return JSONObj
+    }
+
+    this.graphJSONString = JSON.stringify(this.getGraphJSONFromScenario(this.scenario));
+
+    /**
+     * @function getScenarioObjectFromJSONGraph
+     * @description Takes a graph encoded as JSON and returns a Scenario object.
+     * @param {JSON} graphJSON JSON object to use.
+     */
+    this.getScenarioObjectFromJSONGraph = function(graphJSON){
+
+        //TODO populate scenario maintaining the IP Addresses and netmasks of existing machines
+        //and correctly generate new IP addresses for new nodes based on linkage. 
+
+
+
+
+        //this function must be called whenever a node is added or a link is deleted/created
+
+
+
+
+    }
+
+    /**
+     * @function redrawGraph
+     * @description Redraws the graph encoded as a graphJSON, may be used for repositioning also.
+     * @param {JSON} graphJSON JSON object to use.
+     */
     this.redrawGraph = function(graphJSON){
 
-        this.graph = graphJSON
+        this.graphJSON = graphJSON
 
         var children = this.parentNode.children
         if(children.length > 0){
@@ -45,15 +169,16 @@ function NetGraph(scenJSON, parent){
         this.svg.attr("width", this.width);
         this.svg.attr("height", this.height);
 
-        for(var i = 0; i<this.graph.nodes.length; i++){
-            this.graph.nodes[i]["selected"] = "false";
+        for(var i = 0; i<this.graphJSON.nodes.length; i++){
+            this.graphJSON.nodes[i]["selected"] = "false";
         }
 
         //deselect any selected node
         if(this.selectedJSON != 0){
             this.selectedJSON.selected = "false";
+            this.selectedJSON = 0;
         }
-        this.selectedJSON = 0;
+        
 
         //Instantiate a force object which will encompass the same size as the svg.
         this.force = d3.layout.force();
@@ -71,12 +196,23 @@ function NetGraph(scenJSON, parent){
 
     }
 
+
+    /**
+     * @function enableZoomAndPan
+     * @description Enables zoom and pan on the svg element.
+     * @param svgElement DOM svg element.
+     */
     this.enableZoomAndPan = function(svgElement){
         svgElement.call(
             d3.behavior.zoom().on("zoom", this.zoomAndPanHandler.bind(this))
         ).append("g");
     }
 
+    /**
+     * @function zoomAndPanHandler
+     * @description Handles zoom and pan events, translating graph accordingly.
+     * 
+     */
     this.zoomAndPanHandler = function(){
         if(this.zoomAndPanEnabled){
             this.link.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
@@ -84,6 +220,11 @@ function NetGraph(scenJSON, parent){
         }
     }
 
+    /**
+     * @function resetGraphData
+     * @description updates the graph based on the changes in the model, without redrawing.
+     * 
+     */
     this.resetGraphData = function(){
 
         //Set the global link object to point to all the 'link' class elements inside the svg.
@@ -91,15 +232,15 @@ function NetGraph(scenJSON, parent){
         this.node = this.svg.selectAll(".node");//circle svg elements
 
         //pass the node elements to the force object.
-        this.force.nodes(this.graph.nodes);
+        this.force.nodes(this.graphJSON.nodes);
 
         //pass the link elements to the force object.
-        this.force.links(this.graph.links);
+        this.force.links(this.graphJSON.links);
 
         this.force.start();
 
         //create the link objects and set thier common behavior.
-        this.link = this.link.data(this.graph.links);
+        this.link = this.link.data(this.graphJSON.links);
 
         this.link.enter().append("line");
         this.link.attr("class", "link");
@@ -112,7 +253,7 @@ function NetGraph(scenJSON, parent){
 
 
         //create the node objects and set their common behavior.
-        this.node = this.node.data(this.graph.nodes);
+        this.node = this.node.data(this.graphJSON.nodes);
 
         this.node.enter().append("circle");
         this.node.attr("class", "node");
@@ -128,6 +269,12 @@ function NetGraph(scenJSON, parent){
         this.node.call(this.drag);
     }
 
+    
+    /**
+     * @function VMColor
+     * @description Returns the color of the node fill, based on the state of the nodeJSON.
+     * @param d nodeJSON object.
+     */
     this.VMColor = function(d){
         if(d.type == "attacker"){
             if(d.fixed){
@@ -144,6 +291,11 @@ function NetGraph(scenJSON, parent){
         }
     }
 
+    /**
+     * @function strokeColor
+     * @description Returns the color of the node border, based on the state of the nodeJSON.
+     * @param d nodeJSON object.
+     */
     this.strokeColor = function(d){
         if(d.selected == "true"){
             return this.selectedColor;
@@ -153,6 +305,12 @@ function NetGraph(scenJSON, parent){
     }
 
     //PHYSICS CALLBACK FUNCTIONS///////////////////////////////////////////////
+
+    /**
+     * @function handleMouseOver
+     * @description Handles the node's 'mouseover' events.
+     * @param d nodeJSON object.
+     */
     this.handleMouseOver = function(d) {
         
         this.zoomAndPanEnabled = false;
@@ -176,6 +334,11 @@ function NetGraph(scenJSON, parent){
         });
     }
 
+    /**
+     * @function handleMouseOut
+     * @description Handles the node's 'mouseout' events.
+     * @param d nodeJSON object.
+     */
     this.handleMouseOut = function(d) {
 
         this.zoomAndPanEnabled = true;
@@ -192,6 +355,11 @@ function NetGraph(scenJSON, parent){
         d3.select("#t" + d.name).remove();  
     }
 
+    /**
+     * @function tick
+     * @description Callback function used by d3 for updating positions with respect to time.
+     *
+     */
     this.tick = function() {
 
         this.link.attr("x1", function(d) { return d.source.x; })
@@ -211,6 +379,11 @@ function NetGraph(scenJSON, parent){
                         });
     }
 
+    /**
+     * @function dblclick
+     * @description Handles 'dblclick' events on nodes, unfixes them.
+     * @param d nodeJSON object.
+     */
     this.dblclick = function(d) {
         
         d.fixed = false
@@ -219,6 +392,11 @@ function NetGraph(scenJSON, parent){
         elem.setAttribute("fill", this.VMColor(d))
     }
 
+    /**
+     * @function dragstart
+     * @description Handles 'dragstart' events on nodes, fixes them.
+     * @param d nodeJSON object.
+     */
     this.dragstart = function(d) {
 
         d.fixed = true
@@ -227,19 +405,24 @@ function NetGraph(scenJSON, parent){
         elem.setAttribute("fill", this.VMColor(d))
     }
 
+    /**
+     * @function deleteConnection
+     * @description Removes link from DOM and graphJSON.
+     * @param d linkJSON object.
+     */
     this.deleteConnection = function(d){
         //search for link in graph and delete
         var index = -1;
-        for(var i = 0; i<this.graph.links.length; i++){
-            if((this.graph.links[i].source.name == d.source.name)&&(this.graph.links[i].target.name == d.target.name)){
+        for(var i = 0; i<this.graphJSON.links.length; i++){
+            if((this.graphJSON.links[i].source.name == d.source.name)&&(this.graphJSON.links[i].target.name == d.target.name)){
                 var index = i;
             }
         }
 
         if(index >= 0){
-            this.graph.links.splice(index, 1);
+            this.graphJSON.links.splice(index, 1);
             d3.select("#" + d.sName + "_to_" + d.tName).remove()
-            this.updateJSONModel(this.graph);
+            this.updateJSONString(this.graphJSON);
             this.resetGraphData()
             this.selectedJSON = 0;
         }else{
@@ -247,6 +430,11 @@ function NetGraph(scenJSON, parent){
         }
     }
 
+    /**
+     * @function deleteNode
+     * @description Removes node from DOM and graphJSON.
+     * @param d nodeJSON object.
+     */
     this.deleteNode = function(nodeName){
         //i hate this function, its ugly, 'document.getElementById()' doesn't work on svg elements, thats why
 
@@ -271,9 +459,9 @@ function NetGraph(scenJSON, parent){
             }
 
             if(elem != 0){
-                for(var i = 0; i<this.graph.nodes.length; i++){
-                    if(this.graph.nodes[i].name == elem.id){
-                        this.graph.nodes.splice(i, 1)
+                for(var i = 0; i<this.graphJSON.nodes.length; i++){
+                    if(this.graphJSON.nodes[i].name == elem.id){
+                        this.graphJSON.nodes.splice(i, 1)
                     }
                 }
             }
@@ -281,9 +469,9 @@ function NetGraph(scenJSON, parent){
 
             //remove all link
             var linksToRemove = []
-            for(var i = 0; i<this.graph.links.length; i++){
-                if((this.graph.links[i].sName == nodeName) || (this.graph.links[i].tName == nodeName)){
-                    linksToRemove.push(this.graph.links[i])
+            for(var i = 0; i<this.graphJSON.links.length; i++){
+                if((this.graphJSON.links[i].sName == nodeName) || (this.graphJSON.links[i].tName == nodeName)){
+                    linksToRemove.push(this.graphJSON.links[i])
                 }
             }
 
@@ -293,6 +481,11 @@ function NetGraph(scenJSON, parent){
         }
     }
 
+    /**
+     * @function selectAndConnect
+     * @description Handles 'click' events on nodes, if 'connect' is enabled, adds new link to DOM and graphJSON.
+     * @param d nodeJSON object.
+     */
     this.selectAndConnect = function(d){
         //TODO: handle when slectedJSON is null, at start of graph
         if(this.selectedJSON != 0){
@@ -305,12 +498,18 @@ function NetGraph(scenJSON, parent){
                 if(this.connectionCreateEnabled){
                     //links are bididerctional for now
                     if((d3.select("#" + this.selectedJSON.name + "_to_" + d.name)[0][0] == null) && (d3.select("#" + d.name + "_to_" + this.selectedJSON.name)[0][0] == null)){
-                        newLink = {"source":this.selectedJSON, "target":d, "sName":this.selectedJSON.name, "tName":d.name}
-                        this.graph.links.push(newLink);
-                        this.updateJSONModel(this.graph);
+                        newLink = {"source":this.selectedJSON, "target":d, "sName":this.selectedJSON.name, "tName":d.name, }
+                        this.graphJSON.links.push(newLink);
+                        this.updateJSONString(this.graphJSON);
                         this.svg.selectAll("*").remove();
                         this.resetGraphData();
                     }
+                }
+
+
+                //trigger callback
+                if(this.onSelectedNodeChangedCallback != 0){
+                    this.onSelectedNodeChangedCallback(d.name)
                 }
             }
         }
@@ -321,6 +520,12 @@ function NetGraph(scenJSON, parent){
         this.selectedJSON = d;
     }
 
+    /**
+     * @function addNewNode
+     * @description Adds new node to DOM and graphJSON, the node created has the name and type provided.
+     * @param {String} machineName name of machine.
+     * @param {String} machineType either 'victim' or 'attacker'.
+     */
     this.addNewNode = function(machineName, machineType){
         //Clone an element from the graph.
         newNode = {
@@ -334,12 +539,17 @@ function NetGraph(scenJSON, parent){
             "selected":false
             }
 
-        this.graph["nodes"].push(newNode);
-        this.updateJSONModel(this.graph);
+        this.graphJSON["nodes"].push(newNode);
+        this.updateJSONString(this.graphJSON);
         this.resetGraphData();
     }
 
-    this.updateJSONModel = function(graphJSONObject){
+    /**
+     * @function updateJSONString
+     * @description Updates the relevant fields of JSON string encoding of the graph. 
+     * @param graphJSONObject graphJSON object.
+     */    
+    this.updateJSONString = function(graphJSONObject){
         updatedModelObject = {"nodes":[], "links":[]};
         
         var currentNodes = graphJSONObject["nodes"];
@@ -359,28 +569,35 @@ function NetGraph(scenJSON, parent){
                 "source":currentLinks[i]["source"]["index"],
                 "target":currentLinks[i]["target"]["index"],
                 "sName":currentLinks[i]["source"]["name"],
-                "tName":currentLinks[i]["target"]["name"]
+                "tName":currentLinks[i]["target"]["name"],
+                "netMask":currentLinks[i]["netMask"]
             }
             updatedModelObject["links"].push(newLink);
         }
         this.graphJSONString = JSON.stringify(updatedModelObject);
     }
 
+    /**
+     * @function getJSONStringGraph
+     * @description Returns a string JSON with the current state of graphJSON. 
+     * 
+     */ 
     this.getJSONStringGraph = function(){
         console.log(this.graphJSONString)
         return this.graphJSONString
-    }
+    }      
 
-    this.restartGraph = function(){
-        this.graph = JSON.parse(this.graphJSONString);
-        this.redrawGraph(this.graph);  
-    }       
 
     this.testAddNew = function(){
         d = new Date();
         this.addNewNode("_" + d.getTime(), "victim")
     }
 
+    /**
+     * @function addFloatingFooterButtons
+     * @description Draws footer floating buttons. 
+     * @param footerButtonsNamesAndHandlers dictionary containing label=>handler pairs.
+     */ 
     this.addFloatingFooterButtons = function(footerButtonsNamesAndHandlers){
         var buttonsContainer = document.createElement("div")
         buttonsContainer.style = "position:absolute; bottom:40px; left:390px; z-index:1"
@@ -399,6 +616,11 @@ function NetGraph(scenJSON, parent){
         this.parentNode.appendChild(buttonsContainer)
     }
 
+    /**
+     * @function toggleConnect
+     * @description Toggles the ability to create links. 
+     * 
+     */ 
     this.toggleConnect = function(){
         this.connectionCreateEnabled = !this.connectionCreateEnabled;
         
@@ -412,6 +634,11 @@ function NetGraph(scenJSON, parent){
         }
     }
 
+    /**
+     * @function drawGraphOptionButtons
+     * @description Draws the re-center and link-enable-toggle buttons. 
+     * 
+     */ 
     this.drawGraphOptionButtons = function(){
         //toggle-connect button
         var toggleConnectButton = document.createElement("button")
@@ -430,29 +657,34 @@ function NetGraph(scenJSON, parent){
         repositionButton.id = "repositionButton"
         repositionButton.innerHTML = "Re-center"
         repositionButton.style = "position:absolute; top: 200px; left:315px; z-index:1"
-        repositionButton.addEventListener("click", this.restartGraph.bind(this))
+        repositionButton.addEventListener("click", this.startGraph.bind(this))
         this.parentNode.appendChild(repositionButton)
     }
 
+
+    /**
+     * @function startGraph
+     * @description Draws the graph stored as graphJSON. 
+     * 
+     */ 
     this.startGraph = function(){
 
         //this graph should be generated from the scenario passed on constructor
-        this.graphJSONString = `{
-            "nodes": [
-                {"name":"attacker1","type":"attacker", "x": 469, "y": 410},
-                {"name":"victim1", "type":"victim", "x": 493, "y": 364},
-                {"name":"victim2", "type":"victim", "x": 442, "y": 365}
-            ],
-            "links": [
-                {"source":  0, "target":  1, "sName":"attacker1", "tName":"victim1"},
-                {"source":  1, "target":  2, "sName":"victim1", "tName":"victim2"},
-                {"source":  2, "target":  0, "sName":"victim2", "tName":"attacker1"}
-            ]
-        }`
+        // this.graphJSONString = `{
+        //     "nodes": [
+        //         {"name":"attacker1","type":"attacker", "x": 469, "y": 410},
+        //         {"name":"victim1", "type":"victim", "x": 493, "y": 364},
+        //         {"name":"victim2", "type":"victim", "x": 442, "y": 365}
+        //     ],
+        //     "links": [
+        //         {"source":  0, "target":  1, "sName":"attacker1", "tName":"victim1"},
+        //         {"source":  1, "target":  2, "sName":"victim1", "tName":"victim2"},
+        //         {"source":  2, "target":  0, "sName":"victim2", "tName":"attacker1"}
+        //     ]
+        // }`
         test = JSON.parse(this.graphJSONString)
         this.redrawGraph(test)
     }
-
 }
 
 

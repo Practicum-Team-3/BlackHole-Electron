@@ -39,8 +39,7 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         netGraphNode.setAttribute("style", "flex-grow: 3")
 
         //temporary solution while i figure out how to put d3 in global
-        netGraph = new NetGraph(this.scenario, netGraphNode)
-
+        netGraph = new NetGraph(scenario, netGraphNode)
         netGraph.startGraph()
         var footerButtons = {"Restart All_success":function(){showToast("Restart All Machines", "Not Implemented")}, "Shutdown All_danger":function(){showToast("Shutdown All Machines", "Not Implemented")}, "Pause/Resume All_success":function(){showToast("Pause/Resume All Machines", "Not Implemented")}}
         netGraph.addFloatingFooterButtons(footerButtons)
