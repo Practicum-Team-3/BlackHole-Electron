@@ -31,7 +31,8 @@ function MachineInfo(machineInfoNode){
         interface.addLabelPair(null, "OS:", "os", "")
         interface.addLabelPair(null, "Type:", "machineType", "")
         interface.addLabelPair(null, "GUI:", "machineGui", "")
-        interface.addEditDeleteButtons(null, function(){showToast("Edit", "Edit was clicked")}, null, function(){netGraph.deleteNode("attacker1")})
+        //missing handlers that modify scenario object and then call 'netGraph.onScenarioChanged(modifiedScenario)' 
+        interface.addEditDeleteButtons("editMachineButton", null, "deleteMachineButton", null)
         addBrNode(formNode)
 
         // === Network
@@ -111,7 +112,6 @@ MachineInfo.prototype.update = function(){
     this.getNode("os").innerHTML = machine.getOs()
     this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
     this.getNode("machineGui").innerHTML = machine.getGui()
-    
     this.getNode("networkValue").value = ""
 }
 

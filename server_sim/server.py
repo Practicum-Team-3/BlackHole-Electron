@@ -48,6 +48,28 @@ def getScenario(scenario_name):
         ]
       },
       "gui": false
+    },"attacker1": {
+      "os": "laravel/homestead",
+      "name": "attacker1",
+      "is_attacker": true,
+      "shared_folders": [
+        "./attackerfiles",
+        "/sharedfolder"
+      ],
+      "network_settings": {
+        "network_name": "Network Name",
+        "network_type": "Network Type",
+        "ip_address": "192.168.50.7",
+        "auto_config": true
+      },
+      "provisions": {
+        "name": "pingVictim",
+        "provision_type": "shell",
+        "commands": [
+          "pip install unique-id"
+        ]
+      },
+      "gui": false
     },
     "victim": {
       "os": "laravel/homestead",
