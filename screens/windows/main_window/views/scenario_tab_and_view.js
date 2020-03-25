@@ -45,6 +45,9 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         netGraph.addFloatingFooterButtons(footerButtons)
         netGraph.drawGraphOptionButtons()
 
+        //remove on production
+        netGraph.setConnectionDeleteOnClick(false)
+
         //This gets real (Add to centralView's node)
         scenarioViewNode.appendChild(netGraphNode)
 
@@ -55,7 +58,7 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         //create referencer object and save
         machineInfo = new MachineInfo(machineInfoNode)
         
-        machineInfo.setMachine(scenario.getAllAttackerMachines()[0])
+        netGraph.setOnSelectedNodeChangedCallback(machineInfo.setMachine.bind(machineInfo))
 
         //This gets real (Add to centralView's dom)
         scenarioViewNode.appendChild(machineInfoNode)
