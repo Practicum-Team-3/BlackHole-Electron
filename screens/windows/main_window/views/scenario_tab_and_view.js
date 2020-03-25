@@ -36,7 +36,6 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         //Make network graph space===
         var netGraphNode = document.createElement("div")
         netGraphNode.className = "networkGraphContainer"
-        netGraphNode.setAttribute("style", "flex-grow: 3")
 
         //temporary solution while i figure out how to put d3 in global
         netGraph = new NetGraph(scenario, netGraphNode)

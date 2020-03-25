@@ -8,8 +8,7 @@ function ProgramListOverview(programListNode){
     this.programListNode = programListNode
 
     var sectionsContainer = document.createElement("div")
-    sectionsContainer.className = "ProgramListOverviewSectionsContainer"
-    sectionsContainer.style = "height:92%; width: 293px;"
+    sectionsContainer.className = "fillSpace columnFlex ProgramListOverviewSectionsContainer"
 
     // Make an instance of NodeCombos to include html elements
     var interface = new NodeCombos(sectionsContainer)
@@ -20,8 +19,8 @@ function ProgramListOverview(programListNode){
 
     // Populate the collapsibles
     interface.selectNode(interface.getNodes()["programListCollapsibles"])
-    interface.getNodes()["programListCollapsibles"].style = "height:85%; overflow-y:scroll; overflow-x:hidden; margin-bottom:2px;"
-    interface.getNodes()["programListCollapsibles"].className = "programListCollapsibles bg-light"
+    interface.getNodes()["programListCollapsibles"].style = "overflow-y:scroll; overflow-x:hidden"
+    interface.getNodes()["programListCollapsibles"].className = "stretchFlex programListCollapsibles bg-light"
 
     // Create a form to put all of the components in
     var formNode = document.createElement("form")
@@ -54,12 +53,11 @@ function ProgramListOverview(programListNode){
 
     // section at bottom of overview column
     interface.selectNode(interface.getNodes()["programListOptions"])
-    interface.getNodes()["programListOptions"].style = "height:15%;"
-    interface.getNodes()["programListOptions"].className = "container programListOptions bg-dark"
+    interface.getNodes()["programListOptions"].className = "fixedFlex container programListOptions bg-dark"
 
     //var optionButtons = {"Add Program_primary":null}
     //interface.addOverviewOptionsButtons(optionButtons)
-    interface.addSingleButton("Upload Program", "col ml-1 mr-1 mt-2 btn btn-primary", function(){showToast("uploadProgram", "updload program to server was clicked")})
+    interface.addSingleButton("Upload Program", "col mt-2 mb-2 btn btn-primary", function(){showToast("uploadProgram", "updload program to server was clicked")})
 
     this.programListNode.appendChild(sectionsContainer)
 

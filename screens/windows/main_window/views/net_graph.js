@@ -177,8 +177,8 @@ function NetGraph(scenario, parent){
 
         this.svg = d3.select(this.parentNode).append("svg").attr("id", "graphSVG")
 
-        this.svg.attr("width", this.width);
-        this.svg.attr("height", this.height);
+        this.svg.attr("width", "100%");
+        this.svg.attr("height", "100%");
 
         for(var i = 0; i<this.graphJSON.nodes.length; i++){
             this.graphJSON.nodes[i]["selected"] = "false";
@@ -619,7 +619,7 @@ function NetGraph(scenario, parent){
      */ 
     this.addFloatingFooterButtons = function(footerButtonsNamesAndHandlers){
         var buttonsContainer = document.createElement("div")
-        buttonsContainer.style = "position:absolute; bottom:40px; left:390px; z-index:1"
+        buttonsContainer.style = "position:absolute; bottom:20px; left:20px; z-index:1"
         
         var keys = Object.keys(footerButtonsNamesAndHandlers)
     
@@ -665,7 +665,7 @@ function NetGraph(scenario, parent){
         toggleConnectButton.className = "toggleConnectButton button btn btn-light"
         toggleConnectButton.id = "toggleConnectButton"
         toggleConnectButton.innerHTML = "Linking Off"
-        toggleConnectButton.style = "position:absolute; top: 150px; left:315px; z-index:1"
+        toggleConnectButton.style = "position:absolute; top: 20px; left:20px; z-index:1"
         toggleConnectButton.addEventListener("click", function(){showToast("Toggle link Creation", "Implemented but disabled")})
         // toggleConnectButton.addEventListener("click", this.toggleConnect.bind(this))
         this.parentNode.appendChild(toggleConnectButton)
@@ -676,7 +676,7 @@ function NetGraph(scenario, parent){
         repositionButton.className = "repositionButton button btn btn-outline-light"
         repositionButton.id = "repositionButton"
         repositionButton.innerHTML = "Re-center"
-        repositionButton.style = "position:absolute; top: 200px; left:315px; z-index:1"
+        repositionButton.style = "position:absolute; top: 60px; left:20px; z-index:1"
         repositionButton.addEventListener("click", this.startGraph.bind(this))
         this.parentNode.appendChild(repositionButton)
     }

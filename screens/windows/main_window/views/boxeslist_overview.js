@@ -9,8 +9,7 @@ function BoxesListOverview(boxesListNode){
     this.boxesObject = null
 
     var sectionsContainer = document.createElement("div")
-    sectionsContainer.className = "BoxesListOverviewSectionsContainer"
-    sectionsContainer.style = "height:92%"
+    sectionsContainer.className = "fillSpace columnFlex BoxesListOverviewSectionsContainer"
 
     this.interface = new NodeCombos(sectionsContainer)
 
@@ -19,8 +18,8 @@ function BoxesListOverview(boxesListNode){
 
     //populate the collapsibles
     this.interface.selectNode(this.interface.getNodes()["boxesListCollapsibles"])
-    this.interface.getNodes()["boxesListCollapsibles"].style = "height:80%; overflow-y:scroll; overflow-x:hidden; margin-bottom:2px"
-    this.interface.getNodes()["boxesListCollapsibles"].className = "boxesListCollapsibles bg-light"
+    this.interface.getNodes()["boxesListCollapsibles"].style = "overflow-y:scroll; overflow-x:hidden"
+    this.interface.getNodes()["boxesListCollapsibles"].className = "stretchFlex boxesListCollapsibles bg-light"
 
     // Create a form to put all of the components in
     var formNode = document.createElement("form")
@@ -34,8 +33,8 @@ function BoxesListOverview(boxesListNode){
     this.interface.selectNode(this.interface.getNodes()["boxesListCollapsiblesForm"])
 
     this.interface.selectNode(this.interface.getNodes()["boxesListOptions"])
-    this.interface.getNodes()["boxesListOptions"].style = "height:20%;"
-    this.interface.getNodes()["boxesListOptions"].className = "container boxesListOptions bg-dark"
+    //this.interface.getNodes()["boxesListOptions"].style = "height:20%;"
+    this.interface.getNodes()["boxesListOptions"].className = "fixedFlex container boxesListOptions bg-dark"
 
     var optionButtons = {"Create Box_primary":function(){showToast("Create Box", "Not yet implemented")}, "Upload Box_info":function(){showToast("Upload Box", "Not yet implemented")}}
     this.interface.addOverviewOptionsButtons(optionButtons)

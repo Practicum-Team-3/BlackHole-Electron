@@ -315,13 +315,13 @@ NodeCombos.prototype.addOverviewOptionsButtons = function(nameAndHandlerDictiona
 
     var currentNode = this.currentNode
     var div = document.createElement("div")
-    div.style = "height:100%; padding-top:5px"
+    div.style = "padding:5px"
     this.currentNode.appendChild(div)
     this.currentNode = div
 
     for(var i = 0; i<keys.length; i++){
         var rowNode = this.getNewRow()
-        var placeholderBtn = addButtonNode(rowNode, "col mr-1 mt-2 btn btn-" + String(keys[i]).split("_")[1], nameAndHandlerDictionary[keys[i]], String(keys[i]).split("_")[0])
+        var placeholderBtn = addButtonNode(rowNode, "col mt-1 mb-1 btn btn-" + String(keys[i]).split("_")[1], nameAndHandlerDictionary[keys[i]], String(keys[i]).split("_")[0])
         this.addReferenceToNode(keys[i], placeholderBtn)
         this.currentNode.appendChild(placeholderBtn)
     }
