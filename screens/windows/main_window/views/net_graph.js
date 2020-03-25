@@ -15,6 +15,7 @@ function NetGraph(scenario, parent){
     this.selectedColor = "gold";
 
     this.connectionCreateEnabled = false;
+    this.connectionDeleteEnabled = true;
     this.zoomAndPanEnabled = true;
 
     this.svg = 0;
@@ -98,7 +99,7 @@ function NetGraph(scenario, parent){
             groupings[netMask24].push(machines[i])
         }
 
-        //horrendous
+        //horrendous, but document.getElementById doesnt work
         var pairings = []
         var netMasks = Object.keys(groupings)
         for(var i = 0; i<netMasks.length; i++){
@@ -136,13 +137,23 @@ function NetGraph(scenario, parent){
         //and correctly generate new IP addresses for new nodes based on linkage. 
 
 
-
-
         //this function must be called whenever a node is added or a link is deleted/created
 
 
+    }
 
 
+    /**
+     * @function setConnectionDeleteOnClick
+     * @description Sets the ability to delete connections by clicking on them.
+     * @param {Boolean} exp Boolean value.
+     */
+    this.setConnectionDeleteOnClick = function(exp){
+
+        if(exp != true && exp != false){
+            return
+        }
+        this.connectionDeleteEnabled = exp
     }
 
     /**
@@ -411,22 +422,26 @@ function NetGraph(scenario, parent){
      * @param d linkJSON object.
      */
     this.deleteConnection = function(d){
-        //search for link in graph and delete
-        var index = -1;
-        for(var i = 0; i<this.graphJSON.links.length; i++){
-            if((this.graphJSON.links[i].source.name == d.source.name)&&(this.graphJSON.links[i].target.name == d.target.name)){
-                var index = i;
+        if(this.connectionDeleteEnabled){
+            //search for link in graph and delete
+            var index = -1;
+            for(var i = 0; i<this.graphJSON.links.length; i++){
+                if((this.graphJSON.links[i].source.name == d.source.name)&&(this.graphJSON.links[i].target.name == d.target.name)){
+                    var index = i;
+                }
             }
-        }
 
-        if(index >= 0){
-            this.graphJSON.links.splice(index, 1);
-            d3.select("#" + d.sName + "_to_" + d.tName).remove()
-            this.updateJSONString(this.graphJSON);
-            this.resetGraphData()
-            this.selectedJSON = 0;
+            if(index >= 0){
+                this.graphJSON.links.splice(index, 1);
+                d3.select("#" + d.sName + "_to_" + d.tName).remove()
+                this.updateJSONString(this.graphJSON);
+                this.resetGraphData()
+                this.selectedJSON = 0;
+            }else{
+                console.log("Element does not exist");
+            }
         }else{
-            console.log("Element does not exist");
+            showToast("Delete Connection", "Implemented but disabled")
         }
     }
 
@@ -505,15 +520,19 @@ function NetGraph(scenario, parent){
                         this.resetGraphData();
                     }
                 }
-
-
-                //trigger callback
-                if(this.onSelectedNodeChangedCallback != 0){
-                    this.onSelectedNodeChangedCallback(d.name)
-                }
             }
         }
 
+
+        //trigger callback
+        if(this.onSelectedNodeChangedCallback != 0){
+            var machineFromScenario = this.scenario.getMachineByName(d.name)
+            if(machineFromScenario!= undefined || machineFromScenario != null){
+                this.onSelectedNodeChangedCallback(machineFromScenario)
+            }else{
+                showToast("Box not in scenario", "The box does not exist in scenario object")
+            }
+        }
         d.selected = "true";
         d3.select("#" + d.name).attr("stroke", this.strokeColor(d))
         d3.select("#" + d.name).attr("fill", this.VMColor(d))
@@ -647,7 +666,8 @@ function NetGraph(scenario, parent){
         toggleConnectButton.id = "toggleConnectButton"
         toggleConnectButton.innerHTML = "Linking Off"
         toggleConnectButton.style = "position:absolute; top: 150px; left:315px; z-index:1"
-        toggleConnectButton.addEventListener("click", this.toggleConnect.bind(this))
+        toggleConnectButton.addEventListener("click", function(){showToast("Toggle link Creation", "Implemented but disabled")})
+        // toggleConnectButton.addEventListener("click", this.toggleConnect.bind(this))
         this.parentNode.appendChild(toggleConnectButton)
 
         //reposition button

@@ -32,7 +32,7 @@ function MachineInfo(machineInfoNode){
         interface.addLabelPair(null, "Type:", "machineType", "")
         interface.addLabelPair(null, "GUI:", "machineGui", "")
         //missing handlers that modify scenario object and then call 'netGraph.onScenarioChanged(modifiedScenario)' 
-        interface.addEditDeleteButtons("editMachineButton", null, "deleteMachineButton", null)
+        interface.addEditDeleteButtons("editMachineButton", function(){showToast("Edit Machine", "Not yet implemented")}, "deleteMachineButton", function(){showToast("Delete Machine", "Not yet implemented")})
         addBrNode(formNode)
 
         // === Network

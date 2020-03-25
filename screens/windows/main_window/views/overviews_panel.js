@@ -14,12 +14,11 @@ function OverviewsPanel(overviewsPanelNode){
     //----------------------------------------------------------------
 
 
-    //Create instance for MachineListOverview
-    this.machineListNode = document.getElementById("machineListOverview")
-    this.machineListNode.className = "machineListNode"
-    this.machineListOverview = new MachineListOverview(this.machineListNode)
-
-    //this.machineListOverview.setMachines()
+    //Create instance for BoxesListOverview
+    this.boxesListNode = document.getElementById("boxesListOverview")
+    this.boxesListNode.className = "boxesListNode"
+    this.boxesListOverview = new BoxesListOverview(this.boxesListNode)
+    this.boxesListOverview.setBoxes(widow.boxes)
 
     // Create instance for ExploitListOverview
     this.exploitListNode = document.getElementById("exploitListOverview")
