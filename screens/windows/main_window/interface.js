@@ -64,6 +64,15 @@ function getCurrentScenario(){
     return selectedScenario
 }
 
+function openScenarioByName(scenarioName){
+    var scenario = widow.scenarios.getScenarioByName(scenarioName)
+    if (scenario==null){
+        throw "Invalid scenario"
+    }
+    
+    openScenario(scenario)
+}
+
 /**
  * @function openScenario
  * @description Opens a scenario on a new tab

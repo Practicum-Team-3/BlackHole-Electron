@@ -11,7 +11,7 @@ body {
     padding-left:0px;
     padding-right:0px;
     overflow: hidden;
-    
+    background-color: black;
 }
 
 .global{
@@ -45,15 +45,25 @@ body {
 
 /* ======= Inside central view ======= */
 
-.overviewBar{
-    flex: 0 1 200px;
+.overviewsPanel{
+    flex: 1 0 250px;
+    max-width: 350px;
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
+    
+    display:flex;
+    flex-flow: column nowrap;
     /*resize: horizontal;*/
 }
+
+#overviewTabContent > div > div{
+    width: 100%;
+    height: 100%
+}
+
 .scenarioSpecificArea{
-    flex-grow: 1;
+    flex-grow: 3;
     height: 100%;
     
     display: flex;
@@ -62,17 +72,7 @@ body {
 
 /* ======= Inside scenario specific area ======= */
 
-.tabBar{
-    flex-grow: 0;
-    width: 100%;
-}
-/*  */
-.scenarioViews{
-    flex-grow: 1;
-    width: 100%;
-    overflow: hidden;
-    background-color: black;
-}
+
 /* single Central View (the view controlled by tabbing) */
 .scenarioView{
     
@@ -83,6 +83,9 @@ body {
 
 .networkGraphContainer{
     background-color: #1c2938;
+    flex-grow: 3;
+    overflow: hidden;
+    position: relative;
 }
 
 .machineInfoContainer{
@@ -107,4 +110,9 @@ body {
     font-size: 39pt;
     font-family: icons;
     text-align: center;
+}
+
+
+.programListNode{
+    
 }
