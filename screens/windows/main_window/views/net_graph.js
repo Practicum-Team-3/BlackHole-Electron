@@ -176,9 +176,8 @@ function NetGraph(scenario, parent){
         }
 
         this.svg = d3.select(this.parentNode).append("svg").attr("id", "graphSVG")
-
-        this.svg.attr("width", "100%");
-        this.svg.attr("height", "100%");
+        loco = this.svg
+        this.svg.attr("class", "netGraph");
 
         for(var i = 0; i<this.graphJSON.nodes.length; i++){
             this.graphJSON.nodes[i]["selected"] = "false";
@@ -619,16 +618,16 @@ function NetGraph(scenario, parent){
      */ 
     this.addFloatingFooterButtons = function(footerButtonsNamesAndHandlers){
         var buttonsContainer = document.createElement("div")
-        buttonsContainer.style = "position:absolute; bottom:20px; left:20px; z-index:1"
+        buttonsContainer.className = "netGraphToolbar"
         
         var keys = Object.keys(footerButtonsNamesAndHandlers)
     
         for(var i=0; i<keys.length; i++){
             var placeholderButton = document.createElement("button")
             placeholderButton.setAttribute("type", "button")
-            placeholderButton.className = String(keys[i]).split("_")[0] + "-button btn btn-" + String(keys[i]).split("_")[1]
+            placeholderButton.className = String(keys[i]).split("_")[0] + "-button btn btn-sm btn-" + String(keys[i]).split("_")[1]
             placeholderButton.innerHTML = String(keys[i]).split("_")[0]
-            placeholderButton.style = "margin:10px"
+            placeholderButton.style = "margin: 2px"
             placeholderButton.addEventListener("click", footerButtonsNamesAndHandlers[keys[i]])
             buttonsContainer.appendChild(placeholderButton)
         }

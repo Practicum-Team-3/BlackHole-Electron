@@ -1,8 +1,3 @@
-@font-face {
-    font-family: icons;
-    src: url(./icons/icons_solid.otf);
-}
-
 body {
     margin-top:0px;
     margin-bottom:0px;
@@ -11,7 +6,7 @@ body {
     padding-left:0px;
     padding-right:0px;
     overflow: hidden;
-    background-color: black;
+    background-color: #222724;
 }
 
 .global{
@@ -46,7 +41,7 @@ body {
 /* ======= Inside central view ======= */
 
 .overviewsPanel{
-    flex: 1 0 250px;
+    flex: 1 0 220px;
     max-width: 350px;
     height: 100%;
     overflow-x: hidden;
@@ -55,6 +50,11 @@ body {
     display:flex;
     flex-flow: column nowrap;
     /*resize: horizontal;*/
+    
+}
+
+.overviewSeparation{
+    border-right: 5px solid #222724;
 }
 
 #overviewTabContent > div > div{
@@ -63,7 +63,7 @@ body {
 }
 
 .scenarioSpecificArea{
-    flex-grow: 3;
+    flex-grow: 15;
     height: 100%;
     
     display: flex;
@@ -82,10 +82,26 @@ body {
 
 
 .networkGraphContainer{
-    background-color: #1c2938;
+    background-color: #222724;
     flex-grow: 3;
     overflow: hidden;
     position: relative;
+}
+
+.netGraph{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.netGraphToolbar{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    padding: 10px;
+    border-top: 1px solid #343a40;
 }
 
 .machineInfoContainer{
