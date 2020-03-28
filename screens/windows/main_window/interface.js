@@ -20,7 +20,6 @@ window.onload = function(){
     // Toast setup
     $('.toast').toast({delay: 2500});
     
-    
     //Save references to nodes of tab bar and scenario views
     tabBarNode = document.getElementById("tabBar")
     scenarioViewsNode = document.getElementById("scenarioViewsContainer")
@@ -64,6 +63,10 @@ function getCurrentScenario(){
     return selectedScenario
 }
 
+//======================
+// Open Scenarios
+//======================
+
 function openScenarioByName(scenarioName){
     var scenario = widow.scenarios.getScenarioByName(scenarioName)
     if (scenario==null){
@@ -88,6 +91,23 @@ function openScenario(scenario){
     var scenarioTabAndView = new ScenarioTabAndView(scenario, tabBar, scenarioViewsNode)
     scenarioTabAndViews[scenario.getName()] = scenarioTabAndView
 }
+
+//======================
+// Open Modal view
+//======================
+
+/**
+ * function openModal
+ * @description Opens a modal view with an address relative to main.js
+ * @param {string} address Address of page to load on the view
+ */
+function openModal(address){
+    electron.ipcRenderer.send("openModal", address)
+}
+
+//======================
+// Toast
+//======================
 
 /**
  * @function showToast

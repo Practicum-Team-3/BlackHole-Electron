@@ -1,6 +1,6 @@
 @font-face {
     font-family: icons;
-    src: url(../css/webfonts/fa-solid-900.ttf);
+    src: url(../css/webfonts/icons_solid.otf);
 }
 
 .iconArea{
@@ -8,6 +8,14 @@
     float: left;
     min-width: 24px;
     padding-right: 1px;
+}
+
+.floatingIconButton{
+    background-color: transparent;
+    border: none;
+    float: right;
+    font-family: icons;
+    padding: 0px;
 }
 
 /* BOOTSTRAP STYLE OVERRIDES */

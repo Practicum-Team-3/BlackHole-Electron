@@ -1,4 +1,4 @@
-var Modifiable = require('./modifiable.js').Modifiable
+var Modifiable = require('./core/modifiable.js').Modifiable
 
 /**
  * @class Machine

@@ -126,11 +126,12 @@ function NodeCombos(parentNode){
  * @function addCollapsibleGroup
  * @author Jose Guillen
  * @description Adds a collapsible group and selects it for all subsecuent created combos to be added inside
- * @param   {string} title        Title to give the collapsible group
- * @param   {string} iconLigature Optional: ligature of an icon to use on the group
- * @param   {string} dataParent   Optional: Parent of the group, only 1 group can be opened when under a parent
+ * @param   {string}  title        Title to give the collapsible group
+ * @param   {string}  iconLigature Optional: ligature of an icon to use on the group
+ * @param   {string}  dataParent   Optional: Parent of the group, only 1 group can be opened when under a parent
+ * @param   {boolean} willShow     Optional: Boolean for if group should be open by default
  */
-NodeCombos.prototype.addCollapsibleGroup = function(title, iconLigature, dataParent){
+NodeCombos.prototype.addCollapsibleGroup = function(title, iconLigature, dataParent, willShow){
     var groupId = generateUniqueId()
     
     //Make the title
@@ -140,7 +141,7 @@ NodeCombos.prototype.addCollapsibleGroup = function(title, iconLigature, dataPar
     link.setAttribute("data-toggle", "collapse")
     
     //Make a place for the content
-    var collapse = addNode(group, "div", "collapse")
+    var collapse = addNode(group, "div", "collapse"+(willShow?" show":""))
     collapse.setAttribute("id", groupId)
     if (dataParent!=null){
         collapse.setAttribute("data-parent", dataParent)
@@ -327,4 +328,17 @@ NodeCombos.prototype.addOverviewOptionsButtons = function(nameAndHandlerDictiona
     }
 
     this.currentNode = currentNode
+}
+
+/**
+ * @function addVerticalList
+ * @description Make a vertically stacked list with initial items
+ * @author Jose Guillen
+ * @param {string} listName  Name to give the list
+ * @param {string[]} listItems Array with item string labels
+ */
+NodeCombos.prototype.addVerticalList = function(listName, listItems){
+    var listNode = addListGroupNode(this.currentNode, "list-group pl-4 pr-4", "list-group-item", listItems)
+    
+    this.addReferenceAndListenerToNode(listName, listNode)
 }

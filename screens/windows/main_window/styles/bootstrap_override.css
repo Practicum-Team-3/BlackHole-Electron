@@ -1,12 +1,20 @@
+/* */
+.navbar {
+    padding: 0 0.5rem;
+}
+
+
 /* Override to custom style tabs */
 .nav-tabs{
-    border-bottom: 1px solid #616c77;
+    border-bottom: 0px solid #616c77;
 }
 
 .nav-tabs .nav-link {
     border-top-left-radius: 0.4rem;
     border-top-right-radius: 0.4rem;
     color: white;
+    
+    border: 2px solid #343a40;
     background-color: #454d55;
 }
 
@@ -25,6 +33,10 @@
 
 /* More color options */
 
+.bg-darker{
+    background-color: #222724 !important
+}
+
 /* Needed to overwrite active tab contents to be able to use flex */
 .tab-content > .active{
     display: flex;
@@ -40,3 +52,12 @@
     right: 10px;
 }
 
+/* Buttons */
+.btn-sharp{
+    border-radius: 0;
+}
+
+/* List */
+.list-group-item {
+    padding: 0.40rem 1rem;
+}

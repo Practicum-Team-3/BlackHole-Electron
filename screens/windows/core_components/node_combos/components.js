@@ -115,6 +115,7 @@ function addInputNode(node, className, type, value){
 function addButtonNode(node, className, onClick, innerHTML){
     var buttonNode = document.createElement("button")
     buttonNode.className = className
+    buttonNode.type = "button"
     if (onClick!=null){
         buttonNode.onclick = onClick
     }
@@ -123,6 +124,10 @@ function addButtonNode(node, className, onClick, innerHTML){
     }
     node.appendChild(buttonNode)
     return buttonNode
+}
+
+function addFloatingButtonNode(node, onClick, icon){
+    addButtonNode(node, "floatingIconButton", onClick, icon)
 }
 
 /**
@@ -172,3 +177,40 @@ function addCheckboxNode(node, className, labelText){
     node.appendChild(checkboxLabelNode)
     return checkboxNode
 }
+
+/**
+ * @function addListGroup
+ * @todo Add option for floating button
+ * @param   {object}   node          Node to add the list to
+ * @param   {string}   className     Style classes to give the ul
+ * @param   {string}   itemClassName Style classes to give the list items
+ * @param   {string[]} itemList      Array with the contents of the list items
+ * @returns {object}   The list node that was added
+ */
+function addListGroupNode(node, className, itemClassName, itemList){
+    var listNode = document.createElement("ul")
+    listNode.className = className
+    
+    itemList.forEach(function(item){
+        var itemNode = addItemToList(listNode, itemClassName, item)
+        //addFloatingButtonNode(itemNode, null, "cog")
+    })
+    
+    node.appendChild(listNode)
+    return listNode
+    
+}
+
+/**
+ * @function addItemToList
+ * @description Adds an item node to a list node
+ * @param   {object} listNode  List node to add the item to
+ * @param   {string} className Style classes to give the li item
+ * @param   {string} innerHTML HTML to place inside the item
+ * @returns {object} The item node that was added
+ */
+function addItemToList(listNode, className, innerHTML){
+    return addNode(listNode, "li", className, innerHTML)
+    
+}
+

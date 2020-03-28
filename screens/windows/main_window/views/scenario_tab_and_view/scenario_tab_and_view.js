@@ -53,7 +53,6 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         //Make machine info===
         var machineInfoNode = document.createElement("div")
         machineInfoNode.className = "machineInfoContainer"
-        machineInfoNode.setAttribute("style", "flex: 0 0 300px")
         //create referencer object and save
         machineInfo = new MachineInfo(machineInfoNode)
         

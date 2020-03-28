@@ -36,3 +36,9 @@ module.exports.machineDescriptor = '{\
     },\
     "gui": false\
 }'
+
+module.exports.programDescriptor = '{\
+    "os": "windows",\
+    "name": "default",\
+    "is_exploit": false\
+}'
