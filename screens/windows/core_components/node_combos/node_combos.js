@@ -329,3 +329,16 @@ NodeCombos.prototype.addOverviewOptionsButtons = function(nameAndHandlerDictiona
 
     this.currentNode = currentNode
 }
+
+/**
+ * @function addVerticalList
+ * @description Make a vertically stacked list with initial items
+ * @author Jose Guillen
+ * @param {string} listName  Name to give the list
+ * @param {string[]} listItems Array with item string labels
+ */
+NodeCombos.prototype.addVerticalList = function(listName, listItems){
+    var listNode = addListGroupNode(this.currentNode, "list-group pl-4 pr-4", "list-group-item", listItems)
+    
+    this.addReferenceAndListenerToNode(listName, listNode)
+}

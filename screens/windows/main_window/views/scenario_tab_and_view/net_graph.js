@@ -176,7 +176,7 @@ function NetGraph(scenario, parent){
         }
 
         this.svg = d3.select(this.parentNode).append("svg").attr("id", "graphSVG")
-        loco = this.svg
+        
         this.svg.attr("class", "netGraph");
 
         for(var i = 0; i<this.graphJSON.nodes.length; i++){

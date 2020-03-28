@@ -10,10 +10,46 @@ function MachineInfo(machineInfoNode){
     
     // Create a form to put all of the components in
     var formNode = document.createElement("form")
-    formNode.setAttribute("onSubmit", "return false")
+    formNode.setAttribute("onSubmit", "event.preventDefault(); return false")
     
     // Create a NodeCombos instance to add prepackaged components and keep a reference to them
     var interface = new NodeCombos(formNode)
+    
+    
+    this.getInterface = function(){
+        return interface
+    }
+    
+    this.getNode = function(nodeName){
+        return this.getInterface().getNodes()[nodeName]
+    }
+    
+    /**
+     * @function update
+     * @private
+     * @description Fill panel with current machine info
+     */
+    this.update = function(){
+        if (this.machine==null){
+            return
+        }
+        var machine = this.machine
+        this.getNode("name").innerHTML = machine.getName()
+        this.getNode("os").innerHTML = machine.getOs()
+        this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
+        this.getNode("machineGui").innerHTML = machine.getGui()
+        this.getNode("networkValue").value = ""
+    }
+
+    /**
+     * @function onchange
+     * @description Intended for use as a callback for whenever a node combo gets edited
+     * @param {string} nodeName Name of the node element that got edited
+     * @param {object} node     Reference to node that got edited
+     */
+    this.onchange = function(nodeName, node){
+        console.log(nodeName)
+    }
     
     addInterfaceNodes()
     
@@ -65,23 +101,17 @@ function MachineInfo(machineInfoNode){
         interface.addLabelAndSelect(null, "Program:", "program", [""])
         interface.addLabelAndInput(null, "Path:", "path", "")
         interface.addLabelAndInput(null, "Start Time:", "startTime", "12")
+        
+        //interface.addVerticalList(null, ["sh*t", "rox"])
 
         machineInfoNode.appendChild(formNode)
-    }
-    
-    this.getInterface = function(){
-        return interface
-    }
-    
-    this.getNode = function(nodeName){
-        return this.getInterface().getNodes()[nodeName]
     }
 }
 
 
 /**
  * @function setMachine
- * @description Take the information of a machine and fill the machine info section with it
+ * @description Assign a machine to the info panel for editing
  * @param {Machine} machine Machine object to use
  */
 MachineInfo.prototype.setMachine = function(machine){
@@ -101,20 +131,4 @@ MachineInfo.prototype.clear = function(){
     }
     this.machine.removeOnModifiedListener(this.update)
     this.machine = null
-}
-
-MachineInfo.prototype.update = function(){
-    if (this.machine==null){
-        return
-    }
-    var machine = this.machine
-    this.getNode("name").innerHTML = machine.getName()
-    this.getNode("os").innerHTML = machine.getOs()
-    this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
-    this.getNode("machineGui").innerHTML = machine.getGui()
-    this.getNode("networkValue").value = ""
-}
-
-MachineInfo.prototype.onchange = function(nodeName, node){
-    console.log(nodeName)
 }

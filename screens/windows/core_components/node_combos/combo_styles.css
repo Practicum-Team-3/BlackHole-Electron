@@ -10,6 +10,14 @@
     padding-right: 1px;
 }
 
+.floatingIconButton{
+    background-color: transparent;
+    border: none;
+    float: right;
+    font-family: icons;
+    padding: 0px;
+}
+
 /* BOOTSTRAP STYLE OVERRIDES */
 /* Card */
 .card {

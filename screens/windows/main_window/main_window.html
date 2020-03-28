@@ -25,14 +25,15 @@
         <script src="../core_components/node_combos/utilities.js"></script>
         <script src="../core_components/node_combos/components.js"></script>
         <script src="../core_components/node_combos/node_combos.js"></script>
-        <!-- views -->
-        <script src="./views/net_graph.js"></script>
-        <script src="./views/machine_info.js"></script>
-        <script src="./views/scenario_tab_and_view.js"></script>
-        <script src="./views/overviews_panel.js"></script>
-        <script src="./views/boxeslist_overview.js"></script>
-        <script src="./views/exploitlist_overview.js"></script>
-        <script src="./views/programlist_overview.js"></script>
+        <!-- Scenario tab and view -->
+        <script src="./views/scenario_tab_and_view/scenario_tab_and_view.js"></script>
+        <script src="./views/scenario_tab_and_view/net_graph.js"></script>
+        <script src="./views/scenario_tab_and_view/machine_info.js"></script>
+        <!-- Overviews -->
+        <script src="./views/overviews_panel/overviews_panel.js"></script>
+        <script src="./views/overviews_panel/boxeslist_overview.js"></script>
+        <script src="./views/overviews_panel/exploitlist_overview.js"></script>
+        <script src="./views/overviews_panel/programlist_overview.js"></script>
         
         <link rel="stylesheet" href="./styles/bootstrap_override.css">
         <link rel="stylesheet" href="./styles/main_style.css">
@@ -79,21 +80,21 @@
                         <!-- === Tabs of the overviews panel === -->
                         <ul class="tabBar nav nav-tabs pt-2 iconArea" id="myTab" role="tablist">
                             <li class="nav-item">
-                            <a class="nav-link active" id="panel-1-tab" data-toggle="tab" href="#panel-1" role="tab" aria-controls="panel-1"
-                                aria-selected="true">server</a>
+                                <a class="nav-link active" id="panel-1-tab" data-toggle="tab" href="#panel-1" role="tab" aria-controls="panel-1"
+                                aria-selected="true" title="Machines">server</a>
                             </li>
                             <li class="nav-item">
-                            <a class="nav-link" id="panel-2-tab" data-toggle="tab" href="#panel-2" role="tab" aria-controls="panel-2"
-                                aria-selected="false">theater-masks</a>
+                                <a class="nav-link" id="panel-2-tab" data-toggle="tab" href="#panel-2" role="tab" aria-controls="panel-2"
+                                aria-selected="false" title="Scenarios">theater-masks</a>
                             </li>
                             <li class="nav-item">
-                            <a class="nav-link" id="panel-3-tab" data-toggle="tab" href="#panel-3" role="tab" aria-controls="contact"
-                                aria-selected="false">bomb</a>
+                                <a class="nav-link" id="panel-3-tab" data-toggle="tab" href="#panel-3" role="tab" aria-controls="contact"
+                                aria-selected="false" title="Exploits">bomb</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="panel-4-tab" data-toggle="tab" href="#panel-4" role="tab" aria-controls="contact"
-                                    aria-selected="false">window-restore</a>
-                                </li>
+                                    aria-selected="false" title="Programs">window-restore</a>
+                            </li>
                         </ul>
 
                         <!-- === Content of the overviews panel === -->

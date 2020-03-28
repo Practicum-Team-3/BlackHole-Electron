@@ -35,20 +35,41 @@ ipcMain.on('primaryLoad', (event, arg) => {
 
 function createWindow () {
   // Create the browser window.
-  let win = new BrowserWindow({
-    width: 1200,
-    height: 700,
-    minWidth: 600,
-    minHeight: 300,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  })
-
-  // and load the index.html of the app.
-  win.loadFile('../screens/windows/welcome_window/welcome_window.html')
+    mainWindow = new BrowserWindow({
+        width: 1200,
+        height: 700,
+        minWidth: 600,
+        minHeight: 300,
+        webPreferences: {
+            nodeIntegration: true
+        }
+    })
+    
+    // and load the index.html of the app.
+    mainWindow.loadFile('../screens/windows/welcome_window/welcome_window.html')
 }
 
+
+ipcMain.on('openModal', (event, address) => {
+    createModal(mainWindow, address)
+})
+
+function createModal(parent, address){
+    // Create the browser window.
+    var modal = new BrowserWindow({
+        parent: parent,
+        modal: true,
+        show: false,
+        webPreferences: {
+            nodeIntegration: true
+        }
+    })
+    
+    modal.loadFile(address)
+    modal.once('ready-to-show', () => {
+        modal.show()
+    })
+}
 
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar

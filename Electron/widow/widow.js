@@ -29,7 +29,7 @@ function Widow(){
  */
 Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
     this.widowSettings.setAddress(address)
-    
+    syncUpdate(10)
     return this.scenarios.loadScenarios()
     .then(function(){
         syncUpdate(20)

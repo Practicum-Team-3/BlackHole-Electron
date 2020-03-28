@@ -105,10 +105,10 @@ body {
 }
 
 .machineInfoContainer{
-    font-weight: bold;
     overflow-y: auto;
     overflow-x: hidden;
     background-color: white;
+    width: 300px;
 }
 
 /* Form elements */
