@@ -12,7 +12,11 @@ function OverviewsPanel(overviewsPanelNode){
     // this.overviewsPanelNode.appendChild(this.overviewsPanelTabsBar)
     //#ffc107
     //----------------------------------------------------------------
-
+    //Create instance for ScenariosListOverview
+    this.scenariosListNode = document.getElementById("scenarioListOverview")
+    this.scenariosListNode.className = "scenariosListNode"
+    this.scenariosListOverview = new ScenariosListOverview(this.scenariosListNode)
+    this.scenariosListOverview.setScenarios(widow.scenarios)
 
     //Create instance for BoxesListOverview
     this.boxesListNode = document.getElementById("boxesListOverview")
