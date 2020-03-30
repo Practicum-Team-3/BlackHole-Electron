@@ -66,7 +66,7 @@ function BoxesListOverview(boxesListNode){
         boxName = boxName.replace(/\//gi, '-').split(".").join("-")
 
         // showToast("Include Node", "Implemented but disabled")
-        netGraph.addNewNode(boxName, "victim")
+        netGraphs[getActiveScenarioTab().getScenario().getName()].addNewNode(boxName, "victim")
     }
 }
 

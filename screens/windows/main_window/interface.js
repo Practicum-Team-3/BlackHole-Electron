@@ -4,7 +4,7 @@ var idList = new Set()
 var overviewsPanel = null
 // To store references to central views indexed by scenario name
 var scenarioTabAndViews = {}
-var netGraph = 0
+var netGraphs = {}
 
 try{
     window.$ = window.jQuery = require("../../../Electron/node_modules/jquery/dist/jquery")
@@ -97,12 +97,13 @@ function openScenario(scenario){
 //======================
 
 /**
- * function openModal
- * @description Opens a modal view with an address relative to main.js
+ * function openWindow
+ * @description Opens a new window with an address relative to main.js
  * @param {string} address Address of page to load on the view
+ * @param {boolean} modal Boolean for if to make the window modal
  */
-function openModal(address){
-    electron.ipcRenderer.send("openModal", address)
+function openWindow(address, width, height, modal){
+    electron.ipcRenderer.send("openChildWindow", address, width, height, modal)
 }
 
 //======================
@@ -153,3 +154,12 @@ function saveScenario(){
     })
 }
 
+
+/**
+ * @function getActiveScenarioTab
+ * @description Returns the ScenarioTabAndView which is in focus.
+ * 
+ */
+function getActiveScenarioTab(){
+    return activeTabAndView
+}
