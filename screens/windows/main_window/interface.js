@@ -4,7 +4,7 @@ var idList = new Set()
 var overviewsPanel = null
 // To store references to central views indexed by scenario name
 var scenarioTabAndViews = {}
-var netGraph = 0
+var netGraphs = {}
 
 try{
     window.$ = window.jQuery = require("../../../Electron/node_modules/jquery/dist/jquery")
@@ -154,3 +154,12 @@ function saveScenario(){
     })
 }
 
+
+/**
+ * @function getActiveScenarioTab
+ * @description Returns the ScenarioTabAndView which is in focus.
+ * 
+ */
+function getActiveScenarioTab(){
+    return activeTabAndView
+}

@@ -38,7 +38,8 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         netGraphNode.className = "networkGraphContainer"
 
         //temporary solution while i figure out how to put d3 in global
-        netGraph = new NetGraph(scenario, netGraphNode)
+        netGraphs[scenario.getName()] = new NetGraph(scenario, netGraphNode)
+        var netGraph = netGraphs[scenario.getName()]
         netGraph.startGraph()
         var footerButtons = {"Restart All_success":function(){showToast("Restart All Machines", "Not Implemented")}, "Shutdown All_danger":function(){showToast("Shutdown All Machines", "Not Implemented")}, "Pause/Resume All_success":function(){showToast("Pause/Resume All Machines", "Not Implemented")}}
         netGraph.addFloatingFooterButtons(footerButtons)
