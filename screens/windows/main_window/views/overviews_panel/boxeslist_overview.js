@@ -65,8 +65,8 @@ function BoxesListOverview(boxesListNode){
         var boxName = this.boxesObject.getBoxesList()[i]
         boxName = boxName.replace(/\//gi, '-').split(".").join("-")
 
-        showToast("Include Node", "Implemented but disabled")
-        // netGraph.addNewNode(boxName, "victim")
+        // showToast("Include Node", "Implemented but disabled")
+        netGraph.addNewNode(boxName, "victim")
     }
 }
 
