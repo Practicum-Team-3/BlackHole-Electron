@@ -16,6 +16,16 @@
     float: right;
     font-family: icons;
     padding: 0px;
+    outline: none;
+    color: #007bff;
+}
+
+.floatingIconButton:focus{
+    outline: none;
+}
+
+.floatingIconButton:hover{
+    color: #0056b3;
 }
 
 /* BOOTSTRAP STYLE OVERRIDES */
@@ -38,4 +48,9 @@
 /* Grid */
 .col{
     margin-bottom: 0px;
+}
+
+/* List */
+.list-group-item-action{
+    cursor: pointer;
 }

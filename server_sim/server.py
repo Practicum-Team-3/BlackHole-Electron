@@ -101,7 +101,7 @@ def getScenario(scenario_name):
 def editScenario(scenario_name):
     return "cox"#jsonify(scenario_manager.editScenario(scenario_name ,  request.get_json()))
 
-@app.route('/scenarios/new/<scenario_name>')
+@app.route('/scenarios/newEmpty/<scenario_name>')
 def createScenario(scenario_name):
     return "cox"
 
@@ -118,6 +118,27 @@ def getAvailableBoxes():
 @app.route('/vagrantFiles/<scenario_name>/all')
 def createVagrantFiles(scenario_name):
     return "cox"#jsonify(vagrant_manager.createVagrantFiles(scenario_name))
+        
+@app.route('/vagrant/<scenario_name>/run')
+def runVagrantUp(scenario_name):
+  """
+  Executes the vagrant up command for each machine in the scenario
+  :param scenario_name: String with the scenario name
+  :return: True if the vagrant up commands were successfully executed
+  """
+  return "kops"
+
+@app.route('/vagrant/<scenario_name>/ping/<source>/<destination>')
+def testPing(scenario_name, source, destination):
+  """
+  Tests network connectivity between two virtual machines
+  :param scenario_name: String with the scenario name
+  :param source: Source virtual machine
+  :param destination: Destination virtual machine
+  :return:
+  """
+  return "???"
+
 
 if __name__=="__main__":
     app.run()

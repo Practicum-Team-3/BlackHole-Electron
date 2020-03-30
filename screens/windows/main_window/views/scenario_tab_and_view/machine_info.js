@@ -102,7 +102,7 @@ function MachineInfo(machineInfoNode){
         interface.addLabelAndInput(null, "Path:", "path", "")
         interface.addLabelAndInput(null, "Start Time:", "startTime", "12")
         
-        //interface.addVerticalList(null, ["sh*t", "rox"])
+        //interface.addVerticalList(null, ["sh", "rox"], function(event){console.log(event)}, function(event){event.stopPropagation()}, "cog")
 
         machineInfoNode.appendChild(formNode)
     }
