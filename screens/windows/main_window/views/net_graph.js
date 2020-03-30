@@ -775,13 +775,10 @@ function NetGraph(scenario, parent){
         toggleConnectButton.setAttribute("type", "button")
         toggleConnectButton.className = "toggleConnectButton button btn btn-light"
         toggleConnectButton.id = "toggleConnectButton"
-<<<<<<< Updated upstream:screens/windows/main_window/views/net_graph.js
-        toggleConnectButton.innerHTML = "Linking Off"
+
+        toggleConnectButton.innerHTML = "Manual Linking Off"
         toggleConnectButton.style = "position:absolute; top: 150px; left:315px; z-index:1"
-=======
-        toggleConnectButton.innerHTML = "Manual Linking: Off"
-        toggleConnectButton.style = "position:absolute; top: 20px; left:20px; z-index:1"
->>>>>>> Stashed changes:screens/windows/main_window/views/scenario_tab_and_view/net_graph.js
+
         toggleConnectButton.addEventListener("click", function(){showToast("Toggle link Creation", "Implemented but disabled")})
         // toggleConnectButton.addEventListener("click", this.toggleConnect.bind(this))
         this.parentNode.appendChild(toggleConnectButton)
