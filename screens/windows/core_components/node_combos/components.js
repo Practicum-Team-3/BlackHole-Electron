@@ -181,19 +181,22 @@ function addCheckboxNode(node, className, labelText){
 /**
  * @function addListGroup
  * @todo Add option for floating button
- * @param   {object}   node          Node to add the list to
- * @param   {string}   className     Style classes to give the ul
- * @param   {string}   itemClassName Style classes to give the list items
- * @param   {string[]} itemList      Array with the contents of the list items
+ * @param   {object}   node                 Node to add the list to
+ * @param   {string}   className            Style classes to give the ul
+ * @param   {string}   itemClassName        Style classes to give the list items
+ * @param   {string[]} itemList             Array with the contents of the list items
+ * @param {function} itemAction           Optional: Function called when the item gets clicked
+ * @param {function} detailAction         Optional: Function called with the detail icon gets clicked
+ * @param {string}   detailActionLigature Optional: Ligature for the detail icon
  * @returns {object}   The list node that was added
  */
-function addListGroupNode(node, className, itemClassName, itemList){
+function addListGroupNode(node, className, itemClassName, itemList, itemAction, detailAction, detailActionLigature){
     var listNode = document.createElement("ul")
     listNode.className = className
     
     itemList.forEach(function(item){
-        var itemNode = addItemToList(listNode, itemClassName, item)
-        //addFloatingButtonNode(itemNode, null, "cog")
+        var itemNode = addItemToList(listNode, itemClassName, item, itemAction, detailAction, detailActionLigature)
+        
     })
     
     node.appendChild(listNode)
@@ -207,10 +210,21 @@ function addListGroupNode(node, className, itemClassName, itemList){
  * @param   {object} listNode  List node to add the item to
  * @param   {string} className Style classes to give the li item
  * @param   {string} innerHTML HTML to place inside the item
+ * @param {function} itemAction Optional: Function called when the item gets clicked
+ * @param {function} detailAction Optional: Function called with the detail icon gets clicked
+ * @param {string} detailActionLigature Optional: Ligature for the detail icon
  * @returns {object} The item node that was added
  */
-function addItemToList(listNode, className, innerHTML){
-    return addNode(listNode, "li", className, innerHTML)
+function addItemToList(listNode, className, innerHTML, itemAction, detailAction, detailActionLigature){
+    var itemNode = addNode(listNode, "li", className, innerHTML)
     
+    if (itemAction!=null){
+        itemNode.onclick = itemAction
+    }
+    if (detailAction!=null){
+        addFloatingButtonNode(itemNode, detailAction, detailActionLigature)
+    }
+    
+    return itemNode
 }
 

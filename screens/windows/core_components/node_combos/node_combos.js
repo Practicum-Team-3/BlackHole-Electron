@@ -336,9 +336,16 @@ NodeCombos.prototype.addOverviewOptionsButtons = function(nameAndHandlerDictiona
  * @author Jose Guillen
  * @param {string} listName  Name to give the list
  * @param {string[]} listItems Array with item string labels
+ * @param {function} itemAction Optional: Pointer to a function to be called when the item is clicked
+ * @param {function} detailAction Optional: Pointer to a function to be called when the item detail is clicked.
+ *                                When the detail gets clicked, the itemAction will also get called;
+ *                                call event.stopPropagation() in detailAction to prevent
+ * @param {string} detailActionLigature Optional: String with the ligature of the icon to use for the item details
  */
-NodeCombos.prototype.addVerticalList = function(listName, listItems){
-    var listNode = addListGroupNode(this.currentNode, "list-group pl-4 pr-4", "list-group-item", listItems)
+NodeCombos.prototype.addVerticalList = function(listName, listItems, itemAction, detailAction, detailActionLigature){
+    var itemClassName = itemAction==null ? "list-group-item" : "list-group-item list-group-item-action"
+    
+    var listNode = addListGroupNode(this.currentNode, "list-group pl-4 pr-4", itemClassName, listItems, itemAction, detailAction, detailActionLigature)
     
     this.addReferenceAndListenerToNode(listName, listNode)
 }

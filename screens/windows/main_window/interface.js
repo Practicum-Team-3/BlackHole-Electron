@@ -97,12 +97,13 @@ function openScenario(scenario){
 //======================
 
 /**
- * function openModal
- * @description Opens a modal view with an address relative to main.js
+ * function openWindow
+ * @description Opens a new window with an address relative to main.js
  * @param {string} address Address of page to load on the view
+ * @param {boolean} modal Boolean for if to make the window modal
  */
-function openModal(address){
-    electron.ipcRenderer.send("openModal", address)
+function openWindow(address, width, height, modal){
+    electron.ipcRenderer.send("openChildWindow", address, width, height, modal)
 }
 
 //======================

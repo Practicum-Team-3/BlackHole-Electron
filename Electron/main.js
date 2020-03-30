@@ -50,15 +50,17 @@ function createWindow () {
 }
 
 
-ipcMain.on('openModal', (event, address) => {
-    createModal(mainWindow, address)
+ipcMain.on('openChildWindow', (event, address, width, height, modal) => {
+    createChildWindow(mainWindow, address, modal)
 })
 
-function createModal(parent, address){
+function createChildWindow(parent, address, width, height, modal){
     // Create the browser window.
     var modal = new BrowserWindow({
+        width: width,
+        height: height,
         parent: parent,
-        modal: true,
+        modal: modal,
         show: false,
         webPreferences: {
             nodeIntegration: true

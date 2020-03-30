@@ -1,6 +1,6 @@
 /**
  * @class Scenarios
- * @version 2.0.0
+ * @version 2.0.1
  * @description Manager of scenarios.
  *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
@@ -190,17 +190,34 @@ Scenarios.prototype.completeScenarioCreation = function(){
  * @function removeScenarioByName
  * @description Remove a scenario from the list of scenarios in widow
  * @memberof Scenarios
- * @todo Implement back-end deletion when Widow supports it
- *
  * @param {string} scenarioName - Name of the scenario to remove
  * @return {Scenario} The instance of the removed scenario
  */
 Scenarios.prototype.removeScenarioByName = function(scenarioName){
-    if (this.nameList.includes(scenarioName)){
-        this.nameList.pop(scenarioName)
-        delete this.loaded[scenarioName]
-        //TODO implement remote deletion
+    //Guard
+    if (!this.nameList.includes(scenarioName)){
+        return
     }
+    
+    return new Promise(function(resolve, reject){
+
+        var axios = require('axios')
+
+        axios.get(this.getAddress()+"/scenarios/delete/"+scenarioName)
+        .then(function (response) {
+            // Can delete locally
+            this.nameList.pop(scenarioName)
+            delete this.loaded[scenarioName]
+            resolve()
+
+        }.bind(this)).catch(function (error) {
+            // handle error
+            console.log(error);
+            reject()
+
+        })
+    }.bind(this))
+    
 }
 
 //========================
@@ -276,7 +293,7 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
         if (!this.nameList.includes(scenarioName)){
             var axios = require('axios')
             
-            axios.get(this.getAddress()+"/scenarios/new/"+encodeURIComponent(scenarioName))
+            axios.get(this.getAddress()+"/scenarios/newEmpty/"+encodeURIComponent(scenarioName))
             .then(function (response) {
                 // Add to the loaded dictionary
                 resolve()

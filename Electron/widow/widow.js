@@ -16,8 +16,10 @@ function Widow(){
     // Make child objects and pass a reference to this.widowSettings
     var Scenarios = require('./scenarios.js').Scenarios
     var Boxes = require('./boxes.js').Boxes
+    var Programs = require('./programs.js').Programs
     this.scenarios = new Scenarios(this.widowSettings)
     this.boxes = new Boxes(this.widowSettings)
+    this.programs = new Programs(this.widowSettings)
 }
 
 /**
@@ -40,15 +42,17 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
     .then(function(){
         syncUpdate(50)
         //Load available boxes
-        return this.boxes.loadBoxes()
+        return this.boxes.load()
         
     }.bind(this))
 //    .then(function(){
-//        //Set flag
-//        this.scenarios.hasDoneInitialLoad = true
-//        console.log("Primary load finished")
+//        syncUpdate(70)
+//        //Load available programs
+//        return this.programs.load()
 //        
 //    }.bind(this))
+    
+    
     function syncUpdate(progress){
         try{
             syncUpdateCallback(progress)
