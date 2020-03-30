@@ -124,8 +124,7 @@ ScenariosListOverview.prototype.update = function(){
         this.interface.addLabelPair(null, "No. Machines:", "scenarioNoMachines", scenariosArray[i].getAllMachines().length)
         this.interface.addLabelPair(null, "Status:", "scenarioStatus", "Running")
         var strScenarioName = scenariosArray[i].getName();
-        //this.interface.addDeleteAndIncludeButtons(null, function () { showToast("DeleteOnServer", "Not implemented") }, null, this.includeClicked.bind(this, i))
-        this.interface.addEditDeleteButtons(null, function () { openScenarioByName(strScenarioName) }, null, function () { showToast("DeleteScenarioOnServer", "Delete Scenario was clicked") })
+        this.interface.addEditDeleteButtons(null, openScenarioByName.bind(event, strScenarioName), null, function () { showToast("DeleteScenarioOnServer", "Delete Scenario was clicked") })
         this.interface.selectNode(this.interface.getNodes()["scenariosListCollapsiblesForm"])
     }
 }
