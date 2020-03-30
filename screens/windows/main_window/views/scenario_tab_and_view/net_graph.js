@@ -26,6 +26,8 @@ function NetGraph(scenario, parent){
     this.selectedJSON = 0;
     this.graphJSON = 0;
 
+    this.groupingsByNetMask = {}
+
     // use for machine info panel
     this.onSelectedNodeChangedCallback = 0
 
@@ -60,6 +62,8 @@ function NetGraph(scenario, parent){
      */
     this.getGraphJSONFromScenario = function(scenarioObject){
 
+        this.groupingsByNetMask = {}
+
         var machines = scenarioObject.getAllMachines()
 
         //check that machines have unique names
@@ -80,30 +84,36 @@ function NetGraph(scenario, parent){
         //create nodes
         var nameIndex = {}
         for(var i = 0; i<machines.length; i++){
-            var machinePlaceholder = {"name":machines[i].getName(), "type": machines[i].getIsAttacker() ? "attacker" : "victim", "x": 442, "y": 365}
+            var machinePlaceholder = {
+                "name":machines[i].getName(), 
+                "type": machines[i].getIsAttacker() ? "attacker" : "victim", 
+                "x": 442, 
+                "y": 365,
+                "ip":machines[i].networkSettings.getIpAddress()
+            }
             JSONObj["nodes"].push(machinePlaceholder)
             nameIndex[machines[i].getName()] = i
         }
 
-        //This implementation is net mask /24 hardcoded, in future must support any netmasks 
-        var groupings = {}
+        //This implementation is net mask /24 hardcoded, in future must support any netmasks.
+        this.groupingsByNetMask = {}
         for(var i = 0; i<machines.length; i++){
             var ip = machines[i].networkSettings.getIpAddress().split(".")
             var netMask24 = ip[0] + "." + ip[1] + "." + ip[2]
-            groupings[netMask24] = []
+            this.groupingsByNetMask[netMask24] = []
         }
 
         for(var i = 0; i<machines.length; i++){
             var ip = machines[i].networkSettings.getIpAddress().split(".")
             var netMask24 = ip[0] + "." + ip[1] + "." + ip[2]
-            groupings[netMask24].push(machines[i])
+            this.groupingsByNetMask[netMask24].push(machines[i])
         }
 
-        //horrendous, but document.getElementById doesnt work
+        //horrendous, but is because 'document.getElementById()' doesnt work
         var pairings = []
-        var netMasks = Object.keys(groupings)
+        var netMasks = Object.keys(this.groupingsByNetMask)
         for(var i = 0; i<netMasks.length; i++){
-            var netMachines = groupings[netMasks[i]]
+            var netMachines = this.groupingsByNetMask[netMasks[i]]
             for(var j = 0; j<netMachines.length; j++){
                 for(var k = 0; k<netMachines.length; k++){
                     if(j != k){
@@ -127,21 +137,82 @@ function NetGraph(scenario, parent){
     this.graphJSONString = JSON.stringify(this.getGraphJSONFromScenario(this.scenario));
 
     /**
-     * @function getScenarioObjectFromJSONGraph
-     * @description Takes a graph encoded as JSON and returns a Scenario object.
+     * @function updateScenarioFromJSONGraph
+     * @description Takes a graph encoded as JSON and updates the scenario object.
      * @param {JSON} graphJSON JSON object to use.
      */
-    this.getScenarioObjectFromJSONGraph = function(graphJSON){
+    this.updateScenarioFromJSONGraph = function(graphJSON){
 
         //TODO populate scenario maintaining the IP Addresses and netmasks of existing machines
         //and correctly generate new IP addresses for new nodes based on linkage. 
-
-
         //this function must be called whenever a node is added or a link is deleted/created
-
-
+        var machine = 0
+        for(var i = 0; i<this.graphJSON["nodes"].length; i++){
+            machine = this.scenario.getMachineByName(this.graphJSON["nodes"][i]["name"])
+            if(machine != undefined && machine != null){
+                machine.setName(this.graphJSON["nodes"][i]["name"])
+                machine.setIsAttacker(this.graphJSON["nodes"][i]["type"] == "attacker" ? true : false)
+                machine.networkSettings.setIpAddress(this.graphJSON["nodes"][i]["ip"])
+            }else{
+                machine = this.scenario.createNewMachine(this.graphJSON["nodes"][i]["name"])
+                machine.setIsAttacker(this.graphJSON["nodes"][i]["type"] == "attacker" ? true : false)
+                machine.networkSettings.setIpAddress(this.graphJSON["nodes"][i]["ip"])
+            }
+        }
     }
 
+
+    /**
+     * @function getAvailableIpByNetMask
+     * @description Returns an available slot within the ip netmask, based on the current groupings. returns "" if no addresses are available.
+     * @param {String} netMask Network section of the ip address, to be compared against existing netmask groupings.
+     */
+    this.getAvailableIpByNetMask = function(netMask){
+        var ip = netMask
+        var octets = netMask.split(".")
+        if(this.groupingsByNetMask[netMask] != undefined && this.groupingsByNetMask[netMask] != null){
+            var nodesInNet = this.groupingsByNetMask[netMask]
+            ip = this.getNextAvailableIP(netMask, nodesInNet, 4 - octets.length)
+        }else{
+            
+            if(octets.length > 0 && octets.length < 4){
+                for(var i = octets.length; i<4; i++){
+                   ip += "." + 1 
+                   
+                }
+            }else{
+                return ""
+            }
+        }
+        return ip
+    }
+
+    this.getNextAvailableIP = function(netMask, addressList, slots){
+        
+        
+        var counters = []
+        for(var i = 0; i<slots;i++){
+            counters.push(1)
+        }
+        var i = counters.length - 1
+        
+        while(i > -1){
+            
+            if(addressList.indexOf(netMask + "." + counters.join(".")) < 0){
+                return netMask + "." + counters.join(".")
+            }else{
+                console.log(netMask + "." + counters.join("."))
+                counters[i] += 1
+                counters[i] %= 256
+                if(counters[i] == 0){
+                    i = i - 1
+                }else{
+                    i = counters.length - 1
+                }
+            }
+        }
+        return ""
+    }
 
     /**
      * @function setConnectionDeleteOnClick
@@ -293,7 +364,7 @@ function NetGraph(scenario, parent){
                 return this.attackerColor;
             }
         }
-        // console.log(d.fixed)
+        
         if(d.fixed){
             return this.victimColorFixed;
         }else{
@@ -442,6 +513,8 @@ function NetGraph(scenario, parent){
         }else{
             showToast("Delete Connection", "Implemented but disabled")
         }
+
+        this.updateScenarioFromJSONGraph(this.graphJSON)
     }
 
     /**
@@ -493,6 +566,7 @@ function NetGraph(scenario, parent){
                 this.deleteConnection(linksToRemove[i])
             }
         }
+        this.updateScenarioFromJSONGraph(this.graphJSON)
     }
 
     /**
@@ -512,11 +586,7 @@ function NetGraph(scenario, parent){
                 if(this.connectionCreateEnabled){
                     //links are bididerctional for now
                     if((d3.select("#" + this.selectedJSON.name + "_to_" + d.name)[0][0] == null) && (d3.select("#" + d.name + "_to_" + this.selectedJSON.name)[0][0] == null)){
-                        newLink = {"source":this.selectedJSON, "target":d, "sName":this.selectedJSON.name, "tName":d.name, }
-                        this.graphJSON.links.push(newLink);
-                        this.updateJSONString(this.graphJSON);
-                        this.svg.selectAll("*").remove();
-                        this.resetGraphData();
+                        this.connectNodes(this.selectedJSON, d)
                     }
                 }
             }
@@ -538,6 +608,38 @@ function NetGraph(scenario, parent){
         this.selectedJSON = d;
     }
 
+
+    /**
+     * @function connectNodes
+     * @description Creates connection between two nodes and updates the graph.
+     * @param {String} sourceJSON source machine's JSON object.
+     * @param {String} destJSON destination machine's JSON object.
+     */
+    this.connectNodes = function(sourceJSON, destJSON){
+        newLink = {"source":sourceJSON, "target":destJSON, "sName":sourceJSON.name, "tName":destJSON.name, }
+        this.graphJSON.links.push(newLink);
+        this.updateJSONString(this.graphJSON);
+        this.svg.selectAll("*").remove();
+        this.resetGraphData();
+
+        this.updateScenarioFromJSONGraph(this.graphJSON)
+    }
+
+    
+    /**
+     * @function connectToAll
+     * @description Creates connections from the current node to all the axisting nodes in the graph.
+     * @param {String} nodeJSON JSON object to connect to all.
+     */
+    this.connectToAll = function(nodeJSON){
+        for(var i = 0; i<this.graphJSON["nodes"].length; i++){
+            if(this.graphJSON["nodes"][i] != nodeJSON){
+                this.connectNodes(nodeJSON, this.graphJSON["nodes"][i])
+            }
+        }
+    }
+
+
     /**
      * @function addNewNode
      * @description Adds new node to DOM and graphJSON, the node created has the name and type provided.
@@ -554,12 +656,21 @@ function NetGraph(scenario, parent){
             "px":0, 
             "py":0, 
             "fixed":0,
-            "selected":false
+            "selected":"false",
+            "ip":this.getAvailableIpByNetMask("192.168.50")//must guard for case where no ip is available
             }
 
         this.graphJSON["nodes"].push(newNode);
-        this.updateJSONString(this.graphJSON);
-        this.resetGraphData();
+        // this.updateJSONString(this.graphJSON);
+        // this.resetGraphData();
+
+
+        //temporary workaround, uncomment code above once netmasks are implemented//////////////////////////////////////////////////////////
+        this.connectToAll(newNode)
+
+
+        //update the scenario object
+        this.updateScenarioFromJSONGraph(this.graphJSON)
     }
 
     /**
@@ -663,7 +774,7 @@ function NetGraph(scenario, parent){
         toggleConnectButton.setAttribute("type", "button")
         toggleConnectButton.className = "toggleConnectButton button btn btn-light"
         toggleConnectButton.id = "toggleConnectButton"
-        toggleConnectButton.innerHTML = "Linking Off"
+        toggleConnectButton.innerHTML = "Manual Linking: Off"
         toggleConnectButton.style = "position:absolute; top: 20px; left:20px; z-index:1"
         toggleConnectButton.addEventListener("click", function(){showToast("Toggle link Creation", "Implemented but disabled")})
         // toggleConnectButton.addEventListener("click", this.toggleConnect.bind(this))
