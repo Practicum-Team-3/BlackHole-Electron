@@ -3,7 +3,7 @@ var Modifiable = require('./core/modifiable.js').Modifiable
 /**
  * @class Machine
  * @version 1.1.0
- * @description Machine properties
+ * @description Modifiable. Machine properties
  *              
  * @param {string} descriptor Machine descriptor (JSON)
  */

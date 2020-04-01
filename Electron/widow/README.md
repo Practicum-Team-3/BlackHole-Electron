@@ -1,4 +1,4 @@
-# Widow 0323200323
+# Widow
 Back-end communication handlers and data abstractions.
 
 To adopt the usage of widow in an html document, add:

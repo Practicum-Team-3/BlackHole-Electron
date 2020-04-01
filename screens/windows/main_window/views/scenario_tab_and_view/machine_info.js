@@ -39,8 +39,10 @@ function MachineInfo(machineInfoNode){
         this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
         this.getNode("machineGui").innerHTML = machine.getGui()
         this.getNode("networkValue").value = ""
-    }
+    }.bind(this)
 
+    plx = this.update
+    
     /**
      * @function onchange
      * @description Intended for use as a callback for whenever a node combo gets edited
@@ -102,7 +104,7 @@ function MachineInfo(machineInfoNode){
         interface.addLabelAndInput(null, "Path:", "path", "")
         interface.addLabelAndInput(null, "Start Time:", "startTime", "12")
         
-        //interface.addVerticalList(null, ["sh", "rox"], function(event){console.log(event)}, function(event){event.stopPropagation()}, "cog")
+        interface.addVerticalList(null, ["sh", "rox"], function(event){console.log(event)}, function(event){event.stopPropagation()}, "cog")
 
         machineInfoNode.appendChild(formNode)
     }
@@ -117,7 +119,7 @@ function MachineInfo(machineInfoNode){
 MachineInfo.prototype.setMachine = function(machine){
     this.clear()
     this.machine = machine
-    this.machine.onModified(this.update.bind(this))
+    onModified(this.machine, this.update)
     this.update()
 }
 
@@ -129,6 +131,6 @@ MachineInfo.prototype.clear = function(){
     if (this.machine==null){
         return
     }
-    this.machine.removeOnModifiedListener(this.update)
+    removeOnModifiedListener(this.machine, this.update)
     this.machine = null
 }
