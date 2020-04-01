@@ -1,10 +1,11 @@
 /**
  * @class Loadable
- * @version 1.0.0
+ * @version 1.0.1
  * @protected
  * @description Object that handles the loading and management of items
  *              
- * @param {string} widowAddress Address to back-end "Widow"
+ * @param {string} widowSettings Instance of conection settings for black-widow
+ * @param {string} loadPath URI to service
  */
 function Loadable(widowSettings, loadPath){
     var widowSettings = widowSettings
@@ -37,7 +38,8 @@ function Loadable(widowSettings, loadPath){
             axios.get(this.getAddress()+this.getLoadPath())
             .then(function (response) {
                 // Keep list locally
-                this.items = response.data
+                //TODO: Improve wrapper integration
+                this.items = response.data.body
                 resolve()
 
             }.bind(this)).catch(function (error) {

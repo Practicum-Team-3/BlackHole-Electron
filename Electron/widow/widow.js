@@ -45,12 +45,12 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
         return this.boxes.load()
         
     }.bind(this))
-//    .then(function(){
-//        syncUpdate(70)
-//        //Load available programs
-//        return this.programs.load()
-//        
-//    }.bind(this))
+    .then(function(){
+        syncUpdate(70)
+        //Load available programs
+        return this.programs.load()
+        
+    }.bind(this))
     
     
     function syncUpdate(progress){

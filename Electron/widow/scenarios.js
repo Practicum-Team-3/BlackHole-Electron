@@ -1,7 +1,7 @@
 var Modifiable = require('./core/modifiable.js').Modifiable
 /**
  * @class Scenarios
- * @version 2.2.0
+ * @version 2.2.1
  * @description Modifiable. Manager of scenarios.
  *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
@@ -235,7 +235,8 @@ Scenarios.prototype.loadScenarios = function(){
         axios.get(this.getAddress()+"/scenarios/all")
         .then(function (response) {
             // Keep list locally
-            this.nameList = response.data.scenarios
+            //TODO: Improve wrapper integration
+            this.nameList = response.data.body.scenarios
             resolve()
             
         }.bind(this)).catch(function (error) {
@@ -256,7 +257,8 @@ Scenarios.prototype.loadScenarioByName = function(scenarioName){
         axios.get(this.getAddress()+"/scenarios/"+encodeURIComponent(scenarioName))
         .then(function (response) {
             // Add to the loaded object
-            this.loaded[scenarioName] = new Scenario(response.data)
+            //TODO: Improve wrapper integration
+            this.loaded[scenarioName] = new Scenario(response.data.body)
             resolve()
             
         }.bind(this)).catch(function (error) {

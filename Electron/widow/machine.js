@@ -2,7 +2,7 @@ var Modifiable = require('./core/modifiable.js').Modifiable
 
 /**
  * @class Machine
- * @version 1.1.0
+ * @version 1.2.0
  * @description Modifiable. Machine properties
  *              
  * @param {string} descriptor Machine descriptor (JSON)
@@ -25,6 +25,13 @@ function Machine(descriptor){
      * @memberof Machine
      */
     this.provisions = new Provisions(this.descriptor["provisions"])
+    
+    /**
+     * @type {InstalledPrograms}
+     * @description Awaiting backend support. Access programs installed on the machine
+     * @memberof Machine
+     */
+    this.programs = new InstalledPrograms(JSON.parse(require('./defaults.js').installedProgramsDescriptor))//Dummy for now, that's why we are passing a default desc.
     
     // Special properties
     this.sharedFolders = new Set()
@@ -357,5 +364,103 @@ Provisions.prototype.getCommands = function(){
     return this.descriptor["commands"]
 }
 
+//========================
+//=== Installed Programs
+//========================
+/**
+ * @class InstalledPrograms
+ * @version 1.0.0
+ * @param {Object} descriptor Programs descriptor object
+ */
+function InstalledPrograms(descriptor){
+    this.descriptor = descriptor
+    this.programs = []
+    
+    // Create InstalledMachine instance per machine from descriptor
+    this.descriptor.forEach(function(program){
+        this.programs.push(new InstalledProgram(program))
+    }.bind(this))
+}
+
+/**
+ * @function getAllPrograms
+ * @description Returns array with the installed programs on the machine
+ * @memberof InstalledPrograms
+ * @returns {InstalledProgram[]} Array with InstalledPrograms objects
+ */
+InstalledPrograms.prototype.getAllPrograms = function(){
+    return this.programs
+}
+
+/**
+ * @function addProgram
+ * @description Adds a program to the current list of installed programs
+ * @memberof InstalledPrograms
+ * @param {string} name     Filename of the program to install
+ * @param {string} location Location of the installation in the machines file system
+ */
+InstalledPrograms.prototype.addProgram = function(name, location){
+    var program = new InstalledProgram()
+    // Add to descriptor
+    this.descriptor.push(program.getDescriptor())
+}
+
+
+
+//========================
+//=== Installed Program
+//========================
+/**
+ * @class InstalledProgram
+ * @version 1.0.0
+ * @param {Object} descriptor Installed program
+ */
+function InstalledProgram(descriptor){
+    this.descriptor = descriptor==null ? JSON.parse(require('./defaults.js').machineDescriptor) : descriptor
+    
+    this.getDescriptor = function(){
+        return this.descriptor
+    }
+}
+
+//==== Name
+
+/**
+ * @function getName
+ * @memberof InstalledProgram
+ * @returns {string} Name of the program (including extension)
+ */
+InstalledProgram.prototype.getName = function(){
+    return this.descriptor["name"]
+}
+
+/**
+ * @function setName
+ * @memberof InstalledProgram
+ * @param {string} location Name of the program (including extension)
+ */
+InstalledProgram.prototype.setName = function(name){
+    this.descriptor["name"] = name
+}
+
+//==== Location
+
+/**
+ * @function getLocation
+ * @memberof InstalledProgram
+ * @returns {string} Location of the installed program in the machine's filesystem
+ */
+InstalledProgram.prototype.getLocation = function(){
+    return this.descriptor["location"]
+}
+
+/**
+ * @function setLocation
+ * @memberof InstalledProgram
+ * @param {string} location Location of the installed program in the machine's filesystem
+ */
+InstalledProgram.prototype.setLocation = function(location){
+    this.descriptor["location"] = location
+}
 
 module.exports.Machine = Machine

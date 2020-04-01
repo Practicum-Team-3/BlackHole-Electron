@@ -4,62 +4,76 @@
  */
 function ProgramListOverview(programListNode){
     
-    this.nameForTabLabel = "ProgramList"
-    this.programListNode = programListNode
+    this.nameForTabLabel = "ExploitList"
+    this.exploitListNode = programListNode
 
     var sectionsContainer = document.createElement("div")
-    sectionsContainer.className = "fillSpace columnFlex ProgramListOverviewSectionsContainer"
+    sectionsContainer.className = "fillSpace columnFlex ExploitListOverviewSectionsContainer"
 
     // Make an instance of NodeCombos to include html elements
     var interface = new NodeCombos(sectionsContainer)
 
-    // Make sections of the program list overview panel
-    var sections = ["programListCollapsibles", "programListOptions"]
+    // Make sections of the exploit list overview panel
+    var sections = ["exploitListCollapsibles", "exploitListOptions"]
     interface.addMultipleSections(sections)
 
     // Populate the collapsibles
-    interface.selectNode(interface.getNodes()["programListCollapsibles"])
-    interface.getNodes()["programListCollapsibles"].style = "overflow-y:scroll; overflow-x:hidden"
-    interface.getNodes()["programListCollapsibles"].className = "stretchFlex programListCollapsibles bg-light"
+    interface.selectNode(interface.getNodes()["exploitListCollapsibles"])
+    interface.getNodes()["exploitListCollapsibles"].style = "overflow-y:scroll; overflow-x:hidden"
+    interface.getNodes()["exploitListCollapsibles"].className = "stretchFlex exploitListCollapsibles bg-light"
 
     // Create a form to put all of the components in
     var formNode = document.createElement("form")
     //formNode.style ="background-color:red"
-    formNode.className = "programListCollapsiblesForm"
+    formNode.className = "exploitListCollapsiblesForm"
     formNode.setAttribute("onSubmit", "return false")
 
     // Add a reference to formNode and append it
     interface.addReferenceToNode(formNode.className, formNode)
-    interface.getNodes()["programListCollapsibles"].appendChild(formNode)
+    interface.getNodes()["exploitListCollapsibles"].appendChild(formNode)
 
     // Select or point to form node to work on
-    interface.selectNode(interface.getNodes()["programListCollapsiblesForm"])
+    interface.selectNode(interface.getNodes()["exploitListCollapsiblesForm"])
 
-    // Populate the form
-    for (var i = 0; i < 5; i++){
-        interface.addCollapsibleGroup("Program " + (i+1), "server")
-        // General details of program
-        interface.addLabelPair(null, "Name: ", "programName", "")
-        interface.addLabelPair(null, "OS(s): ", "programOs", "")
-        interface.addLabelPair(null, "Vulnerability: ", "programVuln", "")
+    this.addExploitSection = function(exploitName, exploit){
+        interface.selectNode(interface.getNode("exploitListCollapsiblesForm"))
+        
+        var group = interface.addCollapsibleGroup(null, exploitName, "bomb")
+        // General details of exploit
+        interface.addLabelPair(null, "Name: ", "exploitName", exploitName)
+        interface.addLabelPair(null, "OS(s): ", "exploitOs", exploit.getOs())
+        interface.addLabelPair(null, "Target Program: ", "exploitTarget", exploit.getDescription())
 
-        //interface.addSingleButton("Delete Program", "col ml-1 mr-1 mt-2 btn btn-danger", function(){showToast("DeleteOnServer", "delete program from server was clicked")})
-        interface.addEditDeleteButtons(null, function(){showToast("EditProgOnServer", "edit on server was clicked")}, null, function(){showToast("DeleteProgOnServer", "DeleteProgram was clicked")})
+        //interface.addSingleButton("Delete Exploit", "col ml-1 mr-1 mt-2 btn btn-danger", function(){showToast("DeleteOnServer", "delete exploit from server was clicked")})
+        var addExploit = function(){
+            
+        }
+        interface.addDeleteAndIncludeButtons(null, function(){showToast("EditExploitOnServer", "editExploit on server was clicked")}, null, addExploit)
 
         // Select form again
-        interface.selectNode(interface.getNodes()["programListCollapsiblesForm"])
+        interface.selectNode(interface.getNode("exploitListCollapsiblesForm"))
+        
+        return group
+    }
+    
+    // Populate the form
+    var exploits = widow.programs.getAllNonExploits()
+    for (exploitName in exploits){
+        this.addExploitSection(exploitName, exploits[exploitName])
     }
 
 
     // section at bottom of overview column
-    interface.selectNode(interface.getNodes()["programListOptions"])
-    interface.getNodes()["programListOptions"].className = "fixedFlex container programListOptions bg-dark"
+    interface.selectNode(interface.getNodes()["exploitListOptions"])
+    interface.getNodes()["exploitListOptions"].className = " fixedFlex container exploitListOptions bg-dark"
 
-    //var optionButtons = {"Add Program_primary":null}
+    //var optionButtons = {"Add Exploit_primary":null}
     //interface.addOverviewOptionsButtons(optionButtons)
-    interface.addSingleButton("Upload Program", "col mt-2 mb-2 btn btn-primary", function(){showToast("uploadProgram", "updload program to server was clicked")})
+    interface.addSingleButton("Upload Program", "col mt-2 mb-2 btn btn-primary", function(){openWindow('../screens/windows/dialogs/upload/upload.html?exp=false', 530, 355, false, true)})
 
-    this.programListNode.appendChild(sectionsContainer)
+    this.exploitListNode.appendChild(sectionsContainer)
+    
+    
 
     //----------------------------------------
 
@@ -76,14 +90,26 @@ function ProgramListOverview(programListNode){
     }
 
     this.setNode = function(element){
-        this.programListNode = element
+        this.exploitListNode = element
     }
 
-    this.setPrograms = function(programs){
-        for(var i = 0; i < programs.length; i++){
-            this.getNode("programName").innerHTML = programs[i].getName()
-            this.getNode("programOs").innerHTML = programs[i].getOs()
+    this.setExploits = function(exploit){
+        for(var i = 0; i < exploit.length; i++){
+            this.getNode("exploitName").innerHTML = exploit[i].getName()
+            this.getNode("exploitOs").innerHTML = exploits[i].getOs()
 
         }
     }
+    
+    this.programsModified = function(target, modificationType, arg){
+        switch(modificationType){
+            case modificationTypes.ADDED_ELEMENT:
+                if (!arg.getIsExploit()){
+                    var group = this.addExploitSection(arg.name, arg)
+                    $(group.lastChild).collapse('show')
+                }
+                break;
+        }
+    }.bind(this)
+    onModified(widow.programs, this.programsModified)
 }

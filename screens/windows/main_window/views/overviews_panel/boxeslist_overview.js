@@ -66,7 +66,7 @@ function BoxesListOverview(boxesListNode){
         boxName = boxName.replace(/\//gi, '-').split(".").join("-")
 
         // showToast("Include Node", "Implemented but disabled")
-        netGraphs[getActiveScenarioTab().getScenario().getName()].addNewNode(boxName, "victim")
+        getActiveScenarioTab().getNetGraph().addNewNode(boxName, "victim")
     }
 }
 
@@ -114,7 +114,7 @@ BoxesListOverview.prototype.update = function(){
 
     //populate the form
     for(var i = 0;i<boxesArray.length;i++){
-        this.interface.addCollapsibleGroup(boxesArray[i], "server")
+        this.interface.addCollapsibleGroup(null, boxesArray[i], "server")
         // General details
         this.interface.addLabelPair(null, "Name:", "boxName", boxesArray[i])
         this.interface.addLabelPair(null, "OS:", "boxOs", boxesArray[i])

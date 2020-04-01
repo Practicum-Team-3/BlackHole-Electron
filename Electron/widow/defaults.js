@@ -2,8 +2,8 @@ module.exports.scenarioDescriptor = '{\
     "scenario_name": "",\
     "scenario_id": "",\
     "description": "",\
-    "creation_date": "01/01/2020 21:22:38",\
-    "last_accessed": "01/01/2020 21:22:38",\
+    "creation_date": "",\
+    "last_accessed": "",\
     "exploit_info": {\
         "name": "",\
         "type": "",\
@@ -37,8 +37,22 @@ module.exports.machineDescriptor = '{\
     "gui": false\
 }'
 
+// uploads
 module.exports.programDescriptor = '{\
-    "os": "windows",\
-    "name": "default",\
-    "is_exploit": false\
+    "os": "linux",\
+    "is_exploit": false,\
+    "description": ""\
+}'
+
+// TEMP
+module.exports.installedProgramsDescriptor = '[\
+    {\
+        "name": "e0",\
+        "location": "/bin"\
+    }\
+]'
+
+module.exports.installedProgramDescriptor = '{\
+    "name": "",\
+    "location": ""\
 }'
