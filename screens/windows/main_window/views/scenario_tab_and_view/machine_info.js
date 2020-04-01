@@ -35,7 +35,6 @@ function MachineInfo(machineInfoNode){
         }
         var machine = this.machine
         this.getNode("name").innerHTML = machine.getName()
-        console.log(machine.getName())
         this.getNode("os").innerHTML = machine.getOs()
         this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
         this.getNode("machineGui").innerHTML = machine.getGui()

@@ -199,7 +199,6 @@ function NetGraph(scenario, parent){
 
     this.getNextAvailableIP = function(netMask, addressList, slots){
         
-        
         var counters = []
         for(var i = 0; i<slots;i++){
             counters.push(1)
@@ -211,7 +210,6 @@ function NetGraph(scenario, parent){
             if(addressList.indexOf(netMask + "." + counters.join(".")) < 0){
                 return netMask + "." + counters.join(".")
             }else{
-                console.log(netMask + "." + counters.join("."))
                 counters[i] += 1
                 counters[i] %= 256
                 if(counters[i] == 0){
@@ -664,8 +662,13 @@ function NetGraph(scenario, parent){
      */
     this.addNewNode = function(machineName, machineType){
 
+        if(this.nodesNamesIDs[machineName] != null && this.nodesNamesIDs[machineName] != undefined){
+            console.log("Bug is in line 666, the nodesNamesIDs dictionary has collisions with duplicate keys.")
+        }
+
         this.nodesNamesIDs[machineName] = machineName + "_" + generateUniqueId()
         //Clone an element from the graph.
+
         newNode = {
             "name":this.nodesNamesIDs[machineName],
             "type":machineType, 
@@ -676,7 +679,7 @@ function NetGraph(scenario, parent){
             "fixed":0,
             "selected":"false",
             "ip":this.getAvailableIpByNetMask("192.168.50")//must guard for case where no ip is available
-            }
+        }
 
         this.graphJSON["nodes"].push(newNode);
         // this.updateJSONString(this.graphJSON);
