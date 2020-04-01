@@ -4,7 +4,6 @@ var idList = new Set()
 var overviewsPanel = null
 // To store references to central views indexed by scenario name
 var scenarioTabAndViews = {}
-var netGraphs = {}
 
 try{
     window.$ = window.jQuery = require("../../../Electron/node_modules/jquery/dist/jquery")
@@ -97,8 +96,13 @@ function openScenario(scenario){
         //Make the tabbed section for the scenario and keep reference
         var scenarioTabAndView = new ScenarioTabAndView(scenario, tabBar, scenarioViewsNode)
         scenarioTabAndViews[scenario.getName()] = scenarioTabAndView
-        scenarioTabAndView.onClose(function(scenarioName){
-            delete scenarioTabAndViews[scenarioName]
+        scenarioTabAndView.onClose(function(scenarioTabAndView){
+            delete scenarioTabAndViews[scenarioTabAndView.getScenario().getName()]
+            
+            if (getActiveScenarioTab()==scenarioTabAndView){// We are closing the one that was selected
+                // Select another tab, will ya?
+                selectFirstScenarioTab()
+            }
         })
     }
 }
@@ -113,6 +117,13 @@ function selectScenarioTab(scenario){
         scenarioTabAndViews[scenario.getName()].select()
     }catch{
         print("Unable to select scenario tab")
+    }
+}
+
+function selectFirstScenarioTab(){
+    for (scenarioName in scenarioTabAndViews){
+        scenarioTabAndViews[scenarioName].select()
+        break;
     }
 }
 

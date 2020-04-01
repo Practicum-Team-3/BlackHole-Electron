@@ -25,6 +25,7 @@ function ScenariosListOverview(scenariosListNode){
     var formNode = document.createElement("form")
     // formNode.style = "background-color:red"
     formNode.className = "scenariosListCollapsiblesForm"
+    formNode.id = "scenarioListForm"
     formNode.setAttribute("onSubmit", "return false")
 
     this.interface.addReferenceToNode(formNode.className, formNode)
@@ -120,24 +121,28 @@ ScenariosListOverview.prototype.update = function(){
 }
 
 ScenariosListOverview.prototype.addScenarioSection = function(scenario){
-    this.interface.addCollapsibleGroup(scenario.getName(), "server")
+    var group = this.interface.addCollapsibleGroup(null, scenario.getName(), "server", "#scenarioListForm")
     // General details
     this.interface.addLabelPair(null, "Name:", "scenarioName", scenario.getName())
-    this.interface.addLabelPair(null, "Description:", "scenarioDes", "I created this scenario to test crap.")
+    this.interface.addLabelPair(null, "Description:", "scenarioDes", scenario.getDescription())
     this.interface.addLabelPair(null, "CreationDate:", "scenarioCreationDate", scenario.getCreationDate().toLocaleDateString())
     this.interface.addLabelPair(null, "LastAccessed:", "scenarioLastAccessed", scenario.getLastAccessed().toLocaleDateString())
     this.interface.addLabelPair(null, "No. Machines:", "scenarioNoMachines", scenario.getAllMachines().length)
     this.interface.addLabelPair(null, "Status:", "scenarioStatus", "Running")
     var strScenarioName = scenario.getName();
-    this.interface.addEditDeleteButtons(null, openScenarioByName.bind(event, strScenarioName), null, function () { showToast("DeleteScenarioOnServer", "Delete Scenario was clicked") })
-    this.interface.selectNode(this.interface.getNodes()["scenariosListCollapsiblesForm"])
+    this.interface.addOpenEditButtons(null, openScenarioByName.bind(event, strScenarioName), null, function () { showToast("DeleteScenarioOnServer", "Delete Scenario was clicked") })
+    this.interface.selectNode(this.interface.getNode("scenariosListCollapsiblesForm"))
+    
+    return group
 }
 
 ScenariosListOverview.prototype.scenariosModified = function(target, modificationType, arg){
     
     switch(modificationType){
         case modificationTypes.ADDED_ELEMENT:
-            this.addScenarioSection(arg)
+            var group = this.addScenarioSection(arg)
+            $(group.lastChild).collapse('show')
+            this.interface.getNode(arg.getName)
             openScenario(arg)
             break;
     }

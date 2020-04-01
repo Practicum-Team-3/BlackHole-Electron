@@ -37,7 +37,7 @@ function ProgramListOverview(programListNode){
 
     // Populate the form
     for (var i = 0; i < 5; i++){
-        interface.addCollapsibleGroup("Program " + (i+1), "server")
+        interface.addCollapsibleGroup(null, "Program " + (i+1), "server")
         // General details of program
         interface.addLabelPair(null, "Name: ", "programName", "")
         interface.addLabelPair(null, "OS(s): ", "programOs", "")

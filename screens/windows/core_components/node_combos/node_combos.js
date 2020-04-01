@@ -34,6 +34,10 @@ function NodeCombos(parentNode){
         return nodes
     }
     
+    this.getNode = function(nodeName){
+        return nodes[nodeName]
+    }
+    
     /**
      * @function getNewRow
      * @description Returns a new div with the style class of form-row to add components into
@@ -126,12 +130,15 @@ function NodeCombos(parentNode){
  * @function addCollapsibleGroup
  * @author Jose Guillen
  * @description Adds a collapsible group and selects it for all subsecuent created combos to be added inside
+ * @param   {string} groupName     Name to give the top node of the group on the local reference. 
+ *                                 To access the body of the group, a reference is set on the group itself in .groupBody
  * @param   {string}  title        Title to give the collapsible group
  * @param   {string}  iconLigature Optional: ligature of an icon to use on the group
  * @param   {string}  dataParent   Optional: Parent of the group, only 1 group can be opened when under a parent
  * @param   {boolean} willShow     Optional: Boolean for if group should be open by default
+ * @returns {object} The top node of the group
  */
-NodeCombos.prototype.addCollapsibleGroup = function(title, iconLigature, dataParent, willShow){
+NodeCombos.prototype.addCollapsibleGroup = function(groupName, title, iconLigature, dataParent, willShow){
     var groupId = generateUniqueId()
     
     //Make the title
@@ -151,8 +158,15 @@ NodeCombos.prototype.addCollapsibleGroup = function(title, iconLigature, dataPar
     // Add reference to group
     this.collapsibleGroups.push(group)
     
+    this.addReferenceToNode(groupName, group)
+    
+    //Add reference to body on itself
+    group.groupBody = body
+    
     // Select the group so all subsecuent combo creations get added into it
     this.selectNode(body)
+    
+    return group
     
     //Generates the html for inside the link
     function getLinkHTML(title, iconLigature){
@@ -201,6 +215,31 @@ NodeCombos.prototype.addSingleButton = function(buttonName, style, functionOnCli
     this.currentNode.appendChild(rowNode)
 }
 
+/**
+ * @function addButtonPair
+ * @author Jose Guillen
+ * @description Adds two buttons side by side
+ * @param {string} leftButtonName      Name to give the left button on the local reference
+ * @param {string} leftButtonLabel Label for the left button
+ * @param {string} leftButtonClassName Class of the left button
+ * @param {function} leftOnClick Reference to a function to call when the left button gets clicked
+ * @param {string} rightButtonName    Name to give the right button on the local reference
+ * @param {string} rightButtonLabel Label for the right button
+ * @param {string} rightButtonClassName Class of the right button
+ * @param {function} rightOnClick Reference to a function to call when the right button gets clicked
+ */
+NodeCombos.prototype.addButtonPair = function(leftButtonName, leftButtonLabel, leftButtonClassName, leftOnClick, rightButtonName, rightButtonLabel, rightButtonClassName, rightOnClick){
+    var rowNode = this.getNewRow()
+    
+    var leftButtonNode = addButtonNode(rowNode, leftButtonClassName, leftOnClick, leftButtonLabel)
+    var rightButtonNode = addButtonNode(rowNode, rightButtonClassName, rightOnClick, rightButtonLabel)
+    
+    this.addReferenceToNode(leftButtonName, leftButtonNode)
+    this.addReferenceToNode(rightButtonName, rightButtonNode)
+    
+    this.currentNode.appendChild(rowNode)
+}
+
 
 /**
  * @function addEditDeleteButtons
@@ -212,15 +251,20 @@ NodeCombos.prototype.addSingleButton = function(buttonName, style, functionOnCli
  * @param {function} deleteOnClick Reference to a function to call when the delete button gets clicked
  */
 NodeCombos.prototype.addEditDeleteButtons = function(editName, editOnClick, deleteName, deleteOnClick){
-    var rowNode = this.getNewRow()
-    
-    var editButtonNode = addButtonNode(rowNode, "col ml-5 mr-1 mt-2 btn btn-primary", editOnClick, "Edit")
-    var deleteButtonNode = addButtonNode(rowNode, "col ml-1 mr-5 mt-2 btn btn-danger", deleteOnClick, "Delete")
-    
-    this.addReferenceToNode(editName, editButtonNode)
-    this.addReferenceToNode(deleteName, deleteButtonNode)
-    
-    this.currentNode.appendChild(rowNode)
+    this.addButtonPair(editName, "Edit", "col ml-5 mr-1 mt-2 btn btn-primary", editOnClick, deleteName, "Delete", "col ml-1 mr-5 mt-2 btn btn-danger", deleteOnClick)
+}
+
+/**
+ * @function addOpenEditButtons
+ * @author Jose Guillen
+ * @description Adds two buttons side by side, one for an open operation, the other for a edit operation
+ * @param {string} openName    Name to give the open button on the local reference
+ * @param {function} opemOnClick Reference to a function to call when the open button gets clicked
+ * @param {string} editName      Name to give the edit button on the local reference
+ * @param {function} editOnClick Reference to a function to call when the edit button gets clicked
+ */
+NodeCombos.prototype.addOpenEditButtons = function(openName, openOnClick, editName, editOnClick){
+    this.addButtonPair(openName, "Open", "col ml-5 mr-1 mt-2 btn btn-success", openOnClick, editName, "Delete", "col ml-1 mr-5 mt-2 btn btn-danger", editOnClick)
 }
 
 

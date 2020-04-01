@@ -75,7 +75,7 @@ function MachineInfo(machineInfoNode){
 
         // === Network
         // Create group, then add components into it
-        interface.addCollapsibleGroup("Network", "network-wired", null, true)
+        interface.addCollapsibleGroup(null, "Network", "network-wired", null, true)
 
         interface.addLabelAndInput(null, "Network:", "networkValue", "")
         interface.addLabelAndInput(null, "IP:", "ipValue", "")
@@ -83,7 +83,7 @@ function MachineInfo(machineInfoNode){
         // === Collector
         // Exit previous group, create new group, then add components into it
         interface.deselectNode()
-        interface.addCollapsibleGroup("Collectors", "inbox", null, true)
+        interface.addCollapsibleGroup(null, "Collectors", "inbox", null, true)
 
         interface.addLabelAndSelect(null, "Collector:", "collectorValue", ["ECELd"])
 
@@ -98,7 +98,7 @@ function MachineInfo(machineInfoNode){
         // === Program
         // Exit previous group, create new group, then add components into it
         interface.deselectNode()
-        interface.addCollapsibleGroup("Programs", "code", null, true)
+        interface.addCollapsibleGroup(null, "Programs", "code", null, true)
 
         interface.addLabelAndSelect(null, "Program:", "program", [""])
         interface.addLabelAndInput(null, "Path:", "path", "")
