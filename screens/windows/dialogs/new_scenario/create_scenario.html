@@ -18,10 +18,7 @@
                 scenarioDes = document.getElementById("description").value;
 
                 //Create new scenario instance
-				widow.scenarios.createNewScenario();
-				
-				//Retrieve scenario instance
-				var scenario = widow.scenarios.getScenarioBeingCreated();
+				var scenario = widow.scenarios.createNewScenario();
 				
 				//Set scenario Name & Description
                 scenario.setName(scenarioName);
@@ -30,10 +27,15 @@
                 //Complete
                 widow.scenarios.completeScenarioCreation()
                 
+                //Tell the others that there are changes
+                emitModifiedEvent(widow.scenarios, null, modificationTypes.ADDED_ELEMENT, scenario)
+                
                 //Close dialog window
                 electron.remote.getCurrentWindow().close()
             }
-
+            function cancel(){
+                electron.remote.getCurrentWindow().close()
+            }
     </script>
 
     <!-- -->
@@ -67,7 +69,9 @@
                 <!--input type="text" class="form-control disableable" id="description" required>-->
                 <textarea rows="3" class="form-control disableable" placeholder="Add a descrition..." required id="description"></textarea>
             </div>
-            <button class="btn btn-primary disableable float-right" type="submit" id="subm">Create</button>
+            
+            <button class="btn btn-primary disableable float-right ml-3" type="submit" id="subm">Create</button>
+            <button class="btn btn-danger disableable float-right" type="button" onclick="cancel()">Cancel</button>
         </form>
     </div>
 </body>

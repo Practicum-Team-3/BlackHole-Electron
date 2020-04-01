@@ -2,7 +2,7 @@ const electron = require('electron')
 //const util = process.electronBinding('v8_util')
 /**
  * @class Modifiable
- * @version 2.0.0
+ * @version 2.0.1
  * @description Object with modification event handling
  */
 function Modifiable(){
@@ -81,15 +81,17 @@ function Modifiable(){
      * @description After an edit, call this method to notify other listeners about the update
      * @memberof Modifiable
      * @param {function} ignoredCallback Callback to ignore when emitting the event. Usually this would be the updater's own callback
+     * @param {string} eventType Name of the event
+     * @param {Any} eventArg Argument tied to the event
      */
-    this.emitModifiedEvent = function(ignoredCallback){
+    this.emitModifiedEvent = function(ignoredCallback, eventType, eventArg){
         var callbacks = this.getCallbacks()
         for (webContentsId in callbacks){
             
             callbacks[webContentsId].forEach(function(callback){
                 if (callback!=ignoredCallback){
                     try{
-                        callback(this)
+                        callback(this, eventType, eventArg)
                     }catch{
 
                     }

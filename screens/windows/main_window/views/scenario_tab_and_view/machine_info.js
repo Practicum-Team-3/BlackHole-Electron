@@ -42,7 +42,6 @@ function MachineInfo(machineInfoNode){
         this.getNode("networkValue").value = ""
     }.bind(this)
 
-    plx = this.update
     
     /**
      * @function onchange

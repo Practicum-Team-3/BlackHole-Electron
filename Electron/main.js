@@ -54,7 +54,9 @@ function createWindow () {
     
 }
 
-
+//====================
+// Child windows
+//====================
 ipcMain.on('openChildWindow', (event, address, width, height, resizable, modal) => {
     createChildWindow(mainWindow, address, width, height, resizable, modal)
 })
@@ -79,6 +81,10 @@ function createChildWindow(parent, address, width, height, resizable, modal=fals
     })
 }
 
+//====================
+//
+//====================
+
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
@@ -89,4 +95,3 @@ app.on('window-all-closed', () => {
 
 //Create instance of widow
 global.widow = require('./widow/widow.js').default
-global.ele = electron
