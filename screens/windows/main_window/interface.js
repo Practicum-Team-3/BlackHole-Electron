@@ -102,8 +102,8 @@ function openScenario(scenario){
  * @param {string} address Address of page to load on the view
  * @param {boolean} modal Boolean for if to make the window modal
  */
-function openWindow(address, width, height, modal){
-    electron.ipcRenderer.send("openChildWindow", address, width, height, modal)
+function openWindow(address, width, height, resizable, modal){
+    electron.ipcRenderer.send("openChildWindow", address, width, height, resizable, modal)
 }
 
 //======================

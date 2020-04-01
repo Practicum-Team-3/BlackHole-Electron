@@ -27,9 +27,11 @@
                 scenario.setName(scenarioName);
                 scenario.setDescription(scenarioName);
 
+                //Complete
+                widow.scenarios.completeScenarioCreation()
+                
                 //Close dialog window
-                openScenario(scenario);
-                this.hide();
+                electron.remote.getCurrentWindow().close()
             }
 
     </script>
