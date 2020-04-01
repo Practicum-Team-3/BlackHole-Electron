@@ -51,7 +51,7 @@ function createWindow () {
 
 
 ipcMain.on('openChildWindow', (event, address, width, height, modal) => {
-    createChildWindow(mainWindow, address, modal)
+    createChildWindow(mainWindow, address, width, height, modal)
 })
 
 function createChildWindow(parent, address, width, height, modal){
