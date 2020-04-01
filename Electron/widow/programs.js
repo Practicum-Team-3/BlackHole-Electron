@@ -3,7 +3,7 @@ var Loadable = require('./core/loadable.js').Loadable
 /**
  * @class Programs
  * @version 0.1.0
- * @description Available programs
+ * @description Modifiable. Available programs
  *              
  * @param {string} descriptor Program descriptor (JSON)
  */

@@ -29,6 +29,7 @@
     color: #495057;
     background-color: #fff;
     border-color: #fff #fff #fff;
+    overflow: hidden;
 }
 
 /* More color options */

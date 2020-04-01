@@ -82,24 +82,50 @@ function openScenarioByName(scenarioName){
  * @param {Scenario} scenario Instance of Scenario to create a tab and view for
  */
 function openScenario(scenario){
+    //Guard
     if (scenario==null){
         //TODO: Throw
         return
     }
     
-    //Make the tabbed section for the scenario and keep reference
-    var scenarioTabAndView = new ScenarioTabAndView(scenario, tabBar, scenarioViewsNode)
-    scenarioTabAndViews[scenario.getName()] = scenarioTabAndView
+    // If scenario already open, just switch to that tab
+    if (scenarioTabAndViews[scenario.getName()]!=null){
+        selectScenarioTab(scenario)
+        
+    }else{//If scenario not open, go ahead
+        
+        //Make the tabbed section for the scenario and keep reference
+        var scenarioTabAndView = new ScenarioTabAndView(scenario, tabBar, scenarioViewsNode)
+        scenarioTabAndViews[scenario.getName()] = scenarioTabAndView
+        scenarioTabAndView.onClose(function(scenarioName){
+            delete scenarioTabAndViews[scenarioName]
+        })
+    }
+}
+
+function selectScenarioTab(scenario){
+    //Guard
+    if (scenario==null){
+        //TODO: Throw
+        return
+    }
+    try{
+        scenarioTabAndViews[scenario.getName()].select()
+    }catch{
+        print("Unable to select scenario tab")
+    }
 }
 
 //======================
-// Open Modal view
+// Open Window
 //======================
 
 /**
  * function openWindow
  * @description Opens a new window with an address relative to main.js
  * @param {string} address Address of page to load on the view
+ * @param {number} width Width dimension of the window
+ * @param {number} height Height dimension of the window
  * @param {boolean} modal Boolean for if to make the window modal
  */
 function openWindow(address, width, height, modal){
