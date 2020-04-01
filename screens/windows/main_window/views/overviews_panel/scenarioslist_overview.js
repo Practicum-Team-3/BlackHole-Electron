@@ -36,7 +36,7 @@ function ScenariosListOverview(scenariosListNode){
     //this.interface.getNodes()["scenariosListOptions"].style = "height:20%;"
     this.interface.getNodes()["scenariosListOptions"].className = "fixedFlex container scenariosListOptions bg-dark"
 
-    var optionButtons = {"Create Scenario_primary":function(){showToast("Create Scenario", "Not yet implemented")}, "Upload Scenario_info":function(){showToast("Upload Scenario", "Not yet implemented")}}
+    var optionButtons = { "Create Scenario_primary": function () { openWindow('../screens/windows/dialogs/new_scenario/create_scenario.html', 15, 15, true)}, "Upload Scenario_info":function(){showToast("Upload Scenario", "Not yet implemented")}}
     this.interface.addOverviewOptionsButtons(optionButtons)
     
     this.scenariosListNode.appendChild(sectionsContainer)
