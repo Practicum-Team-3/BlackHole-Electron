@@ -8,34 +8,32 @@
 
     <script src="../../../../Electron/widow/widow.js"></script>
     <script>
-            try{
-                window.$ = window.jQuery = require("../../../../Electron/node_modules/jquery/dist/jquery")
-            }catch{}
+        try{
+            window.$ = window.jQuery = require("../../../../Electron/node_modules/jquery/dist/jquery")
+        }catch{}
 
-            //Creates a new scenario object
-            function createScenario(){
-                scenarioName = document.getElementById("name").value;
-                scenarioDes = document.getElementById("description").value;
+        //Creates a new scenario object
+        function uploadFile(){
+            var fileList = document.getElementById("fileSelect").files
 
-                //Create new scenario instance
-				var scenario = widow.scenarios.createNewScenario();
-				
-				//Set scenario Name & Description
-                scenario.setName(scenarioName);
-                scenario.setDescription(scenarioDes);
-
-                //Complete
-                widow.scenarios.completeScenarioCreation()
+            var formData = new FormData();
+            if (fileList.length>0){
+                var file = fileList[0]
                 
-                //Tell the others that there are changes
-                emitModifiedEvent(widow.scenarios, null, modificationTypes.ADDED_ELEMENT, scenario)
+                formData.append("program", file, file.name)
                 
-                //Close dialog window
-                electron.remote.getCurrentWindow().close()
+                widow.programs.addProgram(formData, file.name, "desc", "linux", true)
             }
-            function cancel(){
-                electron.remote.getCurrentWindow().close()
-            }
+
+            //Tell the others that there are changes
+            emitModifiedEvent(widow.programs, null, modificationTypes.ADDED_ELEMENT, widow.programs.getProgramByName(file.name))
+
+            //Close dialog window
+            electron.remote.getCurrentWindow().close()
+        }
+        function cancel(){
+            electron.remote.getCurrentWindow().close()
+        }
     </script>
 
     <!-- -->
@@ -59,11 +57,11 @@
 <body>
     <div class="container">
         <br>
-        <h1>Create Scenario</h1>
-        <form onsubmit="createScenario(); return false">
+        <h2>Upload</h2>
+        <form onsubmit="uploadFile(); return false">
             <div class="form-group" id="rosvox">
-                <label for="name">Scenario:</label>
-                <input type="text" class="form-control disableable" id="name" required>
+                <label for="name">File:</label>
+                <input type="file" class="form-control disableable" id="fileSelect" required>
 
                 <label for="description">Description:</label>
                 <!--input type="text" class="form-control disableable" id="description" required>-->

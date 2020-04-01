@@ -1,5 +1,6 @@
 var Modifiable = require('./core/modifiable.js').Modifiable
 var Loadable = require('./core/loadable.js').Loadable
+var FormData = require('form-data');
 /**
  * @class Programs
  * @version 0.2.0
@@ -10,6 +11,12 @@ var Loadable = require('./core/loadable.js').Loadable
 function Programs(widowSettings){
     Modifiable.call(this)
     //Loadable.call(this, "/programs/all")
+    
+    var widowSettings = widowSettings
+    
+    this.getAddress = function(){
+        return widowSettings.getAddress()
+    }
     this.programs = {}
 }
 
@@ -61,8 +68,34 @@ Programs.prototype.getAllNonExploits = function(){
     return this.getProgramsByTypeExploit(false)
 }
 
-Programs.prototype.addProgram = function(){
-    
+Programs.prototype.addProgram = function(formData, name, description, os, isExploit){
+    //return new Promise(function(resolve, reject){
+        
+
+        //Get axios in the scene now!
+        var axios = require('axios')
+
+        axios.post(this.getAddress()+"/uploadFile", formData)
+        .then(function (response) {
+
+            // Create default instance of Program
+            var program = new Program()
+            // Customize
+            program.name = name
+            program.setOs(os)
+            program.setDescription(description)
+            program.setIsExploit(isExploit)
+            this.programs[name] = program
+
+            //resolve()
+
+        }.bind(this)).catch(function (error) {
+            // handle error
+            console.log(error);
+            //reject()
+
+        })
+    //})
 }
 
 //=========================

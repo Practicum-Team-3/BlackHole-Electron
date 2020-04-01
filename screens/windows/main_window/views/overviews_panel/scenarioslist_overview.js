@@ -142,7 +142,7 @@ ScenariosListOverview.prototype.scenariosModified = function(target, modificatio
         case modificationTypes.ADDED_ELEMENT:
             var group = this.addScenarioSection(arg)
             $(group.lastChild).collapse('show')
-            this.interface.getNode(arg.getName)
+            
             openScenario(arg)
             break;
     }

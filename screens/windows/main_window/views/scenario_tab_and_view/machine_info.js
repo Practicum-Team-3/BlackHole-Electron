@@ -34,7 +34,7 @@ function MachineInfo(machineInfoNode){
             return
         }
         var machine = this.machine
-        this.getNode("name").innerHTML = machine.getName()
+        this.getNode("name").value = machine.getName()
         console.log(machine.getName())
         this.getNode("os").innerHTML = machine.getOs()
         this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
@@ -65,7 +65,7 @@ function MachineInfo(machineInfoNode){
         interface.setOnchangeCallback(self.onchange)
         
         // General details
-        interface.addLabelPair(null, "Name:", "name", "")
+        interface.addLabelAndInput(null, "Name:", "name", "")
         interface.addLabelPair(null, "OS:", "os", "")
         interface.addLabelPair(null, "Type:", "machineType", "")
         interface.addLabelPair(null, "GUI:", "machineGui", "")
@@ -78,7 +78,7 @@ function MachineInfo(machineInfoNode){
         interface.addCollapsibleGroup(null, "Network", "network-wired", null, true)
 
         interface.addLabelAndInput(null, "Network:", "networkValue", "")
-        interface.addLabelAndInput(null, "IP:", "ipValue", "")
+        interface.addLabelPair(null, "IP:", "ipValue", "")
 
         // === Collector
         // Exit previous group, create new group, then add components into it

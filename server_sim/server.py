@@ -155,6 +155,10 @@ def testPing(scenario_name, source, destination):
   :return:
   """
   return "???"
+        
+@app.route('/uploadFile', methods = ['POST'])
+def uploadFile():
+  return "???"
 
 
 if __name__=="__main__":
