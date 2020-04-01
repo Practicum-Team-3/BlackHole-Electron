@@ -123,7 +123,7 @@ ScenariosListOverview.prototype.addScenarioSection = function(scenario){
     this.interface.addCollapsibleGroup(scenario.getName(), "server")
     // General details
     this.interface.addLabelPair(null, "Name:", "scenarioName", scenario.getName())
-    this.interface.addLabelPair(null, "Description:", "scenarioDes", "I created this scenario to test crap.")
+    this.interface.addLabelPair(null, "Description:", "scenarioDes", "")  
     this.interface.addLabelPair(null, "CreationDate:", "scenarioCreationDate", scenario.getCreationDate().toLocaleDateString())
     this.interface.addLabelPair(null, "LastAccessed:", "scenarioLastAccessed", scenario.getLastAccessed().toLocaleDateString())
     this.interface.addLabelPair(null, "No. Machines:", "scenarioNoMachines", scenario.getAllMachines().length)
