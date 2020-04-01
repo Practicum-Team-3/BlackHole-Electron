@@ -78,7 +78,7 @@ function BoxesListOverview(boxesListNode){
 BoxesListOverview.prototype.setBoxes = function(boxesObject){
     this.clear()
     this.boxesObject = boxesObject
-    // this.boxesObject.onModified(this.update.bind(this))
+    // onModified(this.boxesObject, this.update.bind(this))
     this.update()
 }
 
@@ -90,7 +90,7 @@ BoxesListOverview.prototype.clear = function(){
     if (this.boxesObject==null){
         return
     }
-    this.boxesObject.removeOnModifiedListener(this.update)
+    removeOnModifiedListener(this.boxesObject, this.update)
     this.boxesObject = null
 
     //clear collapsibles

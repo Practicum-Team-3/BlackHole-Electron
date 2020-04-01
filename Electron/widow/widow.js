@@ -3,7 +3,7 @@ const defaultWidowAddress = "http://localhost:5000"
 
 /**
  * @class Widow
- * @version 1.1.0
+ * @version 1.1.1
  * @description Abstraction for the communication to the Widow backend.
  *              No need to instantiate, just reference the shared instance widow
  *              
@@ -137,11 +137,19 @@ function removeOnModifiedListener(modifiable, callback){
  * @description Helper for triggering a modified event on a Modifiable object
  * @param {Modifiable} modifiable Modifiable object to trigger event on
  * @param {function} ignoredCallback Callback to ignore when emitting the event. Usually this would be the updater's own callback
+ * @param {string} eventType Name of the event
+ * @param {Any} eventArg Argument tied to the event
  */
-function emitModifiedEvent(modifiable, ignoredCallback){
+function emitModifiedEvent(modifiable, ignoredCallback, eventType, eventArg){
     try{
-        modifiable.emitModifiedEvent(ignoredCallback)
+        modifiable.emitModifiedEvent(ignoredCallback, eventType, eventArg)
     }catch{
 
     }
+}
+/**
+ * @constant {Object} modificationTypes Generic modification types for use with Modifiable
+ */
+const modificationTypes = {
+        ADDED_ELEMENT: "addedElement"   // Reference to new element in eventArg
 }

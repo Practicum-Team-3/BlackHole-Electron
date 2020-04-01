@@ -128,8 +128,8 @@ function selectScenarioTab(scenario){
  * @param {number} height Height dimension of the window
  * @param {boolean} modal Boolean for if to make the window modal
  */
-function openWindow(address, width, height, modal){
-    electron.ipcRenderer.send("openChildWindow", address, width, height, modal)
+function openWindow(address, width, height, resizable, modal){
+    electron.ipcRenderer.send("openChildWindow", address, width, height, resizable, modal)
 }
 
 //======================

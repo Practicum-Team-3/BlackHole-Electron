@@ -54,17 +54,20 @@ function createWindow () {
     
 }
 
-
-ipcMain.on('openChildWindow', (event, address, width, height, modal) => {
-    createChildWindow(mainWindow, address, width, height, modal)
+//====================
+// Child windows
+//====================
+ipcMain.on('openChildWindow', (event, address, width, height, resizable, modal) => {
+    createChildWindow(mainWindow, address, width, height, resizable, modal)
 })
 
-function createChildWindow(parent, address, width, height, modal){
+function createChildWindow(parent, address, width, height, resizable, modal=false){
     // Create the browser window.
-    var modal = new BrowserWindow({
+    var window = new BrowserWindow({
         width: width,
         height: height,
         parent: parent,
+        resizable: resizable,
         modal: modal,
         show: false,
         webPreferences: {
@@ -72,11 +75,15 @@ function createChildWindow(parent, address, width, height, modal){
         }
     })
     
-    modal.loadFile(address)
-    modal.once('ready-to-show', () => {
-        modal.show()
+    window.loadFile(address)
+    window.once('ready-to-show', () => {
+        window.show()
     })
 }
+
+//====================
+//
+//====================
 
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
@@ -88,4 +95,3 @@ app.on('window-all-closed', () => {
 
 //Create instance of widow
 global.widow = require('./widow/widow.js').default
-global.ele = electron

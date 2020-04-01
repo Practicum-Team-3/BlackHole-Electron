@@ -36,7 +36,8 @@ function ScenariosListOverview(scenariosListNode){
     //this.interface.getNodes()["scenariosListOptions"].style = "height:20%;"
     this.interface.getNodes()["scenariosListOptions"].className = "fixedFlex container scenariosListOptions bg-dark"
 
-    var optionButtons = { "Create Scenario_primary": function () { openWindow('../screens/windows/dialogs/new_scenario/create_scenario.html', 15, 15, true)}, "Upload Scenario_info":function(){showToast("Upload Scenario", "Not yet implemented")}}
+    var optionButtons = { "Create Scenario_primary": function () { openWindow('../screens/windows/dialogs/new_scenario/create_scenario.html', 530, 355, false, true)}, "Upload Scenario_info":function(){showToast("Upload Scenario", "Not yet implemented")}}
+    
     this.interface.addOverviewOptionsButtons(optionButtons)
     
     this.scenariosListNode.appendChild(sectionsContainer)
@@ -59,7 +60,6 @@ function ScenariosListOverview(scenariosListNode){
         this.scenariosListNode = element
     }
 
-    //NAMES MUST BE UNIQUE, graph will break if box names are duplicated.
     this.includeClicked = function(i){
 
         var boxName = this.scenariosObject.getScenariosList()[i]
@@ -79,7 +79,7 @@ ScenariosListOverview.prototype.setScenarios = function (scenariosObject){
     this.clear()
     this.scenariosObject = scenariosObject
     //console.log(scenariosObject.getAllScenarios());
-    //this.scenariosObject.onModified(this.update.bind(this))
+    onModified(this.scenariosObject, this.scenariosModified.bind(this))
     this.update()
 }
 
@@ -91,7 +91,7 @@ ScenariosListOverview.prototype.clear = function(){
     if (this.scenariosObject==null){
         return
     }
-    this.scenariosObject.removeOnModifiedListener(this.update)
+    removeOnModifiedListener(this.scenariosObject, this.update)
     this.scenariosObject = null
 
     //clear collapsibles
@@ -115,20 +115,30 @@ ScenariosListOverview.prototype.update = function(){
 
     //populate the form
     for (var i = 0; i <scenariosArray.length;i++){
-        this.interface.addCollapsibleGroup(scenariosArray[i].getName(), "server")
-        // General details
-        this.interface.addLabelPair(null, "Name:", "scenarioName", scenariosArray[i].getName())
-        this.interface.addLabelPair(null, "Description:", "scenarioDes", "I created this scenario to test crap.")
-        this.interface.addLabelPair(null, "CreationDate:", "scenarioCreationDate", scenariosArray[i].getCreationDate().toLocaleDateString())
-        this.interface.addLabelPair(null, "LastAccessed:", "scenarioLastAccessed", scenariosArray[i].getLastAccessed().toLocaleDateString())
-        this.interface.addLabelPair(null, "No. Machines:", "scenarioNoMachines", scenariosArray[i].getAllMachines().length)
-        this.interface.addLabelPair(null, "Status:", "scenarioStatus", "Running")
-        var strScenarioName = scenariosArray[i].getName();
-        this.interface.addEditDeleteButtons(null, openScenarioByName.bind(event, strScenarioName), null, function () { showToast("DeleteScenarioOnServer", "Delete Scenario was clicked") })
-        this.interface.selectNode(this.interface.getNodes()["scenariosListCollapsiblesForm"])
+        this.addScenarioSection(scenariosArray[i])
     }
 }
 
-ScenariosListOverview.prototype.onchange = function(nodeName, node){
-    console.log(nodeName)
+ScenariosListOverview.prototype.addScenarioSection = function(scenario){
+    this.interface.addCollapsibleGroup(scenario.getName(), "server")
+    // General details
+    this.interface.addLabelPair(null, "Name:", "scenarioName", scenario.getName())
+    this.interface.addLabelPair(null, "Description:", "scenarioDes", "I created this scenario to test crap.")
+    this.interface.addLabelPair(null, "CreationDate:", "scenarioCreationDate", scenario.getCreationDate().toLocaleDateString())
+    this.interface.addLabelPair(null, "LastAccessed:", "scenarioLastAccessed", scenario.getLastAccessed().toLocaleDateString())
+    this.interface.addLabelPair(null, "No. Machines:", "scenarioNoMachines", scenario.getAllMachines().length)
+    this.interface.addLabelPair(null, "Status:", "scenarioStatus", "Running")
+    var strScenarioName = scenario.getName();
+    this.interface.addEditDeleteButtons(null, openScenarioByName.bind(event, strScenarioName), null, function () { showToast("DeleteScenarioOnServer", "Delete Scenario was clicked") })
+    this.interface.selectNode(this.interface.getNodes()["scenariosListCollapsiblesForm"])
+}
+
+ScenariosListOverview.prototype.scenariosModified = function(target, modificationType, arg){
+    
+    switch(modificationType){
+        case modificationTypes.ADDED_ELEMENT:
+            this.addScenarioSection(arg)
+            openScenario(arg)
+            break;
+    }
 }
