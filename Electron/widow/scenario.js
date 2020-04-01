@@ -1,13 +1,14 @@
 var Machine = require('./machine.js').Machine
-
+var Modifiable = require('./core/modifiable.js').Modifiable
 /**
  * @class Scenario
- * @version 1.2.0
- * @description Single scenario properties
+ * @version 1.3.0
+ * @description Modifiable. Single scenario properties
  *              
  * @param {string} descriptor Scenario descriptor (JSON)
  */
 function Scenario(descriptor){
+    Modifiable.call(this)
     this.descriptor = descriptor==null ? JSON.parse(require('./defaults.js').scenarioDescriptor) : descriptor
     this.machines = {}
     this.machineLimbo = null

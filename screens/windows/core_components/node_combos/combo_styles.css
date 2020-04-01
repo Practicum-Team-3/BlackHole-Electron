@@ -11,13 +11,17 @@
 }
 
 .floatingIconButton{
+    font-family: icons;
     background-color: transparent;
     border: none;
     float: right;
-    font-family: icons;
     padding: 0px;
+    padding-left: 10px;
     outline: none;
     color: #007bff;
+    white-space: nowrap;
+    text-align: right;
+    width: 20px;
 }
 
 .floatingIconButton:focus{

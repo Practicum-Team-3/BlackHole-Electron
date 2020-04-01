@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
+const electron = require('electron')
 var mainWindow = null
 var addressDialog = null
 
@@ -14,6 +15,8 @@ function createWidowAddressDialog(){
         },
         maximizable: false
     })
+    
+   // console.log(addressDialog.webContents)
     
     addressDialog.on('closed', (e) => {
         app.quit()
@@ -33,6 +36,7 @@ ipcMain.on('primaryLoad', (event, arg) => {
     addressDialog.destroy()
 })
 
+
 function createWindow () {
   // Create the browser window.
     mainWindow = new BrowserWindow({
@@ -47,6 +51,7 @@ function createWindow () {
     
     // and load the index.html of the app.
     mainWindow.loadFile('../screens/windows/welcome_window/welcome_window.html')
+    
 }
 
 
@@ -84,3 +89,4 @@ app.on('window-all-closed', () => {
 
 //Create instance of widow
 global.widow = require('./widow/widow.js').default
+global.ele = electron

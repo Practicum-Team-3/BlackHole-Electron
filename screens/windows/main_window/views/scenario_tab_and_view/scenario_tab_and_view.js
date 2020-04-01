@@ -12,6 +12,8 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
     var scenario = scenario
     var machineInfo = null
     
+    var scenarioCloseCallback = null
+    
     //create a single scenario view (a div node)
     var scenarioViewNode = document.createElement("div")
     scenarioViewNode.className = "tab-pane scenarioView"
@@ -82,6 +84,10 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         tabLink.innerHTML = label
 
         tabNode.appendChild(tabLink)
+        
+        // Close button
+        addFloatingButtonNode(tabLink, function(){this.close()}.bind(self), "times-circle")
+        
         tabBarNode.appendChild(tabNode)
 
         
@@ -102,12 +108,23 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         return scenario
     }
     
+    this.select = function(){
+        $(tabNode.firstElementChild).tab('show')
+    }
+    
+    this.onClose = function(callback){
+        scenarioCloseCallback = callback
+    }
+    
     /**
      * @function close
      * @description Call to perform cleanup before closing the tab and view
      */
     this.close = function(){
-        
+        scenarioViewNode.remove()
+        tabNode.remove()
         machineInfo.clear()
+        
+        scenarioCloseCallback(scenario.getName())
     }
 }

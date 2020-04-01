@@ -1,12 +1,14 @@
+var Modifiable = require('./core/modifiable.js').Modifiable
 /**
  * @class Scenarios
- * @version 2.0.1
- * @description Manager of scenarios.
+ * @version 2.2.0
+ * @description Modifiable. Manager of scenarios.
  *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
  * @param {WidowSettings} widowSettings Connection details to Widow backend
  */
 function Scenarios(widowSettings){
+    Modifiable.call(this)
     var widowSettings = widowSettings
     
     this.getAddress = function(){
