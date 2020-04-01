@@ -104,7 +104,7 @@ function ProgramListOverview(programListNode){
     this.programsModified = function(target, modificationType, arg){
         switch(modificationType){
             case modificationTypes.ADDED_ELEMENT:
-                if (!arg.getIsAttacker()){
+                if (!arg.getIsExploit()){
                     var group = this.addExploitSection(arg.name, arg)
                     $(group.lastChild).collapse('show')
                 }

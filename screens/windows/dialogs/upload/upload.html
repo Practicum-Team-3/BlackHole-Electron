@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <meta charset="UTF-8">
     <title>Connect</title>
-
+    <script src="../../core_components/node_combos/utilities.js"></script>
     <script src="../../../../Electron/widow/widow.js"></script>
     <script>
         try{
             window.$ = window.jQuery = require("../../../../Electron/node_modules/jquery/dist/jquery")
         }catch{}
+            
+        var isUploadingExploit = getUrlVars()["exp"]
 
         //Creates a new scenario object
         function uploadFile(){
@@ -68,7 +70,7 @@
                 <textarea rows="3" class="form-control disableable" placeholder="Add a descrition..." required id="description"></textarea>
             </div>
             
-            <button class="btn btn-primary disableable float-right ml-3" type="submit" id="subm">Create</button>
+            <button class="btn btn-primary disableable float-right ml-3" type="submit" id="subm">Upload</button>
             <button class="btn btn-danger disableable float-right" type="button" onclick="cancel()">Cancel</button>
         </form>
     </div>
