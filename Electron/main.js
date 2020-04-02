@@ -23,7 +23,7 @@ function createWidowAddressDialog(){
     })
 
     // and load the index.html of the app.
-    addressDialog.loadFile('../screens/windows/dialogs/widow_address/widow_address.html')
+    addressDialog.loadFile('./screens/windows/dialogs/widow_address/widow_address.html')
     
 }
 
@@ -50,7 +50,7 @@ function createWindow () {
     })
     
     // and load the index.html of the app.
-    mainWindow.loadFile('../screens/windows/welcome_window/welcome_window.html')
+    mainWindow.loadFile('./screens/windows/welcome_window/welcome_window.html')
     
 }
 

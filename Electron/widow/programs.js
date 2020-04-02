@@ -1,6 +1,5 @@
 var Modifiable = require('./core/modifiable.js').Modifiable
 var Loadable = require('./core/loadable.js').Loadable
-var FormData = require('form-data');
 /**
  * @class Programs
  * @version 0.2.0

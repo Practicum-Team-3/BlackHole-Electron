@@ -6,7 +6,7 @@ var overviewsPanel = null
 var scenarioTabAndViews = {}
 
 try{
-    window.$ = window.jQuery = require("../../../Electron/node_modules/jquery/dist/jquery")
+    window.$ = window.jQuery = require("../../../node_modules/jquery/dist/jquery")
 }catch{
     console.log("failed to load jquery")
 }
