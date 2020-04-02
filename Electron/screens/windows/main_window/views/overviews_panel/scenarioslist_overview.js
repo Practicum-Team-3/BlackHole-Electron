@@ -1,15 +1,11 @@
-import widow from "../../../../../widow/widow"
-
 /**
  * @class Overview
  * @description Model for the overview panel
  */
 function ScenariosListOverview(scenariosListNode){
-
     this.nameForTabLabel = "ScenariosList"
     this.scenariosListNode = scenariosListNode
     this.scenariosObject = null
-
     var sectionsContainer = document.createElement("div")
     sectionsContainer.className = "fillSpace columnFlex ScenariosListOverviewSectionsContainer"
 
@@ -17,7 +13,6 @@ function ScenariosListOverview(scenariosListNode){
 
     var sections = ["scenariosListCollapsibles", "scenariosListOptions"]
     this.interface.addMultipleSections(sections)
-
     //populate the collapsibles
     this.interface.selectNode(this.interface.getNodes()["scenariosListCollapsibles"])
     this.interface.getNodes()["scenariosListCollapsibles"].style = "overflow-y:scroll; overflow-x:hidden"
@@ -71,7 +66,6 @@ function ScenariosListOverview(scenariosListNode){
         showToast("Include Node", "Implemented but disabled")
         // netGraph.addNewNode(boxName, "victim")
     }
-
 
     this.removeScenario = function(strScenarioName, scenario){
         console.log(strScenarioName)
