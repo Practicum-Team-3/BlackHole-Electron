@@ -1,11 +1,11 @@
 /**
- * @class ExploitOverview
- * @description Exploit List in the overview panel
+ * @class ProgramOverview
+ * @description Program List in the overview panel
  */
-function ExploitListOverview(exploitListNode){
+function ProgramListOverview(programListNode){
     
     this.nameForTabLabel = "ExploitList"
-    this.exploitListNode = exploitListNode
+    this.exploitListNode = programListNode
 
     var sectionsContainer = document.createElement("div")
     sectionsContainer.className = "fillSpace columnFlex ExploitListOverviewSectionsContainer"
@@ -40,7 +40,6 @@ function ExploitListOverview(exploitListNode){
         
         var group = interface.addCollapsibleGroup(null, exploitName, "bomb")
         // General details of exploit
-
         interface.addLabelPair(null, "Name: ", "exploitName", exploitName)
         interface.addLabelPair(null, "OS(s): ", "exploitOs", exploit.getOs())
         interface.addLabelPair(null, "Target Program: ", "exploitTarget", exploit.getDescription())
@@ -58,7 +57,7 @@ function ExploitListOverview(exploitListNode){
     }
     
     // Populate the form
-    var exploits = widow.programs.getAllExploits()
+    var exploits = widow.programs.getAllNonExploits()
     for (exploitName in exploits){
         this.addExploitSection(exploitName, exploits[exploitName])
     }
@@ -70,7 +69,7 @@ function ExploitListOverview(exploitListNode){
 
     //var optionButtons = {"Add Exploit_primary":null}
     //interface.addOverviewOptionsButtons(optionButtons)
-    interface.addSingleButton("Upload Exploit", "col mt-2 mb-2 btn btn-primary", function(){openWindow('../screens/windows/dialogs/upload/upload.html', 530, 355, false, true)})
+    interface.addSingleButton("Upload Program", "col mt-2 mb-2 btn btn-primary", function(){openWindow('./screens/windows/dialogs/upload/upload.html', 530, 355, false, true)})
 
     this.exploitListNode.appendChild(sectionsContainer)
     
@@ -105,7 +104,7 @@ function ExploitListOverview(exploitListNode){
     this.programsModified = function(target, modificationType, arg){
         switch(modificationType){
             case modificationTypes.ADDED_ELEMENT:
-                if (arg.getIsExploit()){
+                if (!arg.getIsExploit()){
                     var group = this.addExploitSection(arg.name, arg)
                     $(group.lastChild).collapse('show')
                 }
@@ -113,5 +112,4 @@ function ExploitListOverview(exploitListNode){
         }
     }.bind(this)
     onModified(widow.programs, this.programsModified)
-    
 }

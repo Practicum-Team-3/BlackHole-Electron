@@ -13,12 +13,15 @@ function OverviewsPanel(overviewsPanelNode){
     //#ffc107
     //----------------------------------------------------------------
     //Create instance for ScenariosListOverview
+
+    console.log("populating scenarios list...")
     this.scenariosListNode = document.getElementById("scenarioListOverview")
     this.scenariosListNode.className = "scenariosListNode"
     this.scenariosListOverview = new ScenariosListOverview(this.scenariosListNode)
     this.scenariosListOverview.setScenarios(widow.scenarios)
 
     //Create instance for BoxesListOverview
+    console.log("populating boxeslist...")
     this.boxesListNode = document.getElementById("boxesListOverview")
     this.boxesListNode.className = "boxesListNode"
     this.boxesListOverview = new BoxesListOverview(this.boxesListNode)

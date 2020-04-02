@@ -39,12 +39,13 @@ function Loadable(widowSettings, loadPath){
             .then(function (response) {
                 // Keep list locally
                 //TODO: Improve wrapper integration
+                console.log(response.data)
                 this.items = response.data.body
                 resolve()
 
             }.bind(this)).catch(function (error) {
                 // handle error
-                //console.log(error);
+                console.log(error);
                 reject(error)
 
             })

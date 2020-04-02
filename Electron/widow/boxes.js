@@ -9,7 +9,7 @@ var Loadable = require('./core/loadable.js').Loadable
  */
 function Boxes(widowSettings){
     //Inherit loading and item handling capabilities from loadable
-    Loadable.call(this, widowSettings, "/boxes/all")
+    Loadable.call(this, widowSettings, "/vagrant/boxes/all")
     
 }
 

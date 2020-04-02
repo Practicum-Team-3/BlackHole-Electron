@@ -8,6 +8,7 @@ var Modifiable = require('./core/modifiable.js').Modifiable
  * @param {WidowSettings} widowSettings Connection details to Widow backend
  */
 function Scenarios(widowSettings){
+    console.log("initializing Scenarios object...")
     Modifiable.call(this)
     var widowSettings = widowSettings
     
@@ -24,7 +25,7 @@ function Scenarios(widowSettings){
     
     //Flag to indicate if the initial loading has been done
     this.hasDoneInitialLoad = false
-    
+    console.log("Scenarios object initialized!")
 }
 
 //========================
@@ -229,23 +230,27 @@ Scenarios.prototype.removeScenarioByName = function(scenarioName){
 // === Contact Widow and get the list of scenarios === //
 Scenarios.prototype.loadScenarios = function(){
     return new Promise(function(resolve, reject){
-        
         var axios = require('axios')
-        
-        axios.get(this.getAddress()+"/scenarios/all")
+        console.log("loading axios...")
+        axios.get(this.getAddress() + "/scenarios/all")
         .then(function (response) {
             // Keep list locally
             //TODO: Improve wrapper integration
+            console.log("axios loaded succesfully")
+            console.log("scenarios: " + response.data.body.scenarios)
+
             this.nameList = response.data.body.scenarios
             resolve()
-            
         }.bind(this)).catch(function (error) {
+            
             // handle error
+            console.log("axios encountered a problem")
             console.log(error);
             reject()
             
         })
     }.bind(this))
+    
 }
 
 // === Load a specific scenario into memory === //
@@ -296,7 +301,7 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
         // Check for the existance of the "new scenario", should fail if already exists
         if (!this.nameList.includes(scenarioName)){
             var axios = require('axios')
-            
+            console.log(this.getAddress()+"/scenarios/newEmpty/"+encodeURIComponent(scenarioName))
             axios.get(this.getAddress()+"/scenarios/newEmpty/"+encodeURIComponent(scenarioName))
             .then(function (response) {
                 // Add to the loaded dictionary

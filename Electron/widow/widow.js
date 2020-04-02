@@ -1,5 +1,6 @@
 const electron = require('electron')
-const defaultWidowAddress = "http://localhost:5000"
+// const defaultWidowAddress = "http://localhost:5000"
+const defaultWidowAddress = "http://172.18.128.1:8080"
 
 /**
  * @class Widow
@@ -30,8 +31,11 @@ function Widow(){
  * @returns {Promise} Promise for the completion of the link and sync
  */
 Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
+    console.log("running linkAndSync....")
+
     this.widowSettings.setAddress(address)
     syncUpdate(10)
+    
     return this.scenarios.loadScenarios()
     .then(function(){
         syncUpdate(20)
@@ -40,12 +44,14 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
         
     }.bind(this))
     .then(function(){
+        console.log("got scenarios!")
         syncUpdate(50)
         //Load available boxes
         return this.boxes.load()
         
     }.bind(this))
     .then(function(){
+        console.log("got boxes!")
         syncUpdate(70)
         //Load available programs
         return this.programs.load()
@@ -151,5 +157,6 @@ function emitModifiedEvent(modifiable, ignoredCallback, eventType, eventArg){
  * @constant {Object} modificationTypes Generic modification types for use with Modifiable
  */
 const modificationTypes = {
-        ADDED_ELEMENT: "addedElement"   // Reference to new element in eventArg
+        ADDED_ELEMENT: "addedElement",   // Reference to new element in eventArg
+        REMOVED_ELEMENT: "removedElement"
 }
