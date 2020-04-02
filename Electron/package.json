@@ -1,18 +1,19 @@
 {
-  "name": "blackhole-electron",
+  "name": "BlackHole",
   "version": "1.0.0",
-  "description": "Practicum Team 3 - BlackHole with Electron",
+  "description": "Client for Black Widow",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "author": "elfreddye",
+  "author": "Practicum Team 3",
   "license": "ISC",
   "devDependencies": {
     "axios": "^0.19.2",
-    "electron": "^8.0.3"
+    "electron": "^8.2.0"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "jquery": "^3.4.1",
     "jquery-ui": "^1.12.1"
   }
