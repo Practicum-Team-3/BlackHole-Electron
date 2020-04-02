@@ -1,6 +1,6 @@
 const electron = require('electron')
 // const defaultWidowAddress = "http://localhost:5000"
-const defaultWidowAddress = "http://172.18.128.2:5000"
+const defaultWidowAddress = "http://172.18.128.1:8080"
 
 /**
  * @class Widow
@@ -157,5 +157,6 @@ function emitModifiedEvent(modifiable, ignoredCallback, eventType, eventArg){
  * @constant {Object} modificationTypes Generic modification types for use with Modifiable
  */
 const modificationTypes = {
-        ADDED_ELEMENT: "addedElement"   // Reference to new element in eventArg
+        ADDED_ELEMENT: "addedElement",   // Reference to new element in eventArg
+        REMOVED_ELEMENT: "removedElement"
 }

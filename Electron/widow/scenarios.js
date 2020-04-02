@@ -238,7 +238,7 @@ Scenarios.prototype.loadScenarios = function(){
             //TODO: Improve wrapper integration
             console.log("axios loaded succesfully")
             console.log("scenarios: " + response.data.body.scenarios)
-            
+
             this.nameList = response.data.body.scenarios
             resolve()
         }.bind(this)).catch(function (error) {
@@ -301,7 +301,7 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
         // Check for the existance of the "new scenario", should fail if already exists
         if (!this.nameList.includes(scenarioName)){
             var axios = require('axios')
-            
+            console.log(this.getAddress()+"/scenarios/newEmpty/"+encodeURIComponent(scenarioName))
             axios.get(this.getAddress()+"/scenarios/newEmpty/"+encodeURIComponent(scenarioName))
             .then(function (response) {
                 // Add to the loaded dictionary

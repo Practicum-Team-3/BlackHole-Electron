@@ -1,3 +1,5 @@
+import widow from "../../../../../widow/widow"
+
 /**
  * @class Overview
  * @description Model for the overview panel
@@ -69,7 +71,15 @@ function ScenariosListOverview(scenariosListNode){
         showToast("Include Node", "Implemented but disabled")
         // netGraph.addNewNode(boxName, "victim")
     }
+
+
+    this.removeScenario = function(strScenarioName, scenario){
+        console.log(strScenarioName)
+        widow.scenarios.removeScenarioByName(strScenarioName)
+        emitModifiedEvent(widow.scenarios, null, modificationTypes.REMOVED_ELEMENT, scenario)
+    }
 }
+
 
 /**
  * @function setScenarios
@@ -131,7 +141,7 @@ ScenariosListOverview.prototype.addScenarioSection = function(scenario){
     this.interface.addLabelPair(null, "No. Machines:", "scenarioNoMachines", scenario.getAllMachines().length)
     this.interface.addLabelPair(null, "Status:", "scenarioStatus", "Running")
     var strScenarioName = scenario.getName();
-    this.interface.addOpenEditButtons(null, openScenarioByName.bind(event, strScenarioName), null, function () { showToast("DeleteScenarioOnServer", "Delete Scenario was clicked") })
+    this.interface.addOpenEditButtons(null, openScenarioByName.bind(event, strScenarioName), null, this.removeScenario.bind(event, strScenarioName, scenario))
     this.interface.selectNode(this.interface.getNode("scenariosListCollapsiblesForm"))
     
     return group
@@ -145,6 +155,11 @@ ScenariosListOverview.prototype.scenariosModified = function(target, modificatio
             $(group.lastChild).collapse('show')
             
             openScenario(arg)
+            break;
+
+        case modificationTypes.REMOVED_ELEMENT:
+            var group = this.addScenarioSection(arg)
+            $(group.lastChild).collapse('show')
             break;
     }
 }
