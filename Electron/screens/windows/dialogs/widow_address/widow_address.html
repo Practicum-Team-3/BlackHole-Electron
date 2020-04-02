@@ -13,7 +13,9 @@
             }catch{}
             
             function init(){
+                console.log("initiating...")
                 document.getElementById("address").value = widow.defaultAddress
+                console.log("init done!")
             }
             
             function setDisabled(disabled){
@@ -30,14 +32,11 @@
                 
                 widow.linkAndSync(document.getElementById("address").value, setProgress).then(function(){
                     electron.ipcRenderer.send("primaryLoad")
-                    
                 }).catch(function(error){
                     setDisabled(false)
                     setProgressHasError(true)
                     console.log(error)
-                    
                 })
-                
             }
             
             function setProgress(value){
