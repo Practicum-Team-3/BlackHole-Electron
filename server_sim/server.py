@@ -2,6 +2,18 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
+@app.route('/upload/filelist')
+def getFileList():
+  return "cpx"
+
+@app.route('/upload/deletefile/<file_name>')
+def deleteFile(file_name):
+  return "cox"
+
+@app.route('/upload/uploadFile', methods=['GET','POST'])
+def uploadFile():
+    return "cox"
+
 @app.route('/scenarios/newEmpty/<scenario_name>')
 def createScenario(scenario_name):
     return "cox"
@@ -113,7 +125,7 @@ def getScenario(scenario_name):
    }
 }'''
 
-@app.route('/scenarios/edit/<scenario_name>', methods = ['POST'])
+@app.route('/scenarios/edit', methods = ['POST'])
 def editScenario(scenario_name):
     return "cox"#jsonify(scenario_manager.editScenario(scenario_name ,  request.get_json()))
 
@@ -165,10 +177,6 @@ def testPing(scenario_name, source, destination):
   """
   return "???"
         
-@app.route('/uploadFile', methods = ['POST'])
-def uploadFile():
-  return "???"
-
 
 if __name__=="__main__":
     app.run()
