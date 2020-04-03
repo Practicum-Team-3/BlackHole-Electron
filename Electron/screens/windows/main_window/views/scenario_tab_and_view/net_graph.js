@@ -211,7 +211,7 @@ function NetGraph(scenario, parent){
             if(addressList.indexOf(netMask + "." + counters.join(".")) < 0){
                 return netMask + "." + counters.join(".")
             }else{
-                console.log(netMask + "." + counters.join("."))
+                
                 counters[i] += 1
                 counters[i] %= 256
                 if(counters[i] == 0){
@@ -674,7 +674,7 @@ function NetGraph(scenario, parent){
     this.addNewNode = function(machineName, machineType){
 
         if(this.nodesNamesIDs[machineName] != null && this.nodesNamesIDs[machineName] != undefined){
-            // machineName
+            machineName = machineName + generateUniqueId()
         }
 
         this.nodesNamesIDs[machineName] = machineName + "_" + generateUniqueId()
@@ -694,7 +694,7 @@ function NetGraph(scenario, parent){
         this.graphJSON["nodes"].push(newNode);
         // this.updateJSONString(this.graphJSON);
         // this.resetGraphData();
-        console.log(this.graphJSON)
+        
         //temporary workaround, uncomment code above once netmasks are implemented//////////////////////////////////////////////////////////
         this.connectToAll(newNode)
 
