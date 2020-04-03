@@ -10,6 +10,7 @@ function generateUniqueId(){
     idList.add(id)
     return id
 }
+var idList = new Set()
 
 /**
  * @function getUrlVars
@@ -22,4 +23,17 @@ function getUrlVars() {
         vars[key] = decodeURIComponent(value);
     });
     return vars;
+}
+
+/**
+ * @function setDisabled
+ * @description Set the disabled property of all elements of a specific class name
+ * @param {boolean} disabled        Value to set on disabled property
+ * @param {string} targetClassName Class name of the target elements
+ */
+function setDisabled(disabled, targetClassName){
+    var formElements = document.getElementsByClassName(targetClassName)
+    for (var i=0; i<formElements.length; i++){
+        formElements[i].disabled = disabled
+    }
 }

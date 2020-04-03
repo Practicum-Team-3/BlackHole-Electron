@@ -15,8 +15,7 @@ function createWidowAddressDialog(){
         },
         maximizable: false
     })
-    
-   // console.log(addressDialog.webContents)
+    addressDialog.removeMenu()
     
     addressDialog.on('closed', (e) => {
         app.quit()
@@ -50,7 +49,7 @@ function createWindow () {
     })
     
     // and load the index.html of the app.
-    mainWindow.loadFile('./screens/windows/welcome_window/welcome_window.html')
+    mainWindow.loadFile('./screens/windows/main_window/main_window.html')
     
 }
 
@@ -61,7 +60,7 @@ ipcMain.on('openChildWindow', (event, address, width, height, resizable, modal) 
     createChildWindow(mainWindow, address, width, height, resizable, modal)
 })
 
-function createChildWindow(parent, address, width, height, resizable, modal=false){
+function createChildWindow(parent, address, width, height, resizable, modal=false, showMenu=false){
     // Create the browser window.
     var window = new BrowserWindow({
         width: width,
@@ -69,16 +68,19 @@ function createChildWindow(parent, address, width, height, resizable, modal=fals
         parent: parent,
         resizable: resizable,
         modal: modal,
-        show: false,
+//        show: false,
         webPreferences: {
             nodeIntegration: true
         }
     })
+    if (!showMenu){
+        window.removeMenu()
+    }
     
     window.loadFile(address)
-    window.once('ready-to-show', () => {
-        window.show()
-    })
+//    window.once('ready-to-show', () => {
+//        window.show()
+//    })
 }
 
 //====================

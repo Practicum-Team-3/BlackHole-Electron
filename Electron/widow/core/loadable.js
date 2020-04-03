@@ -39,7 +39,6 @@ function Loadable(widowSettings, loadPath){
             .then(function (response) {
                 // Keep list locally
                 //TODO: Improve wrapper integration
-                console.log(response.data)
                 this.items = response.data.body
                 resolve()
 

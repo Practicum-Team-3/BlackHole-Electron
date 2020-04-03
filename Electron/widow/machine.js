@@ -7,8 +7,9 @@ var Modifiable = require('./core/modifiable.js').Modifiable
  *              
  * @param {string} descriptor Machine descriptor (JSON)
  */
-function Machine(descriptor){
+function Machine(descriptor, externalRename){
     Modifiable.call(this)
+    this.externalRename = externalRename
     
     this.descriptor = descriptor==null ? JSON.parse(require('./defaults.js').machineDescriptor) : descriptor
     
@@ -49,13 +50,13 @@ function Machine(descriptor){
  *              
  * @returns {string} String representation of the machine descriptor
  */
-Machine.prototype.getDescriptorAsString = function(){
+Machine.prototype.getDescriptor = function(){
     //Update shared folders
     this.descriptor["sharedFolders"] = this.getSharedFolders()
     
-    let stringDescriptor = JSON.stringify(this.descriptor)
+    //let stringDescriptor = JSON.stringify(this.descriptor)
     
-    return stringDescriptor
+    return this.descriptor
 }
 
 // === NAME
@@ -71,13 +72,28 @@ Machine.prototype.getName = function(){
 /**
  * @function setName
  * @description Set the internal name of the machine
- *              (discouraged) rename machine from scenario instead
+ *              To rename the machine internally and externally, call rename() instead
  * @private
  * @memberof Machine
  * @param {string} name
  */
 Machine.prototype.setName = function(name){
     this.descriptor["name"] = name
+}
+
+/**
+ * @function rename
+ * @description Asks the parent of the machine to change name externally
+ * @memberof Machine
+ * @param {string} newName
+ */
+Machine.prototype.rename = function(newName){
+    try{
+        this.externalRename(this.getName(), newName)
+    }catch{
+        console.log("Unable to call external rename")
+        console.log(this.externalRename)
+    }
 }
 
 // === OS

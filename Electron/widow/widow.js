@@ -1,6 +1,6 @@
 const electron = require('electron')
 // const defaultWidowAddress = "http://localhost:5000"
-const defaultWidowAddress = "http://172.18.128.1:8080"
+const defaultWidowAddress = "http://172.18.128.2:5000"
 
 /**
  * @class Widow
@@ -31,7 +31,7 @@ function Widow(){
  * @returns {Promise} Promise for the completion of the link and sync
  */
 Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
-    console.log("running linkAndSync....")
+    console.log("LinkAndSync....")
 
     this.widowSettings.setAddress(address)
     syncUpdate(10)
@@ -44,14 +44,14 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
         
     }.bind(this))
     .then(function(){
-        console.log("got scenarios!")
+        console.log("Loaded scenarios")
         syncUpdate(50)
         //Load available boxes
         return this.boxes.load()
         
     }.bind(this))
     .then(function(){
-        console.log("got boxes!")
+        console.log("Loaded boxes")
         syncUpdate(70)
         //Load available programs
         return this.programs.load()
@@ -114,7 +114,8 @@ try{
  * @function onModified
  * @description Helper for adding a modified callback to Modifiable objects
  * @param {Modifiable} modifiable Modifiable object to add listener to
- * @param {function} callback   Callback event listener
+ * @param {function} callback   Callback event listener. Callbacks can receive up to 3 parameters
+ * @see Modifiable.onModified()
  */
 function onModified(modifiable, callback){
     try{
@@ -150,7 +151,7 @@ function emitModifiedEvent(modifiable, ignoredCallback, eventType, eventArg){
     try{
         modifiable.emitModifiedEvent(ignoredCallback, eventType, eventArg)
     }catch{
-
+        console.log("emitModifiedEvent encountered an error")
     }
 }
 /**
@@ -158,5 +159,6 @@ function emitModifiedEvent(modifiable, ignoredCallback, eventType, eventArg){
  */
 const modificationTypes = {
         ADDED_ELEMENT: "addedElement",   // Reference to new element in eventArg
-        REMOVED_ELEMENT: "removedElement"
+        REMOVED_ELEMENT: "removedElement", // Pass reference to removed element in eventArg
+        DESTROYED: "destroyed", // Element being observed is being destroyed
 }

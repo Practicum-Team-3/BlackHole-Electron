@@ -49,6 +49,7 @@
 
         .form-group {
             text-align: left;
+            position: relative;
         }
 
     </style>
@@ -59,11 +60,12 @@
 <body>
     <div class="container">
         <br>
-        <h2>Upload</h2>
+        <h3>Upload</h3>
         <form onsubmit="uploadFile(); return false">
             <div class="form-group" id="rosvox">
                 <label for="name">File:</label>
-                <input type="file" class="form-control disableable" id="fileSelect" required>
+                <input type="file" class="form-control custom-file-input disableable" id="fileSelect" required>
+                <label class="custom-file-label" for="fileSelect">Choose file</label>
 
                 <label for="description">Description:</label>
                 <!--input type="text" class="form-control disableable" id="description" required>-->
@@ -74,5 +76,12 @@
             <button class="btn btn-danger disableable float-right" type="button" onclick="cancel()">Cancel</button>
         </form>
     </div>
+    
+    <script>
+        $(".custom-file-input").on("change", function() {
+          var fileName = $(this).val().split("\\").pop();
+          $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
 </body>
 </html>

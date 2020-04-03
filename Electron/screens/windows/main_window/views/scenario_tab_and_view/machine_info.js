@@ -1,4 +1,5 @@
 
+var machineInfoDefaultWidth = 300
 /**
  * @class MachineInfo
  * @description Model for the machine info panel
@@ -6,10 +7,12 @@
  */
 function MachineInfo(machineInfoNode){
     var self = this
+    this.parentNode = machineInfoNode
     this.machine = null
     
     // Create a form to put all of the components in
     var formNode = document.createElement("form")
+    formNode.style.width = machineInfoDefaultWidth+"px"
     formNode.setAttribute("onSubmit", "event.preventDefault(); return false")
     
     // Create a NodeCombos instance to add prepackaged components and keep a reference to them
@@ -34,7 +37,7 @@ function MachineInfo(machineInfoNode){
             return
         }
         var machine = this.machine
-        this.getNode("name").value = machine.getName()
+        this.getNode("rename").value = machine.getName()
         console.log(machine.getName())
         this.getNode("os").innerHTML = machine.getOs()
         this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
@@ -48,16 +51,21 @@ function MachineInfo(machineInfoNode){
      * @description Intended for use as a callback for whenever a node combo gets edited
      * @param {string} nodeName Name of the node element that got edited
      * @param {object} node     Reference to node that got edited
+     * @param {Any} Preprocessed value of the changed element
      */
-    this.onchange = function(nodeName, node){
-        console.log(nodeName)
-    }
+    this.onchange = function(nodeName, node, value){
+        this.machine[nodeName](node.value)
+    }.bind(this)
     
     addInterfaceNodes()
     
     // Generates the interface by making calls to NodeCombos (interface)
     function addInterfaceNodes(){
-    
+//        var floating = addFloatingButtonNode(formNode, function(){
+//            
+//        }, "eye-slash")
+//        floating.classList.add("pr-5")
+        
         // Computer icon
         addNode(formNode, "div", "bigIcon", "desktop")
         
@@ -65,7 +73,8 @@ function MachineInfo(machineInfoNode){
         interface.setOnchangeCallback(self.onchange)
         
         // General details
-        interface.addLabelAndInput(null, "Name:", "name", "")
+        interface.addLabelAndInput(null, "Name:", "rename", "")
+        addBrNode(formNode)
         interface.addLabelPair(null, "OS:", "os", "")
         interface.addLabelPair(null, "Type:", "machineType", "")
         interface.addLabelPair(null, "GUI:", "machineGui", "")
@@ -73,13 +82,24 @@ function MachineInfo(machineInfoNode){
         interface.addEditDeleteButtons("editMachineButton", function(){showToast("Edit Machine", "Not yet implemented")}, "deleteMachineButton", function(){showToast("Delete Machine", "Not yet implemented")})
         addBrNode(formNode)
 
+        // === Settings
+        interface.addCollapsibleGroup(null, "Settings", "tools", null, true)
+        
+        interface.addLabel(null, "CPUs:")
+        interface.addRangeAndValue("cpus", 1, 16, 1, 2)
+        interface.addLabel(null, "Base Memory (MB):")
+        interface.addRangeAndValue("baseMem", 512, 8192, 1, 2048)
+
+        
         // === Network
         // Create group, then add components into it
+        interface.deselectNode()
         interface.addCollapsibleGroup(null, "Network", "network-wired", null, true)
 
         interface.addLabelAndInput(null, "Network:", "networkValue", "")
         interface.addLabelPair(null, "IP:", "ipValue", "")
-
+        
+        
         // === Collector
         // Exit previous group, create new group, then add components into it
         interface.deselectNode()
@@ -91,7 +111,7 @@ function MachineInfo(machineInfoNode){
         interface.addCheckbox("systemLogs", "System Logs")
         interface.addCheckbox("apiCalls", "API Calls")
 
-        interface.addLabelAndSelect(null, "Start:", "startCondition", ["Total Eclipse"])
+        interface.addLabelAndSelect(null, "Start:", "startCondition", ["Total Eclipse", "Pandemic"])
         interface.addLabelAndSelect(null, "Stop:", "stopCondition", ["Earthquake"])
         interface.addCheckbox("timeout", "Timeout")
 
@@ -120,6 +140,7 @@ MachineInfo.prototype.setMachine = function(machine){
     this.clear()
     this.machine = machine
     onModified(this.machine, this.update)
+    this.parentNode.style.width = machineInfoDefaultWidth+"px"
     this.update()
 }
 
@@ -132,5 +153,6 @@ MachineInfo.prototype.clear = function(){
         return
     }
     removeOnModifiedListener(this.machine, this.update)
+    this.parentNode.style.width = ""
     this.machine = null
 }

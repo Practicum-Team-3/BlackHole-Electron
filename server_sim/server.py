@@ -126,7 +126,7 @@ def getScenario(scenario_name):
 }'''
 
 @app.route('/scenarios/edit', methods = ['POST'])
-def editScenario(scenario_name):
+def editScenario():
     return "cox"#jsonify(scenario_manager.editScenario(scenario_name ,  request.get_json()))
 
 @app.route('/scenarios/delete/<scenario_name>')

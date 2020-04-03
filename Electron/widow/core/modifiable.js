@@ -27,7 +27,8 @@ function Modifiable(){
      * @description Call to subscribe for when an edit occurs.
      *                  Be sure to call removeOnModifiedListener(), when appropriate, to avoid memory leaks
      * @memberof Modifiable
-     * @param {function} callback Reference to a method to be called upon the emission of an edit event
+     * @param {function} callback Reference to a callback function to be called upon the emission of an edit event.
+     *                            The callback receives up to 3 parameters: object being modified, (optional) modification type, (optional) modification parameter
      * @param {number} webContentsId Id of webContents that the callback belongs to
      */
     this.onModified = function(callback, webContentsId){
@@ -42,7 +43,7 @@ function Modifiable(){
 
             // Subscribe to event so all of the callbacks issued from this window are removed when it gets unloaded
             webContents.once('render-view-deleted', function(event){
-                console.log("Attempting to remove onmodified listeners for: "+event.sender.id)
+//                console.log("Attempting to remove onmodified listeners for: "+event.sender.id)
                 
                 // Iterate through all local callbacks added by this window that issued the event
                 this.getCallbacks()[event.sender.id].forEach(function(callback){
@@ -81,8 +82,8 @@ function Modifiable(){
      * @description After an edit, call this method to notify other listeners about the update
      * @memberof Modifiable
      * @param {function} ignoredCallback Callback to ignore when emitting the event. Usually this would be the updater's own callback
-     * @param {string} eventType Name of the event
-     * @param {Any} eventArg Argument tied to the event
+     * @param {string} eventType Optional: Name of the event
+     * @param {Any} eventArg Optional: Argument tied to the event
      */
     this.emitModifiedEvent = function(ignoredCallback, eventType, eventArg){
         var callbacks = this.getCallbacks()
