@@ -2,6 +2,22 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
+@app.route('/upload/filelist')
+def getFileList():
+  return "cpx"
+
+@app.route('/upload/deletefile/<file_name>')
+def deleteFile(file_name):
+  return "cox"
+
+@app.route('/upload/uploadFile', methods=['GET','POST'])
+def uploadFile():
+    return "cox"
+
+@app.route('/scenarios/newEmpty/<scenario_name>')
+def createScenario(scenario_name):
+    return "cox"
+
 @app.route('/scenarios/all')
 def getScenarios():
     return '''{
@@ -109,15 +125,20 @@ def getScenario(scenario_name):
    }
 }'''
 
-@app.route('/scenarios/edit/<scenario_name>', methods = ['POST'])
+@app.route('/scenarios/edit', methods = ['POST'])
 def editScenario(scenario_name):
     return "cox"#jsonify(scenario_manager.editScenario(scenario_name ,  request.get_json()))
 
-@app.route('/scenarios/newEmpty/<scenario_name>')
-def createScenario(scenario_name):
-    return "cox"
-
-@app.route('/boxes/all')
+@app.route('/scenarios/delete/<scenario_name>')
+def deleteScenario(scenario_name):
+    """
+    Edits a current scenario with a JSON file
+    :param scenario_name: String with the scenario name
+    :return: True if the scenario has been successfully edited, otherwise False
+    """
+    return "jsonify(scenario_manager.deleteScenario(scenario_name))"
+        
+@app.route('/vagrant/boxes/all')
 def getAvailableBoxes():
     return '''{
         "response": true,
@@ -132,7 +153,7 @@ def getAvailableBoxes():
         }
     }'''
 
-@app.route('/vagrantFiles/<scenario_name>/all')
+@app.route('/vagrant/<scenario_name>/all')
 def createVagrantFiles(scenario_name):
     return "cox"#jsonify(vagrant_manager.createVagrantFiles(scenario_name))
         
@@ -156,10 +177,6 @@ def testPing(scenario_name, source, destination):
   """
   return "???"
         
-@app.route('/uploadFile', methods = ['POST'])
-def uploadFile():
-  return "???"
-
 
 if __name__=="__main__":
     app.run()
