@@ -45,7 +45,9 @@ function ScenariosListOverview(scenariosListNode){
     this.getInterface = function(){
         return this.interface
     }
-    
+
+    this.removeScenarioSectionBound = this.removeScenarioSection.bind(this)
+
     this.getNode = function(nodeName){
         return this.getInterface().getNodes()[nodeName]
     }
@@ -84,7 +86,9 @@ ScenariosListOverview.prototype.setScenarios = function (scenariosObject){
     this.clear()
     this.scenariosObject = scenariosObject
     //console.log(scenariosObject.getAllScenarios());
-    onModified(this.scenariosObject, this.scenariosModified.bind(this))
+    //onModified(this.scenariosObject, this.scenariosModified.bind(this))
+    this.onScenarioModified = this.scenariosModified.bind(this);
+    onModified(this.scenariosObject, this.onScenarioModified)
     this.update()
 }
 
@@ -125,7 +129,7 @@ ScenariosListOverview.prototype.update = function(){
 }
 
 ScenariosListOverview.prototype.addScenarioSection = function(scenario){
-    var group = this.interface.addCollapsibleGroup(null, scenario.getName(), "server", "#scenarioListForm")
+    var group = this.interface.addCollapsibleGroup(scenario.getName(), scenario.getName(), "server", "#scenarioListForm")
     // General details
     this.interface.addLabelPair(null, "Name:", "scenarioName", scenario.getName())
 
@@ -141,6 +145,14 @@ ScenariosListOverview.prototype.addScenarioSection = function(scenario){
     return group
 }
 
+//Remove Scenarios
+ScenariosListOverview.prototype.removeScenarioSection = function (scenario) {    
+    var group = this.interface.getNode(scenario.getName());
+    //console.log(group);
+    group.remove();
+    
+}
+
 ScenariosListOverview.prototype.scenariosModified = function(target, modificationType, arg){
     
     switch(modificationType){
@@ -152,8 +164,8 @@ ScenariosListOverview.prototype.scenariosModified = function(target, modificatio
             break;
 
         case modificationTypes.REMOVED_ELEMENT:
-            var group = this.addScenarioSection(arg)
-            $(group.lastChild).collapse('show')
+            var group = this.removeScenarioSectionBound(arg)
+            //$(group.lastChild).collapse('show')
             break;
     }
 }
