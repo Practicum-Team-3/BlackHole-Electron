@@ -76,7 +76,7 @@ function NetGraph(scenario, parent){
         for(var i = 0; i<machines.length; i++){
             names[machines[i].getName()] += 1
             if(names[machines[i].getName()] > 1){
-                showToast("Duplicate Machine Names", "This scenario contains machine with duplicate names, can't show graph.")
+                showToast("Duplicate Machine Names", "This scenario contains machines with duplicate names, can't show graph.")
                 return
             }
         }
@@ -648,9 +648,18 @@ function NetGraph(scenario, parent){
      * @param {String} nodeJSON JSON object to connect to all.
      */
     this.connectToAll = function(nodeJSON){
-        for(var i = 0; i<this.graphJSON["nodes"].length; i++){
-            if(this.graphJSON["nodes"][i] != nodeJSON){
-                this.connectNodes(nodeJSON, this.graphJSON["nodes"][i])
+
+        if(this.graphJSON["nodes"].length > 1){
+            for(var i = 0; i<this.graphJSON["nodes"].length; i++){
+                if(this.graphJSON["nodes"][i] != nodeJSON){
+                    this.connectNodes(nodeJSON, this.graphJSON["nodes"][i])
+                }
+            }
+        }else{
+            if(this.graphJSON["nodes"].length != 0){
+                this.svg.selectAll("*").remove();
+                this.resetGraphData();
+                this.updateScenarioFromJSONGraph(this.graphJSON)
             }
         }
     }
@@ -663,6 +672,10 @@ function NetGraph(scenario, parent){
      * @param {String} machineType either 'victim' or 'attacker'.
      */
     this.addNewNode = function(machineName, machineType){
+
+        if(nodesNamesIDs[machineName] != null && nodesNamesIDs[machineName] != undefined){
+            // machineName
+        }
 
         this.nodesNamesIDs[machineName] = machineName + "_" + generateUniqueId()
         //Clone an element from the graph.
@@ -681,11 +694,9 @@ function NetGraph(scenario, parent){
         this.graphJSON["nodes"].push(newNode);
         // this.updateJSONString(this.graphJSON);
         // this.resetGraphData();
-
-
+        console.log(this.graphJSON)
         //temporary workaround, uncomment code above once netmasks are implemented//////////////////////////////////////////////////////////
         this.connectToAll(newNode)
-
 
         //update the scenario object
         this.updateScenarioFromJSONGraph(this.graphJSON)
