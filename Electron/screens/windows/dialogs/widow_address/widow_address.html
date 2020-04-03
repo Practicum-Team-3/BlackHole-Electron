@@ -7,6 +7,8 @@
         <title>Connect</title>
     
         <script src="../../../../widow/widow.js"></script>
+        <script src="../../core_components/node_combos/utilities.js"></script>
+        
         <script>
             try{
                 window.$ = window.jQuery = require("../../../../node_modules/jquery/dist/jquery")
@@ -18,22 +20,15 @@
                 console.log("init done!")
             }
             
-            function setDisabled(disabled){
-                var formElements = document.getElementsByClassName("disableable")
-                for (var i=0; i<formElements.length; i++){
-                    formElements[i].disabled = disabled
-                }
-            }
-            
             function setAddress(){
-                setDisabled(true)
+                setDisabled(true, "disableable")
                 setProgress(0)
                 setProgressHasError(false)
                 
                 widow.linkAndSync(document.getElementById("address").value, setProgress).then(function(){
                     electron.ipcRenderer.send("primaryLoad")
                 }).catch(function(error){
-                    setDisabled(false)
+                    setDisabled(false, "disableable")
                     setProgressHasError(true)
                     console.log(error)
                 })
@@ -57,6 +52,7 @@
         <script src="../../../../node_modules/jquery/dist/jquery.js"></script>
 		<link rel="stylesheet" href="../../core_components/css/Bootstrap/bootstrap.css">
 		<script src="../../core_components/css/bootstrap/bootstrap.js"></script>
+        
         <style type="text/css">
             body{
                 text-align: center;

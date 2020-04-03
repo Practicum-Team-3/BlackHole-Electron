@@ -83,6 +83,7 @@ body {
 
 .networkGraphContainer{
     background-color: #222724;
+    flex-shrink: 2;
     flex-grow: 3;
     overflow: hidden;
     position: relative;
@@ -108,7 +109,9 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     background-color: white;
-    width: 300px;
+    width: 0;
+    transition: width 0.3s;
+    transition-timing-function: ease-out;
 }
 
 /* Form elements */

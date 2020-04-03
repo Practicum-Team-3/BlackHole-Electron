@@ -33,6 +33,11 @@ function Scenario(descriptor){
      */
     this.vulnerabilityInfo = new VulnerabilityInfo(this.descriptor["vulnerability_info"])
     
+    //
+    this.renameCallback = function(oldName, newName){
+        this.renameMachine(oldName, newName)
+    }.bind(this)
+    
     // Create machine objects from the descriptor
     this.createMachinesFromDescriptor()
 }
@@ -50,7 +55,7 @@ Scenario.prototype.getDescriptorAsString = function(){
     this.descriptor["machines"] = {}
     // Add machines to descriptor
     for (machineName in this.machines){
-        this.descriptor["machines"][machineName] = this.machines[machineName].getDescriptorAsString()
+        this.descriptor["machines"][machineName] = this.machines[machineName].getDescriptor()
     }
     let stringDescriptor = JSON.stringify(this.descriptor)
     //Clear machines again
@@ -115,7 +120,7 @@ Scenario.prototype.setId = function(id){
  * @returns {string} Scenario description
  */
 Scenario.prototype.getDescription = function(){
-    return this.descriptor["description"]
+    return ""//this.descriptor["description"]
 }
 
 /**
@@ -125,7 +130,7 @@ Scenario.prototype.getDescription = function(){
  * @param {string} description Scenario description/summary
  */
 Scenario.prototype.setDescription = function(description){
-    this.descriptor["description"] = description
+    //this.descriptor["description"] = description
 }
 
 // === Creation date
@@ -352,7 +357,7 @@ Scenario.prototype.getMachineNamesList = function(){
  * @returns {Machine} New Machine instance
  */
 Scenario.prototype.createNewMachine = function(machineName){
-    let newMachine = new Machine()
+    let newMachine = new Machine(null, this.renameCallback)
     newMachine.setName(machineName)
     this.addMachine(newMachine)
     return newMachine
@@ -423,7 +428,7 @@ Scenario.prototype.getMachineByName = function(machineName){
 Scenario.prototype.createMachinesFromDescriptor = function(){
     
     for (machineName in this.descriptor["machines"]){
-        this.addMachine(new Machine(this.descriptor["machines"][machineName]))
+        this.addMachine(new Machine(this.descriptor["machines"][machineName], this.renameCallback))
     }
 }
 

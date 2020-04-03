@@ -74,7 +74,7 @@ Programs.prototype.addProgram = function(formData, name, description, os, isExpl
         //Get axios in the scene now!
         var axios = require('axios')
 
-        axios.post(this.getAddress()+"/uploadFile", formData)
+        axios.post(this.getAddress()+"/upload/uploadFile", formData)
         .then(function (response) {
 
             // Create default instance of Program

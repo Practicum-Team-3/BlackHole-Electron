@@ -70,7 +70,9 @@ function ScenariosListOverview(scenariosListNode){
     }
 
     this.removeScenario = function(strScenarioName, scenario){
+        console.log(scenario)
         console.log(strScenarioName)
+        emitModifiedEvent(scenario, null, modificationTypes.DESTROYED)
         widow.scenarios.removeScenarioByName(strScenarioName)
         emitModifiedEvent(widow.scenarios, null, modificationTypes.REMOVED_ELEMENT, scenario)
     }

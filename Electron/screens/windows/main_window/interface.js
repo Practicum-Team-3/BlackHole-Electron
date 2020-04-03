@@ -1,6 +1,5 @@
 var tabBarNode = null
 var scenarioViewsNode = null
-var idList = new Set()
 var overviewsPanel = null
 // To store references to central views indexed by scenario name
 var scenarioTabAndViews = {}
@@ -133,6 +132,13 @@ function selectFirstScenarioTab(){
     for (scenarioName in scenarioTabAndViews){
         scenarioTabAndViews[scenarioName].select()
         break;
+    }
+}
+
+function closeScenario(scenario){
+    var tabAndView = scenarioTabAndViews[scenario.getName()]
+    if (tabAndView!=null){
+        tabAndView.close()
     }
 }
 

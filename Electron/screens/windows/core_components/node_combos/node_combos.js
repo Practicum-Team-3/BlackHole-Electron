@@ -121,7 +121,15 @@ function NodeCombos(parentNode){
      */
     this.onchange = (function(event){
         if (onchangeCallback!=null){
-            onchangeCallback(event.target.getAttribute("comboname"), event.target)
+            var target = event.target
+            // Preprocess value (for when the element does not already return the desired value format)
+            var value = target.value
+            switch (target.type){
+                case "select-one": 
+                    value = target.value == "on" ? true : false
+                    break;
+            }
+            onchangeCallback(event.target.getAttribute("comboname"), event.target, value)
         }
     }).bind(this)
 }
@@ -195,6 +203,13 @@ NodeCombos.prototype.addLabelPair = function(leftLabelName, leftLabelText, right
     this.addReferenceToNode(rightLabelName, rightLabelNode)
     
     this.currentNode.appendChild(rowNode)
+}
+
+NodeCombos.prototype.addLabel = function(labelName, labelText){
+    
+    var labelNode = addLabelNode(this.currentNode, "ml-4", labelText)
+    
+    this.addReferenceToNode(labelName, labelNode)
 }
 
 /**
@@ -293,7 +308,7 @@ NodeCombos.prototype.addLabelAndInput = function(labelName, labelText, inputName
     
     var inputId = generateUniqueId()
     
-    var labelNode = addLabelNode(rowNode, "col-5 alignRight", labelText, inputId)
+    var labelNode = addLabelNode(rowNode, "col-5 my-1 alignRight", labelText, inputId)
     var inputNode = addInputNode(rowNode, "col form-control mb-1 mr-4", "text", inputText)
     
     inputNode.setAttribute("id", inputId)
@@ -316,7 +331,7 @@ NodeCombos.prototype.addLabelAndInput = function(labelName, labelText, inputName
 NodeCombos.prototype.addLabelAndSelect = function(labelName, labelText, selectName, selectOptions){
     var rowNode = this.getNewRow()
     
-    var labelNode = addLabelNode(rowNode, "col-5 alignRight", labelText)
+    var labelNode = addLabelNode(rowNode, "col-5 my-1 alignRight", labelText)
     var selectNode = addSelectNode(rowNode, "col form-control mb-1 mr-4", selectOptions)
     
     this.addReferenceToNode(labelName, labelNode)
@@ -339,6 +354,29 @@ NodeCombos.prototype.addCheckbox = function(checkboxName, labelText){
     var checkboxNode = addCheckboxNode(rowNode, "col form-check-label alignLeft", labelText)
     
     this.addReferenceAndListenerToNode(checkboxName, checkboxNode)
+    
+    this.currentNode.appendChild(rowNode)
+}
+
+/**
+ * @function addRangeAndValue
+ * @param {string} rangeName Name to give the range on the local reference
+ * @param   {number} min       Minimum value for the range
+ * @param   {number} max       Maximum value for the range
+ * @param   {number} step      Step size
+ * @param   {number} value     Starting value
+ */
+NodeCombos.prototype.addRangeAndValue = function(rangeName, min, max, step, value){
+    var rowNode = this.getNewRow()
+    
+    var rangeNode = addRangeNode(rowNode, "custom-range col-9 pl-5", min, max, step, value)
+    var labelNode = addLabelNode(rowNode, "col-3 alignLeft", value)
+    
+    rangeNode.oninput = function(event){
+        this.innerHTML = event.target.value
+    }.bind(labelNode)
+    
+    this.addReferenceAndListenerToNode(rangeName, rangeNode)
     
     this.currentNode.appendChild(rowNode)
 }

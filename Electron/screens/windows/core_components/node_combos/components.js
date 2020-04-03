@@ -127,7 +127,7 @@ function addButtonNode(node, className, onClick, innerHTML){
 }
 
 function addFloatingButtonNode(node, onClick, icon){
-    addButtonNode(node, "floatingIconButton", onClick, icon)
+    return addButtonNode(node, "floatingIconButton", onClick, icon)
 }
 
 /**
@@ -228,3 +228,25 @@ function addItemToList(listNode, className, innerHTML, itemAction, detailAction,
     return itemNode
 }
 
+/**
+ * @function addRangeNode
+ * @param   {object} node      Node to add the range to
+ * @param   {string} className Style classes to give the range node
+ * @param   {number} min       Minimum value for the range
+ * @param   {number} max       Maximum value for the range
+ * @param   {number} step      Step size
+ * @param   {number} value     Starting value
+ * @returns {object The range node that was added
+ */
+function addRangeNode(node, className, min, max, step, value){
+    var rangeNode = document.createElement("input")
+    rangeNode.className = className
+    rangeNode.setAttribute("type", "range")
+    rangeNode.min = min
+    rangeNode.max = max
+    rangeNode.step = step
+    rangeNode.value = value
+    
+    node.appendChild(rangeNode)
+    return rangeNode
+}

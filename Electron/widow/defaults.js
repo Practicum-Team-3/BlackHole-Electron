@@ -1,19 +1,18 @@
 module.exports.scenarioDescriptor = '{\
     "scenario_name": "",\
-    "scenario_id": "",\
-    "description": "",\
-    "creation_date": "",\
-    "last_accessed": "",\
+    "scenario_id": "928376",\
+    "creation_date": "02/03/2020 21:22:38",\
+    "last_accessed": "02/03/2020 21:22:38",\
     "exploit_info": {\
-        "name": "",\
-        "type": "",\
-        "download_link": ""\
+        "name": "spl",\
+        "type": "spl",\
+        "download_link": "link"\
     },\
     "vulnerability_info": {\
-        "name": "",\
-        "type": "",\
-        "cve_link": "",\
-        "download_link": ""\
+        "name": "name",\
+        "type": "type",\
+        "cve_link": "link",\
+        "download_link": "link"\
     },\
     "machines": {}\
 }'

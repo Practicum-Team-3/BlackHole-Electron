@@ -28,6 +28,17 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
     //Go deeper into the creation for inner sections
     createMainSectionsForScenarioView()
     
+    // Subscribe to edits
+    this.scenarioModified = function(modified, modificationType, arg){
+        switch(modificationType){
+            case modificationTypes.DESTROYED://This scenario was deleted, need to close tab
+               this.close()
+            break;
+        }
+        
+    }.bind(this)
+    onModified(scenario, this.scenarioModified)
+    
     
     /**
      * @function createMainSectionsForScenarioView

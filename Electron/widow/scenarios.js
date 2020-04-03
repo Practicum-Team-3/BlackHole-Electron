@@ -1,7 +1,7 @@
 var Modifiable = require('./core/modifiable.js').Modifiable
 /**
  * @class Scenarios
- * @version 2.2.1
+ * @version 2.2.2
  * @description Modifiable. Manager of scenarios.
  *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
@@ -104,7 +104,9 @@ Scenarios.prototype.renameScenario = function(oldName, newName){
    
 /**
  * @function addScenario
- * @description Adds a scenario instance to the list of scenarios in Widow
+ * @description Adds a scenario instance to the list of scenarios in Widow.
+ *              The scenario is only available locally after having been successfuly added to Black-Widow
+ *              Checks for duplication and rejects the promise if so.
  * @memberof Scenarios
  *
  * @param {Scenario} scenario - A Scenario instance to add to the list
@@ -117,16 +119,18 @@ Scenarios.prototype.addScenario = function(scenario){
             // declare new scenario to Widow
             this.declareScenarioByName(scenario.getName())
             .then(function(){
-                this.nameList.push(scenario.getName())
+                //Finally add the actual scenario info
+                //Scenario was already included, so just add (or overwrite) to loaded
+                this.loaded[scenario.getName()] = scenario
                 resolve()
                 
             }.bind(this)).catch(function(){
                 reject()
                 
             }.bind(this))
+        }else{
+            reject()
         }
-        //Scenario was already included, so just add (or overwrite) to loaded
-        this.loaded[scenario.getName()] = scenario
     }.bind(this))
     
 }
@@ -162,7 +166,8 @@ Scenarios.prototype.getScenarioBeingCreated = function(){
 /**
  * @function completeScenarioCreation
  * @description Adds the scenario created after a call to createNewScenario() to the list of scenarios in widow
- *              and saves the scenario back to the widow backend
+ *              and saves the scenario back to the widow backend.
+ *              Warning: The scenario is not part of the local set until the whole process is completed.
  * @memberof Scenarios
  * @returns {Promise} Promise for the completion of the scenario creation process
  */
@@ -171,6 +176,7 @@ Scenarios.prototype.completeScenarioCreation = function(){
         if (this.scenarioLimbo!=null){
             this.addScenario(this.scenarioLimbo)
             .then(function(){
+                // By this point, the scenario is 
                 var scenarioName = this.scenarioLimbo.getName()
                 this.scenarioLimbo = null
                 return this.saveScenarioByName(scenarioName)
@@ -199,18 +205,19 @@ Scenarios.prototype.completeScenarioCreation = function(){
 Scenarios.prototype.removeScenarioByName = function(scenarioName){
     //Guard
     if (!this.nameList.includes(scenarioName)){
+        console.log("Fatal: Scenario for removal not found")
         return
     }
-    
     return new Promise(function(resolve, reject){
 
         var axios = require('axios')
 
-        axios.get(this.getAddress()+"/scenarios/delete/"+scenarioName)
+        axios.get(this.getAddress()+"/scenarios/delete/"+encodeURIComponent(scenarioName))
         .then(function (response) {
             // Can delete locally
-            this.nameList.pop(scenarioName)
+            this.nameList.splice(this.nameList.indexOf(scenarioName), 1)
             delete this.loaded[scenarioName]
+            console.log("Scenario deleted")
             resolve()
 
         }.bind(this)).catch(function (error) {
@@ -305,6 +312,7 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
             axios.get(this.getAddress()+"/scenarios/newEmpty/"+encodeURIComponent(scenarioName))
             .then(function (response) {
                 // Add to the loaded dictionary
+                this.nameList.push(scenarioName)
                 resolve()
 
             }.bind(this)).catch(function (error) {
@@ -329,17 +337,21 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
  */
 Scenarios.prototype.saveScenarioByName = function(scenarioName){
     return new Promise(function(resolve, reject){
-        var axios = require('axios')
-        
+        var axios = require('axios').create({
+            headers: {'Content-Type': 'application/json'}
+            //body: (raw json)
+        })
+        console.log("...")
         //Check if the scenario exists and can be saved
         if (this.nameList.includes(scenarioName)){
-            
+            console.log("Edit Scenario "+scenarioName+"...")
             axios.post(this.getAddress()+"/scenarios/edit", this.getScenarioByName(scenarioName).getDescriptorAsString())
             .then(function (response) {
+                console.log("Done")
                 resolve()
             })
             .catch(function (error) {
-                console.log("F3")
+                console.log("Edit Scenario Failed")
                 console.log(error);
                 reject()
             });
