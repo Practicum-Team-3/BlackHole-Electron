@@ -673,7 +673,7 @@ function NetGraph(scenario, parent){
      */
     this.addNewNode = function(machineName, machineType){
 
-        if(nodesNamesIDs[machineName] != null && nodesNamesIDs[machineName] != undefined){
+        if(this.nodesNamesIDs[machineName] != null && this.nodesNamesIDs[machineName] != undefined){
             // machineName
         }
 
