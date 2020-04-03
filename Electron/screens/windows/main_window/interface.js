@@ -105,6 +105,15 @@ function openScenario(scenario){
             }
         })
     }
+
+    
+    document.getElementById("saveScenarioButton").addEventListener("click", function(){
+        widow.scenarios.saveScenarioByName(activeTabAndView.getScenario().getName())
+    })
+
+    document.getElementById("runScenarioButton").addEventListener("click", function(){
+        widow.scenarios.runScenarioByName(activeTabAndView.getScenario().getName())
+    })
 }
 
 function selectScenarioTab(scenario){

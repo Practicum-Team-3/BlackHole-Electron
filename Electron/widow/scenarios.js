@@ -334,7 +334,7 @@ Scenarios.prototype.saveScenarioByName = function(scenarioName){
         //Check if the scenario exists and can be saved
         if (this.nameList.includes(scenarioName)){
             
-            axios.post(this.getAddress()+"/scenarios/edit/"+encodeURIComponent(scenarioName), this.getScenarioByName(scenarioName).getDescriptorAsString())
+            axios.post(this.getAddress()+"/scenarios/edit", this.getScenarioByName(scenarioName).getDescriptorAsString())
             .then(function (response) {
                 resolve()
             })
@@ -398,7 +398,7 @@ Scenarios.prototype.runScenarioByName = function(scenarioName){
         if (this.nameList.includes(scenarioName)){
             var axios = require('axios')
             
-            axios.get(this.getAddress()+"/vagrantFiles/"+encodeURIComponent(scenarioName)+"/run")
+            axios.get(this.getAddress()+"/vagrant/"+encodeURIComponent(scenarioName)+"/run")
             .then(function (response) {
                 // Add to the loaded dictionary
                 resolve()
