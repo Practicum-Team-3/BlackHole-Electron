@@ -127,6 +127,7 @@ def getScenario(scenario_name):
 
 @app.route('/scenarios/edit', methods = ['POST'])
 def editScenario():
+    print(request.get_json())
     return "cox"#jsonify(scenario_manager.editScenario(scenario_name ,  request.get_json()))
 
 @app.route('/scenarios/delete/<scenario_name>')
@@ -179,4 +180,5 @@ def testPing(scenario_name, source, destination):
         
 
 if __name__=="__main__":
+    
     app.run()

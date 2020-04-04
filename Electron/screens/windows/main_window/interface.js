@@ -105,14 +105,7 @@ function openScenario(scenario){
         })
     }
 
-    
-    document.getElementById("saveScenarioButton").addEventListener("click", function(){
-        widow.scenarios.saveScenarioByName(activeTabAndView.getScenario().getName())
-    })
 
-    document.getElementById("runScenarioButton").addEventListener("click", function(){
-        widow.scenarios.runScenarioByName(activeTabAndView.getScenario().getName())
-    })
 }
 
 function selectScenarioTab(scenario){
@@ -180,16 +173,17 @@ function showToast(title, message){
  * @function runScenario
  * @description Calls prepares machines and runs the scenario on widow
  */
-function runScenario(){
+function runScenario(event){
     if (activeTabAndView==null){
         return
     }
-    console.log("Running...")
-    widow.scenarios.prepareMachinesByScenarioName(activeTabAndView.getScenario().getName()).then(function(){
-        console.log("Vagrant created")
-        return widow.scenarios.runScenarioByName(activeTabAndView.getScenario().getName())
-    }).then(function(){
-        console.log("Running")
+    var scenarioName = activeTabAndView.getScenario().getName()
+    //Feedback
+    showToast("Run...", "Preparing machines to run scenario: "+scenarioName)
+    
+    widow.scenarios.runScenarioByName(scenarioName)
+    .then(function(){
+        showToast("Running", "Scenario running: "+scenarioName)
     })
 }
 
@@ -201,9 +195,16 @@ function saveScenario(){
     if (activeTabAndView==null){
         return
     }
-    console.log("Saving...")
-    widow.scenarios.saveScenarioByName(activeTabAndView.getScenario().getName()).then(function(){
-        console.log("Saved")
+    var scenarioName = activeTabAndView.getScenario().getName()
+    //Feedback
+    showToast("Saving", "Saving scenario: "+scenarioName)
+    
+    widow.scenarios.saveScenarioByName(scenarioName)
+    .then(function(){
+        showToast("Saved", "Finished saving scenario: "+scenarioName)
+    })
+    .catch(function(){
+        showToast("Error", "Failed to save scenario: "+scenarioName)
     })
 }
 

@@ -43,7 +43,6 @@ function Modifiable(){
 
             // Subscribe to event so all of the callbacks issued from this window are removed when it gets unloaded
             webContents.once('render-view-deleted', function(event){
-//                console.log("Attempting to remove onmodified listeners for: "+event.sender.id)
                 
                 // Iterate through all local callbacks added by this window that issued the event
                 this.getCallbacks()[event.sender.id].forEach(function(callback){
