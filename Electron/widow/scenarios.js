@@ -200,7 +200,7 @@ Scenarios.prototype.completeScenarioCreation = function(){
  * @description Remove a scenario from the list of scenarios in widow
  * @memberof Scenarios
  * @param {string} scenarioName - Name of the scenario to remove
- * @return {Scenario} The instance of the removed scenario
+ * @return {Promise} Promise for the completion of the scenario removal
  */
 Scenarios.prototype.removeScenarioByName = function(scenarioName){
     //Guard
@@ -238,14 +238,12 @@ Scenarios.prototype.removeScenarioByName = function(scenarioName){
 Scenarios.prototype.loadScenarios = function(){
     return new Promise(function(resolve, reject){
         var axios = require('axios')
-        console.log("loading axios...")
+        console.log("Loading scenarios...")
         axios.get(this.getAddress() + "/scenarios/all")
         .then(function (response) {
             // Keep list locally
+            console.log("Scenarios loaded")
             //TODO: Improve wrapper integration
-            console.log("axios loaded succesfully")
-            console.log("scenarios: " + response.data.body.scenarios)
-
             this.nameList = response.data.body.scenarios
             resolve()
         }.bind(this)).catch(function (error) {
@@ -339,7 +337,6 @@ Scenarios.prototype.saveScenarioByName = function(scenarioName){
     return new Promise(function(resolve, reject){
         var axios = require('axios').create({
             headers: {'Content-Type': 'application/json'}
-            //body: (raw json)
         })
         console.log("...")
         //Check if the scenario exists and can be saved

@@ -146,7 +146,7 @@ MachineInfo.prototype.setMachine = function(machine){
 
 /**
  * @function clear
- * @description Call to unassign the scenario from the machine info
+ * @description Call to unassign the machine from the machine info
  */
 MachineInfo.prototype.clear = function(){
     if (this.machine==null){
