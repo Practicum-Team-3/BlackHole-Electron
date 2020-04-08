@@ -30,13 +30,13 @@ function OverviewsPanel(overviewsPanelNode){
     // Create instance for ExploitListOverview
     this.exploitListNode = document.getElementById("exploitListOverview")
     this.exploitListNode.className = "exploitListNode"
-    this.exploitListOverview = new ExploitListOverview(this.exploitListNode)
+    this.exploitListOverview = new ProgramListOverview(this.exploitListNode, programListOverviewTypes.EXPLOITS)
     //this.exploitListOverview.setExploits()
 
     // Create instance for ProgramListOverview
     this.programListNode = document.getElementById("programListOverview")
     this.programListNode.className = "programListNode"
-    this.programListOverview = new ProgramListOverview(this.programListNode)
+    this.programListOverview = new ProgramListOverview(this.programListNode, programListOverviewTypes.VULNERABILITIES)
     //this.programListOverview.setPrograms()
 
 

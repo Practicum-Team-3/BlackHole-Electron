@@ -43,18 +43,15 @@ function Machine(descriptor, externalRename){
 
 
 /**
- * @function getDescriptorAsString
- * @description Generate and return the updated descriptor (JSON)
+ * @function getDescriptor
+ * @description Returns the local descriptor
  * @memberof Machine
- * @todo Complete implementation
  *              
- * @returns {string} String representation of the machine descriptor
+ * @returns {object} Local machine descriptor
  */
 Machine.prototype.getDescriptor = function(){
     //Update shared folders
     this.descriptor["sharedFolders"] = this.getSharedFolders()
-    
-    //let stringDescriptor = JSON.stringify(this.descriptor)
     
     return this.descriptor
 }

@@ -1,97 +1,107 @@
+const programListOverviewTypes = {
+    VULNERABILITIES: {
+        origin: "getAllNonExploits",
+        modificationLookout: "getIsExploit",
+        iconLigature: "bug",
+        uploadButtonLabel: "Upload Program"
+    },
+    EXPLOITS: {
+        origin: "getAllExploits",
+        modificationLookout: "getIsExploit",
+        iconLigature: "bomb",
+        uploadButtonLabel: "Upload Exploit"
+    }
+}
+
 /**
  * @class ProgramOverview
  * @description Program List in the overview panel
  */
-function ProgramListOverview(programListNode){
+function ProgramListOverview(programListNode, programListOverviewType){
+    this.nameForTabLabel = "ProgramList"
+    this.programListNode = programListNode
     
-    this.nameForTabLabel = "ExploitList"
-    this.exploitListNode = programListNode
-
+    // The specifics of this program list
+    var programListType = programListOverviewType
+    
+    
     var sectionsContainer = document.createElement("div")
-    sectionsContainer.className = "fillSpace columnFlex ExploitListOverviewSectionsContainer"
+    sectionsContainer.className = "fillSpace columnFlex ProgramListOverviewSectionsContainer"
 
     // Make an instance of NodeCombos to include html elements
     var interface = new NodeCombos(sectionsContainer)
+    
+    // Weak map to keep references to section nodes
+    var programSections = new WeakMap();
 
-    // Make sections of the exploit list overview panel
-    var sections = ["exploitListCollapsibles", "exploitListOptions"]
-    interface.addMultipleSections(sections)
+    function addInterface(){
 
-    // Populate the collapsibles
-    interface.selectNode(interface.getNodes()["exploitListCollapsibles"])
-    interface.getNodes()["exploitListCollapsibles"].style = "overflow-y:scroll; overflow-x:hidden"
-    interface.getNodes()["exploitListCollapsibles"].className = "stretchFlex exploitListCollapsibles bg-light"
+        // Make sections of the exploit list overview panel (list section and panel options)
+        var sections = ["programListCollapsibles", "programListOptions"]
+        interface.addMultipleSections(sections)
 
-    // Create a form to put all of the components in
-    var formNode = document.createElement("form")
-    //formNode.style ="background-color:red"
-    formNode.className = "exploitListCollapsiblesForm"
-    formNode.setAttribute("onSubmit", "return false")
+        // ==== Populate the group ====
+        interface.selectNode(interface.getNode("programListCollapsibles"))
+        interface.getNode("programListCollapsibles").style = "overflow-y:scroll; overflow-x:hidden"
+        interface.getNode("programListCollapsibles").className = "stretchFlex programListCollapsibles bg-light"
 
-    // Add a reference to formNode and append it
-    interface.addReferenceToNode(formNode.className, formNode)
-    interface.getNodes()["exploitListCollapsibles"].appendChild(formNode)
+        // Create a form to put all of the components in
+        var formNode = document.createElement("form")
+        //formNode.style ="background-color:red"
+        formNode.className = "programListCollapsiblesForm"
+        formNode.setAttribute("onSubmit", "return false")
 
-    // Select or point to form node to work on
-    interface.selectNode(interface.getNodes()["exploitListCollapsiblesForm"])
+        // Add a reference to formNode on node combos, and append it
+        interface.addReferenceToNode(formNode.className, formNode)
+        interface.getNode("programListCollapsibles").appendChild(formNode)
+    }
+    addInterface()
 
-    this.addExploitSection = function(exploitName, exploit){
-        interface.selectNode(interface.getNode("exploitListCollapsiblesForm"))
+    // Define the function that adds progran sections
+    this.addProgramSection = function(programName, program){
+        //Select the area for the groups
+        interface.selectNode(interface.getNode("programListCollapsiblesForm"))
         
-        var group = interface.addCollapsibleGroup(null, exploitName, "bomb")
+        var group = interface.addCollapsibleGroup(null, programName, programListType.iconLigature)
         // General details of exploit
-        interface.addLabelPair(null, "Name: ", "exploitName", exploitName)
-        interface.addLabelPair(null, "OS(s): ", "exploitOs", exploit.getOs())
-        interface.addLabelPair(null, "Target Program: ", "exploitTarget", exploit.getDescription())
+        interface.addLabelPair(null, "Name: ", "programName", programName)
+        interface.addLabelPair(null, "OS(s): ", "programOs", program.getOs())
+        interface.addLabelPair(null, "Target Program: ", "programTarget", program.getDescription())
 
         //interface.addSingleButton("Delete Exploit", "col ml-1 mr-1 mt-2 btn btn-danger", function(){showToast("DeleteOnServer", "delete exploit from server was clicked")})
-        var addExploit = function(){
+        var addProgram = function(){
             
         }
-        interface.addDeleteAndIncludeButtons(null, function(){showToast("EditExploitOnServer", "editExploit on server was clicked")}, null, addExploit)
+        interface.addDeleteAndIncludeButtons(null, function(){showToast("EditExploitOnServer", "editExploit on server was clicked")}, null, addProgram)
 
+        // keep reference to group node in map
+        programSections.set(program, group)
+        
         // Select form again
-        interface.selectNode(interface.getNode("exploitListCollapsiblesForm"))
+        interface.selectNode(interface.getNode("programListCollapsiblesForm"))
         
         return group
     }
     
-    // Populate the form
-    var exploits = widow.programs.getAllNonExploits()
-    for (exploitName in exploits){
-        this.addExploitSection(exploitName, exploits[exploitName])
+    // Create the groups for the available programs by calling addProgramSection()
+    var programs = widow.programs[programListType.origin]()
+    for (programName in programs){
+        this.addProgramSection(programName, programs[programName])
     }
 
 
     // section at bottom of overview column
-    interface.selectNode(interface.getNodes()["exploitListOptions"])
-    interface.getNodes()["exploitListOptions"].className = " fixedFlex container exploitListOptions bg-dark"
+    interface.selectNode(interface.getNode("programListOptions"))
+    interface.getNode("programListOptions").className = "fixedFlex container programListOptions bg-dark"
 
     //var optionButtons = {"Add Exploit_primary":null}
     //interface.addOverviewOptionsButtons(optionButtons)
-    interface.addSingleButton("Upload Program", "col mt-2 mb-2 btn btn-primary", function(){openWindow('./screens/windows/dialogs/upload/upload.html', 530, 355, false, true)})
+    interface.addSingleButton(programListType.uploadButtonLabel, "col mt-2 mb-2 btn btn-primary", function(){openWindow('./screens/windows/dialogs/upload/upload.html', 530, 355, false, true)})
 
-    this.exploitListNode.appendChild(sectionsContainer)
+    this.programListNode.appendChild(sectionsContainer)
     
     
 
-    //----------------------------------------
-
-    this.getInterface = function(){
-        return interface
-    }
-
-    this.getNode = function(nodeName){
-        return this.getIntercace().getNodes()[nodeName]
-    }
-
-    this.getTabLabel = function(){
-        return this.nameForTabLabel
-    }
-
-    this.setNode = function(element){
-        this.exploitListNode = element
-    }
 
     this.setExploits = function(exploit){
         for(var i = 0; i < exploit.length; i++){
@@ -105,7 +115,7 @@ function ProgramListOverview(programListNode){
         switch(modificationType){
             case modificationTypes.ADDED_ELEMENT:
                 if (!arg.getIsExploit()){
-                    var group = this.addExploitSection(arg.name, arg)
+                    var group = this.addProgramSection(arg.name, arg)
                     $(group.lastChild).collapse('show')
                 }
                 break;

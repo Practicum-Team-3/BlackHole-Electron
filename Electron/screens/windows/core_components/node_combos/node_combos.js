@@ -381,7 +381,12 @@ NodeCombos.prototype.addRangeAndValue = function(rangeName, min, max, step, valu
     this.currentNode.appendChild(rowNode)
 }
 
-
+/**
+ * @function addMultipleSections
+ * @description Adds multiple rows
+ * @author Unknown
+ * @param {string[]} sectionsLabelsList Array with the names of the rows for the local reference
+ */
 NodeCombos.prototype.addMultipleSections = function(sectionsLabelsList){
     for(var i=0; i<sectionsLabelsList.length;i++){
         var rowNode = this.getNewRow()
