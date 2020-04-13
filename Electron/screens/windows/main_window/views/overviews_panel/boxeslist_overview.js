@@ -36,7 +36,7 @@ function BoxesListOverview(boxesListNode){
     //this.interface.getNodes()["boxesListOptions"].style = "height:20%;"
     this.interface.getNodes()["boxesListOptions"].className = "fixedFlex container boxesListOptions bg-dark"
 
-    var optionButtons = {"Create Box_primary":function(){showToast("Create Box", "Not yet implemented")}, "Upload Box_info":function(){showToast("Upload Box", "Not yet implemented")}}
+    var optionButtons = {"Add from vagrant_primary":function(){openWindow('./screens/windows/dialogs/new_box/add_from_vagrant.html', 530, 355, false, true)}, "Upload OVA_info":function(){showToast("Upload OVA", "Not yet implemented")}}
     this.interface.addOverviewOptionsButtons(optionButtons)
     
     this.boxesListNode.appendChild(sectionsContainer)

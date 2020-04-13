@@ -1,6 +1,6 @@
 const electron = require('electron')
 // const defaultWidowAddress = "http://localhost:5000"
-const defaultWidowAddress = "http://172.18.128.2:5000"
+const defaultWidowAddress = "http://172.18.128.1:8080"
 
 /**
  * @class Widow
