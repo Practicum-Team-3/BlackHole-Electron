@@ -4,7 +4,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <meta charset="UTF-8">
-    <title>Connect</title>
+    <title>Upload</title>
     <script src="../../core_components/node_combos/utilities.js"></script>
     <script src="../../../../widow/widow.js"></script>
     <script>
@@ -16,6 +16,8 @@
 
         //Creates a new scenario object
         function uploadFile(){
+            enterLoading()
+            
             var fileList = document.getElementById("fileSelect").files
 
             var formData = new FormData();
@@ -24,14 +26,24 @@
                 
                 formData.append("program", file, file.name)
                 
-                widow.programs.addProgram(formData, file.name, "desc", "linux", true)
+                file.arrayBuffer().then(function(buffer){
+                    
+                    var uploadProgressCallback = function(uploaded, total){
+                        setProgressBarPercent(Math.ceil(100/total*uploaded), "progressBar")
+                    }
+                    
+                    widow.programs.addProgram(buffer, file.name, "linux", "desc", true, getAxiosBridge(), uploadProgressCallback)
+                    .then(function(){
+                        
+                        //Tell the others that there are changes
+                        //emitModifiedEvent(widow.programs, null, modificationTypes.ADDED_ELEMENT, widow.programs.getProgramByName(file.name))
+
+                        //Close dialog window
+                        electron.remote.getCurrentWindow().close()
+                        
+                    })
+                })
             }
-
-            //Tell the others that there are changes
-            emitModifiedEvent(widow.programs, null, modificationTypes.ADDED_ELEMENT, widow.programs.getProgramByName(file.name))
-
-            //Close dialog window
-            electron.remote.getCurrentWindow().close()
         }
         function cancel(){
             electron.remote.getCurrentWindow().close()
@@ -51,7 +63,11 @@
             text-align: left;
             position: relative;
         }
-
+        .progress{
+            height: 6px;
+            border-top-right-radius: 0;
+            border-top-left-radius: 0; 
+        }
     </style>
 
 
@@ -64,15 +80,18 @@
         <form onsubmit="uploadFile(); return false">
             <div class="form-group" id="rosvox">
                 <label for="name">File:</label>
-                <input type="file" class="form-control custom-file-input disableable" id="fileSelect" required>
-                <label class="custom-file-label" for="fileSelect">Choose file</label>
+                <input type="file" class="form-control custom-file-input" id="fileSelect" required>
+                <label class="custom-file-label disableable" for="fileSelect">Choose file</label>
 
                 <label for="description">Description:</label>
                 <!--input type="text" class="form-control disableable" id="description" required>-->
                 <textarea rows="3" class="form-control disableable" placeholder="Add a descrition..." required id="description"></textarea>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped" style="width:0" id="progressBar"></div>
+                </div>
             </div>
             
-            <button class="btn btn-primary disableable float-right ml-3" type="submit" id="subm">Upload</button>
+            <button class="btn btn-primary disableable float-right ml-3" type="submit" id="subm">Upload<span class="spinner-border spinner-border-sm ml-1" style="display: none" id="spinner"></span></button>
             <button class="btn btn-danger disableable float-right" type="button" onclick="cancel()">Cancel</button>
         </form>
     </div>

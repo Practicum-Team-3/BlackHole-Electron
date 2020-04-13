@@ -1,10 +1,10 @@
 const electron = require('electron')
-// const defaultWidowAddress = "http://localhost:5000"
-const defaultWidowAddress = "http://172.18.128.2:5000"
 
+const defaultWidowAddress = "http://172.18.128.2:5000"
+const defaultCloudAddress = "http://0.tcp.ngrok.io:18799/remote.php/dav/files/admin/"
 /**
  * @class Widow
- * @version 1.1.1
+ * @version 1.2.0
  * @description Abstraction for the communication to the Widow backend.
  *              No need to instantiate, just reference the shared instance widow
  *              
@@ -12,7 +12,7 @@ const defaultWidowAddress = "http://172.18.128.2:5000"
  */
 function Widow(){
     this.defaultAddress = defaultWidowAddress
-    this.widowSettings = new WidowSettings(this.defaultAddress)
+    this.widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudAddress)
     
     // Make child objects and pass a reference to this.widowSettings
     var Scenarios = require('./scenarios.js').Scenarios
@@ -62,15 +62,18 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
     function syncUpdate(progress){
         try{
             syncUpdateCallback(progress)
-        }catch{}
+        }catch{
+            console.log("Skipped syncUpdate")    
+        }
     }
 }
 
 //=============            
 // WidowSettings
 //=============
-function WidowSettings(_address){
+function WidowSettings(_address, _cloudAddress){
     var address = address
+    var cloudAddress = _cloudAddress
     
     this.getAddress = function(){
         return address
@@ -78,16 +81,28 @@ function WidowSettings(_address){
     this.setAddress = function(_address){
         address = _address
     }
+    
+    this.getCloudAddress = function(){
+        return cloudAddress
+    }
 }
+    
+//======================================================
+// CHROMIUM BRIDGES
+// Functions in this section are intended to wrap chromium-origin object methods
+// in objects that can be passed as parameter to nodejs-origin object methods
+//======================================================
+
         
-//=============            
-// Modifiable
-//=============
-function whatever(){
-    util.setRemoteCallbackFreer(function(something){console.log(something)}, 0, "d", 0, "ss")
-    //setRemoteCallbackFreer(fn: Function, frameId: number, contextId: String, id: number, sender: any): void
-//    electron.webFrame.routingId
+function getAxiosBridge(){
+    var _axios = require('axios').create()
+    
+    return {
+        request: _axios.request,
+        responseUse: _axios.interceptors.response.use.bind(_axios.interceptors.response)
+    }
 }
+
 
 //======================================================
 //=== Automatic instance for shared Electron runtime ===
@@ -104,7 +119,6 @@ try{
         console.log("Automatic instance of widow failed to start")
     }
 }
-    
     
     
 //=============            

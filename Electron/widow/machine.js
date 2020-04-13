@@ -5,7 +5,7 @@ var Modifiable = require('./core/modifiable.js').Modifiable
  * @version 1.2.0
  * @description Modifiable. Machine properties
  *              
- * @param {string} descriptor Machine descriptor (JSON)
+ * @param {object} descriptor Machine descriptor object
  */
 function Machine(descriptor, externalRename){
     Modifiable.call(this)

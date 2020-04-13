@@ -1,9 +1,10 @@
+const { session } = require('electron')
 var Modifiable = require('./core/modifiable.js').Modifiable
 var Loadable = require('./core/loadable.js').Loadable
 /**
  * @class Programs
- * @version 0.2.0
- * @description Modifiable. Available programs
+ * @version 0.3.0
+ * @description Modifiable. Bridged. Available programs
  *              
  * @param {string} descriptor Program descriptor (JSON)
  */
@@ -16,7 +17,56 @@ function Programs(widowSettings){
     this.getAddress = function(){
         return widowSettings.getAddress()
     }
+    
+    this.getCloudAddress = function(){
+        return widowSettings.getCloudAddress()
+    }
+    
     this.programs = {}
+    
+    this.getList = function(){
+        var axios = require('axios')
+        axios({
+            method: 'propfind',
+            url: this.getCloudAddress(),
+            auth: {
+                username: 'admin',
+                password: 'password'
+            },
+        })
+        .then(function (response) {
+            // Keep list locally
+            //TODO: Improve wrapper integration
+            console.log(response)
+
+        }.bind(this)).catch(function (error) {
+            // handle error
+            console.log(error);
+
+        })
+    }
+    
+    this.makeFolder = function(folderName){
+        var axios = require('axios')
+        axios({
+            method: 'mkcol',
+            url: this.getCloudAddress()+folderName,
+            auth: {
+                username: 'admin',
+                password: 'password'
+            },
+        })
+        .then(function (response) {
+            // Keep list locally
+            //TODO: Improve wrapper integration
+            console.log(response)
+
+        }.bind(this)).catch(function (error) {
+            // handle error
+            console.log(error);
+
+        })
+    }
 }
 
 
@@ -67,39 +117,71 @@ Programs.prototype.getAllNonExploits = function(){
     return this.getProgramsByTypeExploit(false)
 }
 
-Programs.prototype.addProgram = function(formData, name, description, os, isExploit){
-    //return new Promise(function(resolve, reject){
-        
-
-        //Get axios in the scene now!
-        var axios = require('axios')
-
-        axios.post(this.getAddress()+"/upload/uploadFile", formData)
-        .then(function (response) {
-
+Programs.prototype.addProgram = function(buffer, name, os, description, isExploit, axiosBridge, uploadProgressCallback){
+    
+    // Prepare axios instance in case a bridge was omited
+    var axios = require('axios').create()
+    
+    // Prepare axios' methods from either the bridge or the local nodejs instance
+    var axiosRequest = axiosBridge.request!=null ? axiosBridge.request : axios.request
+    var responseUse = axiosBridge.responseUse!=null ? axiosBridge.responseUse : axios.interceptors.response.use
+    
+    // Prepare promise to return to caller
+    var uploadPromise = new Promise(function(resolve, reject){
+        responseUse(function (response) {
+            // Need to delete cookies because Nextcloud sends back stuff it can't handle itself
+            session.defaultSession.clearStorageData(["cookies"])
+            
             // Create default instance of Program
-            var program = new Program()
-            // Customize
-            program.name = name
-            program.setOs(os)
-            program.setDescription(description)
-            program.setIsExploit(isExploit)
-            this.programs[name] = program
+//            var program = new Program()
+//            // Customize
+//            program.name = name
+//            program.setOs(os)
+//            program.setDescription(description)
+//            program.setIsExploit(isExploit)
+//            this.programs[name] = program
+            
+            resolve()
+            return response;
+        }, function (error) {
 
-            //resolve()
+            console.log(error)
+            reject()
+            return Promise.reject(error);
+        });
+    }.bind(this))
+    
+    // Make request for upload
+    axiosRequest({
+        method: 'put',
+        url: this.getCloudAddress()+encodeURIComponent(name),
+        auth: {
+            username: 'admin',
+            password: 'password'
+        },
+        onUploadProgress: function (progressEvent) {
+            
+            try{
+                uploadProgressCallback(progressEvent.loaded, progressEvent.total)
+            }catch{
+                console.log("Skipping upload progress")
+            }
+            
+        },
+        data: buffer
+    })
 
-        }.bind(this)).catch(function (error) {
-            // handle error
-            console.log(error);
-            //reject()
-
-        })
-    //})
+    return uploadPromise
 }
 
 //=========================
 // Single Program
 //=========================
+/**
+ * @class Program
+ * @description Single instance of a program available on Black Widow
+ * @param {object} descriptor Program descriptor object
+ */
 function Program(descriptor){
     this.descriptor = descriptor==null ? JSON.parse(require('./defaults.js').programDescriptor) : descriptor
 }
@@ -158,5 +240,6 @@ Program.prototype.setDescription = function(description){
 Program.prototype.getDescription = function(){
     return this.descriptor["description"]
 }
+
 
 module.exports.Programs = Programs

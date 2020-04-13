@@ -34,8 +34,8 @@
                 })
             }
             
-            function setProgress(value){
-                document.getElementById("progressBar").style.width = value+"%"
+            function setProgress(percent){
+                setProgressBarPercent(percent, "progressBar")
             }
             
             function setProgressHasError(hasError){
