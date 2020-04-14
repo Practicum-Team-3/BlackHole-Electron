@@ -152,6 +152,15 @@ function openWindow(address, width, height, resizable, modal){
     electron.ipcRenderer.send("openChildWindow", address, width, height, resizable, modal)
 }
 
+/**
+ * @function openBrowserWindow
+ * @description Opens a child window with restricted preferences for loading an external site.
+ * @param {string} address Address of site to load
+ */
+function openBrowserWindow(address){
+    electron.ipcRenderer.send("openChildWindow", address, 1000, 600, true, false, true, true)
+}
+
 //======================
 // Toast
 //======================
