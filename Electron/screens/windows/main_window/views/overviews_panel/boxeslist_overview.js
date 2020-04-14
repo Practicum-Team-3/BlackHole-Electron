@@ -79,7 +79,7 @@ function BoxesListOverview(boxesListNode){
 BoxesListOverview.prototype.setBoxes = function(boxesObject){
     this.clear()
     this.boxesObject = boxesObject
-    onModified(this.boxesObject, this.onChange.bind(this, modificationType, eventArg))
+    onModified(this.boxesObject, this.onChange.bind(this))
     this.update()
 }
 
