@@ -31,7 +31,7 @@ function Machine(descriptor, externalRename){
     
     /**
      * @type {InstalledPrograms}
-     * @description Awaiting backend support. Access programs installed on the machine
+     * @description Access installed programs on the machine
      * @memberof Machine
      */
     this.programs = new InstalledPrograms(this.descriptor["programs"])

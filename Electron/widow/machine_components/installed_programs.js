@@ -3,7 +3,7 @@ var Collectable = require('../core/collectionist.js').Collectable
 /**
  * @class InstalledPrograms
  * @version 2.0.0
- * @param {Object} descriptor Programs descriptor object
+ * @param {object} descriptor Programs descriptor object
  */
 function InstalledPrograms(descriptor){
     Collectionist.call(this, descriptor, InstalledProgram)
@@ -49,8 +49,9 @@ InstalledPrograms.prototype.addProgram = function(name, location){
 /**
  * @function removeProgram
  * @description Removes instance of InstalledProgram
+ * @memberof InstalledPrograms
  * @param   {InstalledProgram} program Instance of InstalledProgram to remove
- * @returns {boolean} Suvvess of the removal
+ * @returns {boolean} Success of the removal
  */
 InstalledPrograms.prototype.removeProgram = function(program){
     return this.super.remove(program)
