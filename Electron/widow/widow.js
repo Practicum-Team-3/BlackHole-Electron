@@ -1,5 +1,5 @@
 const electron = require('electron')
-// const defaultWidowAddress = "http://localhost:5000"
+//const defaultWidowAddress = "http://0.tcp.ngrok.io:16653"
 const defaultWidowAddress = "http://172.18.128.2:5000"
 
 /**
@@ -38,21 +38,21 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
     
     return this.scenarios.loadScenarios()
     .then(function(){
-        syncUpdate(20)
+        syncUpdate(30)
         // Load all the scenarios from the list
         return this.scenarios.loadAllScenarios()
         
     }.bind(this))
     .then(function(){
         console.log("Loaded scenarios")
-        syncUpdate(50)
+        syncUpdate(70)
         //Load available boxes
         return this.boxes.load()
         
     }.bind(this))
     .then(function(){
         console.log("Loaded boxes")
-        syncUpdate(70)
+        syncUpdate(100)
         //Load available programs
         return this.programs.load()
         
