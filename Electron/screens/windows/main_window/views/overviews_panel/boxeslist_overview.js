@@ -79,7 +79,7 @@ function BoxesListOverview(boxesListNode){
 BoxesListOverview.prototype.setBoxes = function(boxesObject){
     this.clear()
     this.boxesObject = boxesObject
-    onModified(this.boxesObject, this.update.bind(this))
+    onModified(this.boxesObject, this.onChange.bind(this, modificationType, eventArg))
     this.update()
 }
 
@@ -91,7 +91,7 @@ BoxesListOverview.prototype.clear = function(){
     if (this.boxesObject==null){
         return
     }
-    removeOnModifiedListener(this.boxesObject, this.update)
+    removeOnModifiedListener(this.boxesObject, this.onChange)
     this.boxesObject = null
 
     //clear collapsibles
@@ -122,11 +122,17 @@ BoxesListOverview.prototype.update = function(){
         this.interface.addLabelPair(null, "Exploits:", "boxInstalledExploits", "")
         this.interface.addLabelPair(null, "Programs:", "boxInstalledPrograms", "")
 
-        this.interface.addDeleteAndIncludeButtons(null, function(){showToast("DeleteOnServer", "Not implemented")}, null, this.includeClicked.bind(this, i))
+        this.interface.addDeleteAndIncludeButtons(null, function(){this.removeBox.bind(event, boxesArray[i])}, null, this.includeClicked.bind(this, i))
         this.interface.selectNode(this.interface.getNodes()["boxesListCollapsiblesForm"])
     }
 }
 
-BoxesListOverview.prototype.onchange = function(nodeName, node){
-    console.log(nodeName)
+BoxesListOverview.prototype.removeBox = function(boxName){
+    window.boxes.removeBox(boxName)
+    emitModifiedEvent(widow.boxes, null, modificationTypes.REMOVED_ELEMENT, null)
+}
+
+BoxesListOverview.prototype.onChange = function(modificationType, argA){
+    this.clear()
+    this.update()
 }

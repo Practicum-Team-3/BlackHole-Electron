@@ -1,4 +1,5 @@
 var Loadable = require('./core/loadable.js').Loadable
+var Modifiable = require('./core/modifiable.js').Modifiable
 
 /**
  * @class Boxes
@@ -11,6 +12,7 @@ var Loadable = require('./core/loadable.js').Loadable
 function Boxes(widowSettings){
     //Inherit loading and item handling capabilities from loadable
     Loadable.call(this, widowSettings, "/vagrant/boxes/all")
+    Modifiable.call(this)
 }
 
 /**
@@ -70,6 +72,7 @@ Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback){
         if(response.data.body.current < response.data.body.total){
             this.requestTaskProgress(taskID, syncUpdateCallback)
         }else{
+            console.log("Emitting modified event...")
             emitModifiedEvent(widow.boxes, null, modificationTypes.ADDED_ELEMENT, null)
         }
         console.log("Task status update received...")
@@ -79,6 +82,30 @@ Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback){
         console.log("An error occured while requesting task progress...")
         
     })
+}
+
+
+Boxes.prototype.removeBox = function(boxName) {
+    return new Promise(function(resolve, reject){
+        var axios = require('axios').create({
+            headers: {'Content-Type': 'application/json'}
+        })
+
+        console.log("Downloading vagrant box: "+boxName+"...")
+        axios.post(this.getAddress()+"/vagrant/boxes/remove", {"box_name":boxName})
+        .then(function (response) {
+            console.log(response)
+            console.log("Box deleted...")
+            // emitModifiedEvent(widow.boxes, null, modificationTypes.REMOVED_ELEMENT, null)
+            resolve(response)
+        }.bind(this))
+        .catch(function (error) {
+            console.log("Box Deletion Failed...")
+            console.log(error);
+            reject(error)
+        }.bind(this));
+
+    }.bind(this))
 }
 
 module.exports.Boxes = Boxes

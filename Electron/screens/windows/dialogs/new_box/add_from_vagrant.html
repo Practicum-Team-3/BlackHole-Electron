@@ -46,6 +46,7 @@
             function setProgress(value){
                 document.getElementById("boxDownloadProgressBar").style.width = value+"%"
                 document.getElementById("outcomeText").innerHTML = value+"%"
+                electron.remote.getCurrentWindow().close()
             }
 
 
