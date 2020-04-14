@@ -110,6 +110,8 @@ BoxesListOverview.prototype.update = function(){
 
     //get boxesList should return a list of JSON objects with more details for each box than just OS
     var boxesArray = this.boxesObject.getBoxesList()
+    console.log("New box list:")
+    console.log(boxesArray)
 
     this.interface.selectNode(this.interface.getNodes()["boxesListCollapsiblesForm"])
 
@@ -128,11 +130,22 @@ BoxesListOverview.prototype.update = function(){
 }
 
 BoxesListOverview.prototype.removeBox = function(boxName){
+    console.log("Removing box '" + boxName + "'...")
     widow.boxes.removeBox(boxName)
-    emitModifiedEvent(widow.boxes, null, modificationTypes.REMOVED_ELEMENT, null)
+    .then(function(response){
+        console.log("Box removed from server.")
+        console.log("Updating GUI...")
+        emitModifiedEvent(widow.boxes, null, modificationTypes.REMOVED_ELEMENT, null)
+        console.log("Done.")
+    }.bind(this))
+    .catch(function(error){
+        console.log(error)
+        console.log("An error ocurred on server, couldn't remove box '" + boxName + "'")
+    })
 }
 
 BoxesListOverview.prototype.onChange = function(modificationType, argA){
     this.clear()
+    console.log("Updating boxeslistoverview...")
     this.update()
 }
