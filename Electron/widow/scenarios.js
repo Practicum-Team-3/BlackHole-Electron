@@ -8,7 +8,7 @@ var Modifiable = require('./core/modifiable.js').Modifiable
  * @param {WidowSettings} widowSettings Connection details to Widow backend
  */
 function Scenarios(widowSettings){
-    console.log("initializing Scenarios object...")
+    console.log("Starting widow.scenarios")
     Modifiable.call(this)
     var widowSettings = widowSettings
     
@@ -25,7 +25,6 @@ function Scenarios(widowSettings){
     
     //Flag to indicate if the initial loading has been done
     this.hasDoneInitialLoad = false
-    console.log("Scenarios object initialized!")
 }
 
 //========================
@@ -283,6 +282,9 @@ Scenarios.prototype.loadScenarioByName = function(scenarioName){
 // === Load all available scenarios into memory === //
 Scenarios.prototype.loadAllScenarios = function(){
     return new Promise(function(resolve, reject){
+        
+        //Clear before loading
+        this.loaded = {}
         
         this.nameList.forEach(async function(name, index){
             await this.loadScenarioByName(name)

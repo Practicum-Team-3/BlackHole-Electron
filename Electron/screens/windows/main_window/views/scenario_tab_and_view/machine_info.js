@@ -42,6 +42,10 @@ function MachineInfo(machineInfoNode){
         this.getNode("os").innerHTML = machine.getOs()
         this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
         this.getNode("machineGui").innerHTML = machine.getGui()
+        this.getNode("setBaseMemory").value = machine.getBaseMemory()
+        this.getNode("setBaseMemory").dispatchEvent(new Event("input"))
+        this.getNode("setProcessors").value = machine.getProcessors()
+        this.getNode("setProcessors").dispatchEvent(new Event("input"))
         this.getNode("networkValue").value = ""
     }.bind(this)
 
@@ -86,9 +90,9 @@ function MachineInfo(machineInfoNode){
         interface.addCollapsibleGroup(null, "Settings", "tools", null, true)
         
         interface.addLabel(null, "CPUs:")
-        interface.addRangeAndValue("cpus", 1, 16, 1, 2)
+        interface.addRangeAndValue("setProcessors", 1, 16, 1, 2)
         interface.addLabel(null, "Base Memory (MB):")
-        interface.addRangeAndValue("baseMem", 512, 8192, 1, 2048)
+        interface.addRangeAndValue("setBaseMemory", 512, 8192, 1, 2048)
 
         
         // === Network

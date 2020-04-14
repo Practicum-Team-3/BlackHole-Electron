@@ -1,8 +1,10 @@
 var Modifiable = require('./core/modifiable.js').Modifiable
+var Provisions = require('./machine_components/provisions.js').Provisions
+var InstalledPrograms = require('./machine_components/installed_programs.js').InstalledPrograms
 
 /**
  * @class Machine
- * @version 1.2.0
+ * @version 1.3.0
  * @description Modifiable. Machine properties
  *              
  * @param {object} descriptor Machine descriptor object
@@ -32,15 +34,13 @@ function Machine(descriptor, externalRename){
      * @description Awaiting backend support. Access programs installed on the machine
      * @memberof Machine
      */
-    this.programs = new InstalledPrograms(JSON.parse(require('./defaults.js').installedProgramsDescriptor))//Dummy for now, that's why we are passing a default desc.
+    this.programs = new InstalledPrograms(this.descriptor["programs"])
     
     // Special properties
     this.sharedFolders = new Set()
     this.extractSharedFoldersFromDescriptor()
     
 }
-
-
 
 /**
  * @function getDescriptor
@@ -154,9 +154,47 @@ Machine.prototype.setGui = function(gui){
     this.descriptor["gui"] = gui
 }
 
-//========================
+// === BASE MEMORY
+/**
+ * @function getBaseMemory
+ * @memberof Machine
+ * @returns {number}
+ */
+Machine.prototype.getBaseMemory = function(){
+    return parseInt(this.descriptor["base_memory"])
+}
+
+/**
+ * @function setBaseMemory
+ * @memberof Machine
+ * @param {number} baseMemory
+ */
+Machine.prototype.setBaseMemory = function(baseMemory){
+    this.descriptor["base_memory"] = baseMemory.toString()
+}
+
+// === PROCESSORS
+/**
+ * @function getProcessors
+ * @memberof Machine
+ * @returns {number}
+ */
+Machine.prototype.getProcessors = function(){
+    return parseInt(this.descriptor["processors"])
+}
+
+/**
+ * @function setProcessors
+ * @memberof Machine
+ * @param {number} processors
+ */
+Machine.prototype.setProcessors = function(processors){
+    this.descriptor["processors"] = processors.toString()
+}
+
+//=============================================================================================
 //=== Shared Folders
-//========================
+//=============================================================================================
 
 /**
  * @function extractSharedFoldersFromDescriptor
@@ -220,9 +258,9 @@ Machine.prototype.getSharedFolders = function(){
 }
 
 
-//========================
+//=============================================================================================
 //=== Network Settings
-//========================
+//=============================================================================================
 /**
  * @class NetworkSettings
  * @version 1.0.0
@@ -309,171 +347,5 @@ NetworkSettings.prototype.getAutoConfig = function(){
     return this.descriptor["auto_config"]
 }
 
-//========================
-//=== Provisions
-//========================
-/**
- * @class Provisions
- * @version 1.0.0
- * @param {Object} descriptor Provisions descriptor object
- */
-function Provisions(descriptor){
-    this.descriptor = descriptor
-}
-
-// === Name
-/**
- * @function setName
- * @memberof Provisions
- * @param {string} name
- */
-Provisions.prototype.setName = function(name){
-    this.descriptor["name"] = name
-}
-
-/**
- * @function getName
- * @memberof Provisions
- * @returns {string}
- */
-Provisions.prototype.getName = function(){
-    return this.descriptor["name"]
-}
-
-// === Provision type
-/**
- * @function setProvisionType
- * @memberof Provisions
- * @param {string} provisionType
- */
-Provisions.prototype.setProvisionType = function(provisionType){
-    this.descriptor["provision_type"] = provisionType
-}
-
-/**
- * @function getProvisionType
- * @memberof Provisions
- * @returns {string}
- */
-Provisions.prototype.getProvisionType = function(){
-    return this.descriptor["provision_type"]
-}
-
-// === Commands
-/**
- * @function setCommands
- * @memberof Provisions
- * @param {string[]} commands Array of string commands
- */
-Provisions.prototype.setCommands = function(commands){
-    this.descriptor["commands"] = commands
-}
-/**
- * @function getCommands
- * @memberof Provisions
- * @returns {string[]} Current array of string commands
- */
-Provisions.prototype.getCommands = function(){
-    return this.descriptor["commands"]
-}
-
-//========================
-//=== Installed Programs
-//========================
-/**
- * @class InstalledPrograms
- * @version 1.0.0
- * @param {Object} descriptor Programs descriptor object
- */
-function InstalledPrograms(descriptor){
-    this.descriptor = descriptor
-    this.programs = []
-    
-    // Create InstalledMachine instance per machine from descriptor
-    this.descriptor.forEach(function(program){
-        this.programs.push(new InstalledProgram(program))
-    }.bind(this))
-}
-
-/**
- * @function getAllPrograms
- * @description Returns array with the installed programs on the machine
- * @memberof InstalledPrograms
- * @returns {InstalledProgram[]} Array with InstalledPrograms objects
- */
-InstalledPrograms.prototype.getAllPrograms = function(){
-    return this.programs
-}
-
-/**
- * @function addProgram
- * @description Adds a program to the current list of installed programs
- * @memberof InstalledPrograms
- * @param {string} name     Filename of the program to install
- * @param {string} location Location of the installation in the machines file system
- */
-InstalledPrograms.prototype.addProgram = function(name, location){
-    var program = new InstalledProgram()
-    // Add to descriptor
-    this.descriptor.push(program.getDescriptor())
-}
-
-
-
-//========================
-//=== Installed Program
-//========================
-/**
- * @class InstalledProgram
- * @version 1.0.0
- * @param {Object} descriptor Installed program
- */
-function InstalledProgram(descriptor){
-    this.descriptor = descriptor==null ? JSON.parse(require('./defaults.js').machineDescriptor) : descriptor
-    
-    this.getDescriptor = function(){
-        return this.descriptor
-    }
-}
-
-//==== Name
-
-/**
- * @function getName
- * @memberof InstalledProgram
- * @returns {string} Name of the program (including extension)
- */
-InstalledProgram.prototype.getName = function(){
-    return this.descriptor["name"]
-}
-
-/**
- * @function setName
- * @memberof InstalledProgram
- * @param {string} location Name of the program (including extension)
- */
-InstalledProgram.prototype.setName = function(name){
-    this.descriptor["name"] = name
-}
-
-//==== Location
-
-/**
- * @function getLocation
- * @memberof InstalledProgram
- * @returns {string} Location of the installed program in the machine's filesystem
- */
-InstalledProgram.prototype.getLocation = function(){
-    return this.descriptor["location"]
-}
-
-/**
- * @function setLocation
- * @memberof InstalledProgram
- * @param {string} location Location of the installed program in the machine's filesystem
- */
-InstalledProgram.prototype.setLocation = function(location){
-    this.descriptor["location"] = location
-}
 
 module.exports.Machine = Machine
