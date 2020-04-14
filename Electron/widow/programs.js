@@ -1,6 +1,7 @@
 const { session } = require('electron')
 var Modifiable = require('./core/modifiable.js').Modifiable
 var Loadable = require('./core/loadable.js').Loadable
+var NextcloudManager = require('./cloud/nextcloud.js').NextcloudManager
 /**
  * @class Programs
  * @version 0.3.0
@@ -11,75 +12,77 @@ var Loadable = require('./core/loadable.js').Loadable
 function Programs(widowSettings){
     Modifiable.call(this)
     //Loadable.call(this, "/programs/all")
+    this.programs = []
+    var registryLocation = "programs/program-registry.json"
     
+    this.cloud = new NextcloudManager(widowSettings)
     var widowSettings = widowSettings
     
     this.getAddress = function(){
         return widowSettings.getAddress()
     }
-    
     this.getCloudAddress = function(){
         return widowSettings.getCloudAddress()
     }
     
-    this.programs = {}
-    
-    this.getList = function(){
-        var axios = require('axios')
-        axios({
-            method: 'propfind',
-            url: this.getCloudAddress(),
-            auth: {
-                username: 'admin',
-                password: 'password'
-            },
-        })
-        .then(function (response) {
-            // Keep list locally
-            //TODO: Improve wrapper integration
-            console.log(response)
-
-        }.bind(this)).catch(function (error) {
-            // handle error
-            console.log(error);
-
-        })
+    this.load = function(){
+        return new Promise(function(resolve, reject){
+            //this.programs["e0"] = new Program()
+            console.log("LD1")
+            this.cloud.download(registryLocation)
+            .then(function(response){
+                console.log("LD2")
+            }).catch(function(error){
+                console.log("LE1")
+                // Load of the registry failed, maybe cloud needs init
+                if (error.response==null || error.response.status!=404){
+                    console.log("LE2")
+                    // No hope for this, probably can't find cloud
+                    reject()
+                }else{
+                    console.log("LE3")
+                    // 404 -> Just need to init the cloud for handling programs
+                    this.initCloud()
+                    .then(function(){
+                        console.log("LE4")
+                        resolve()
+                    })
+                    .catch(function(){
+                        console.log("LE5")
+                        reject()
+                    })
+                }
+            }.bind(this))
+        }.bind(this))
     }
     
-    this.makeFolder = function(folderName){
-        var axios = require('axios')
-        axios({
-            method: 'mkcol',
-            url: this.getCloudAddress()+folderName,
-            auth: {
-                username: 'admin',
-                password: 'password'
-            },
-        })
-        .then(function (response) {
-            // Keep list locally
-            //TODO: Improve wrapper integration
-            console.log(response)
-
-        }.bind(this)).catch(function (error) {
-            // handle error
-            console.log(error);
-
-        })
+    this.initCloud = function(){
+        console.log("LE6")
+        console.log(this)
+        return new Promise(function(resolve, reject){
+            console.log("LE7")
+            console.log(this)
+            this.cloud.createFolder("programs")
+            .then(function(){
+                console.log("LE8")
+                return this.saveRegistry()
+            }.bind(this)).then(function(){
+                console.log("LE9")
+                resolve()
+            }).catch(function(){
+                console.log("LE10")
+                reject()
+            })
+            
+        }.bind(this))
+    }
+    
+    this.saveRegistry = function(){
+        console.log("SV1")
+        return this.cloud.upload(JSON.stringify(this.programs), registryLocation)
     }
 }
 
-
-Programs.prototype.load = function(){
-    return new Promise(function(resolve, reject){
-        this.programs["e0"] = new Program()
-        this.programs["e0"].setIsExploit(true)
-        this.programs["e1"] = new Program()
-        this.programs["e1"].setIsExploit(true)
-        this.programs["p0"] = new Program()
-        resolve()
-    }.bind(this))
-}
 
 Programs.prototype.getProgramsByTypeExploit = function(shouldBeExploit){
     var programs = {}

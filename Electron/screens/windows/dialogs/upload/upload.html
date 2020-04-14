@@ -32,6 +32,8 @@
                         setProgressBarPercent(Math.ceil(100/total*uploaded), "progressBar")
                     }
                     
+                    console.log(buffer)
+                    
                     widow.programs.addProgram(buffer, file.name, "linux", "desc", true, getAxiosBridge(), uploadProgressCallback)
                     .then(function(){
                         
@@ -39,7 +41,7 @@
                         //emitModifiedEvent(widow.programs, null, modificationTypes.ADDED_ELEMENT, widow.programs.getProgramByName(file.name))
 
                         //Close dialog window
-                        electron.remote.getCurrentWindow().close()
+                        //electron.remote.getCurrentWindow().close()
                         
                     })
                 })

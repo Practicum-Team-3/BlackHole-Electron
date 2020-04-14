@@ -1,7 +1,8 @@
 const electron = require('electron')
 
 const defaultWidowAddress = "http://172.18.128.2:5000"
-const defaultCloudAddress = "http://0.tcp.ngrok.io:18799/remote.php/dav/files/admin/"
+const defaultCloudDomain = "http://0.tcp.ngrok.io:14409"
+const defaultCloudPath = "/remote.php/dav/files/admin/"
 /**
  * @class Widow
  * @version 1.2.0
@@ -12,7 +13,7 @@ const defaultCloudAddress = "http://0.tcp.ngrok.io:18799/remote.php/dav/files/ad
  */
 function Widow(){
     this.defaultAddress = defaultWidowAddress
-    this.widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudAddress)
+    this.widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudDomain, defaultCloudPath)
     
     // Make child objects and pass a reference to this.widowSettings
     var Scenarios = require('./scenarios.js').Scenarios
@@ -71,9 +72,14 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
 //=============            
 // WidowSettings
 //=============
-function WidowSettings(_address, _cloudAddress){
+function WidowSettings(_address, _cloudDomain, _cloudPath){
     var address = address
-    var cloudAddress = _cloudAddress
+    var cloudDomain = _cloudDomain
+    var cloudPath = _cloudPath
+    var cloudAuth = {
+        username: 'admin',
+        password: 'password'
+    }
     
     this.getAddress = function(){
         return address
@@ -82,8 +88,19 @@ function WidowSettings(_address, _cloudAddress){
         address = _address
     }
     
+    this.getCloudPath = function(){
+        return cloudPath
+    }
     this.getCloudAddress = function(){
-        return cloudAddress
+        return cloudDomain+cloudPath
+    }
+    
+    this.setCloudCredentials = function(username, password){
+        cloudAuth.username = username
+        cloudAuth.password = password
+    }
+    this.getCloudCredentials = function(){
+        return cloudAuth
     }
 }
     

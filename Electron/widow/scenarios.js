@@ -365,6 +365,7 @@ Scenarios.prototype.saveScenarioByName = function(scenarioName){
 
 /**
  * @function prepareMachinesByScenarioName
+ * @deprecated No longer supported by Black Widow
  * @description Tells Widow backend to have the VMs ready for running
  * @memberof Scenarios
  * @param   {string} scenarioName Name of the scenario to prepare the machines for
