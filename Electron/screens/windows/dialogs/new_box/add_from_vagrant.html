@@ -32,7 +32,7 @@
                 document.getElementById("progressContainer").classList.remove("d-none")
                 document.getElementById("outcomeText").innerHTML = "Contacting Server..."
 
-                widow.boxes.linkAndSyncPOST(document.getElementById("vagrantBoxID").value, setProgress)
+                widow.boxes.linkAndSyncPOST(document.getElementById("vagrantBoxID").value, updateProgressBar, updateGUI)
                 // .then(function(response){
                 //     //show some feedback telling user that download has begun.
                 //     console.log("lynkAndSyncPOST has returned")
@@ -43,7 +43,12 @@
                 // })
             }
 
-            function setProgress(value){
+            function updateGUI(){
+                console.log("Emitting modified event...")
+                emitModifiedEvent(widow.boxes, null, modificationTypes.ADDED_ELEMENT, null)
+            }
+
+            function updateProgressBar(value){
                 document.getElementById("boxDownloadProgressBar").style.width = value+"%"
                 document.getElementById("outcomeText").innerHTML = value+"%"
             }

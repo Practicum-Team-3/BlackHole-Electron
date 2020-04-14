@@ -26,19 +26,19 @@ Boxes.prototype.getBoxesList = function(){
 }
 
 
-Boxes.prototype.linkAndSyncPOST = function(vagrantBoxID, syncUpdateCallback){
+Boxes.prototype.linkAndSyncPOST = function(vagrantBoxID, syncUpdateCallback, refreshGUICallback){
     console.log("LinkAndSyncPOST....")
     
-    return this.downloadBoxFromVagrant(vagrantBoxID, syncUpdateCallback)
+    return this.downloadBoxFromVagrant(vagrantBoxID)
     .then(function(response){
         
-        this.requestTaskProgress(response.data.task_id, syncUpdateCallback)
+        this.requestTaskProgress(response.data.task_id, syncUpdateCallback, refreshGUICallback)
 
     }.bind(this))
 
 }
 
-Boxes.prototype.downloadBoxFromVagrant = function(vagrantBoxID, progressUpdateCallBack){
+Boxes.prototype.downloadBoxFromVagrant = function(vagrantBoxID){
     return new Promise(function(resolve, reject){
         var axios = require('axios').create({
             headers: {'Content-Type': 'application/json'}
@@ -61,7 +61,7 @@ Boxes.prototype.downloadBoxFromVagrant = function(vagrantBoxID, progressUpdateCa
 }
 
 
-Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback){
+Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, refreshGUICallback){
     var axios = require('axios')
     console.log("Getting progress for task: "+ taskID +"...")
     axios.get(this.getAddress() + "/vagrant/taskStatus/" + taskID)
@@ -70,15 +70,14 @@ Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback){
         syncUpdateCallback(((response.data.body.current*1.0)/response.data.body.total)*100)
         console.log(response.data)
         if(response.data.body.current < response.data.body.total){
-            this.requestTaskProgress(taskID, syncUpdateCallback)
+            this.requestTaskProgress(taskID, syncUpdateCallback, refreshGUICallback)
         }else{
-            console.log("Emitting modified event...")
-            emitModifiedEvent(widow.boxes, null, modificationTypes.ADDED_ELEMENT, null)
+            refreshGUICallback()
         }
         console.log("Task status update received...")
     }.bind(this))
     .catch(function (error) {
-        // handle error
+        console.log(error)
         console.log("An error occured while requesting task progress...")
         
     })
@@ -91,7 +90,7 @@ Boxes.prototype.removeBox = function(boxName) {
             headers: {'Content-Type': 'application/json'}
         })
 
-        console.log("Downloading vagrant box: "+boxName+"...")
+        console.log("Removing vagrant box: "+boxName+"...")
         axios.post(this.getAddress()+"/vagrant/boxes/remove", {"box_name":boxName})
         .then(function (response) {
             console.log(response)

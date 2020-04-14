@@ -100,6 +100,7 @@ BoxesListOverview.prototype.clear = function(){
 
     for(var i = 0; i<containerChildren.length;i++){
         formContainer.removeChild(containerChildren[i])
+        console.log("Removing: " + containerChildren[i])
     }
 }
 
@@ -117,6 +118,8 @@ BoxesListOverview.prototype.update = function(){
 
     //populate the form
     for(var i = 0;i<boxesArray.length;i++){
+        console.log("Adding back:" + boxesArray[i])
+
         this.interface.addCollapsibleGroup(null, boxesArray[i], "server")
         // General details
         this.interface.addLabelPair(null, "Name:", "boxName", boxesArray[i])
