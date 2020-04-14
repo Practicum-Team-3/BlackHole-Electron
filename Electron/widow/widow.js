@@ -66,6 +66,7 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
     }
 }
 
+
 //=============            
 // WidowSettings
 //=============

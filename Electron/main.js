@@ -60,7 +60,7 @@ ipcMain.on('openChildWindow', (event, address, width, height, resizable, modal) 
     createChildWindow(mainWindow, address, width, height, resizable, modal)
 })
 
-function createChildWindow(parent, address, width, height, resizable, modal=false, showMenu=false){
+function createChildWindow(parent, address, width, height, resizable, modal=false, showMenu=true){
     // Create the browser window.
     var window = new BrowserWindow({
         width: width,
