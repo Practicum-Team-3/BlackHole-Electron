@@ -22,93 +22,15 @@
                 window.$ = window.jQuery = require("../../../../node_modules/jquery/dist/jquery")
             }catch{}
 
-            //Creates a new scenario object
-            // function VagrantBoxDownloadManager(progressBar, spinner, progressText){
-
-            //     // document.getElementById("progressContainer").classList.remove("d-none")
-
-            //     // this.taskID = 0
-            //     // this.progressBar = progressBar
-            //     // this.spinner = spinner
-            //     // this.progressText = progressText
-
-            //     vagrantBoxID = document.getElementById("vagrantBoxID").value;
-            //     this.progressBar = document.getElementById(progressBar)
-            //     this.spinner = document.getElementById(spinner)
-            //     this.progressText = document.getElementById(progressText)
-
-            //     // console.log(typeof(progressText))
-
-            //     this.spinner.style.display = "none"
-            //     this.progressText.innerHTML = "Contacting Server..."
-            //     this.progressBar.style.width = "0%"
-
-            //     //Disable this puppy
-            //     setDisabled(true, "disableable")
-            //     this.spinner.style.display = "inline-block"
-
-            //     this.updateDownloadProgressBar = function(progress, finished){
-
-            //         if(progress <= 100 && !finished){
-            //             this.progressText.innerHTML = progress + "%"
-            //             this.progressBar.style.width = progress + "%"
-            //         }else{
-            //             electron.remote.getCurrentWindow().close()
-            //         }
-            //     }
-
-            //     this.setProgressHasError = function(hasError){
-            //         if (hasError){
-            //             this.progressBar.classList.add("bg-danger")
-            //         }else{
-            //             this.progressBar.classList.remove("bg-danger")
-            //         }
-            //     }
-
-            //     //reset the progress bar
-            //     this.setProgressHasError(false)
-            // }
-
-
-            // function startDownload(){
-
-            //     boxDownloadManager = new VagrantBoxDownloadManager("boxDownloadProgressBar", "spinner", "outcomeText")
-
-            //     //Tell widow to download a box from vagrant cloud
-            //     promise = widow.boxes.downloadBoxFromVagrant(boxDownloadManager)
-
-            //     //Tell notify user that download has begun
-            //     promise.then(function(response){
-
-            //         //Get task ID
-            //         if(boxDownloadManager != 0){
-            //             boxDownloadManager.progressText.innerHTML = "Starting Download..."
-            //         }
-                    
-            //     }).catch(function(error){
-            //         if(boxDownloadManager){
-            //             boxDownloadManager.progressText.innerHTML = "Couldn't Download Box, try again."
-            //             setProgressHasError(true)
-            //             boxDownloadManager.spinner.style.display = "none"
-            //             setDisabled(false, "disableable")
-            //         }
-            //     })
-            // }
-
-            // function cancel(){
-            //     if(updateDownloadProgressBarHandler != 0){
-            //         clearInterval(updateDownloadProgressBarHandler)
-            //         updateDownloadProgressBarHandler = 0
-            //     }
-            //     widow.boxes.stopDownload(taskID)
-            //     electron.remote.getCurrentWindow().close()
-            // }
 
             function startDownload(){
                 
                 setDisabled(true, "disableable")
                 setProgress(10)
                 setProgressHasError(false)
+
+                document.getElementById("progressContainer").classList.remove("d-none")
+                document.getElementById("outcomeText").innerHTML = "Contacting Server..."
 
                 widow.boxes.linkAndSyncPOST(document.getElementById("vagrantBoxID").value, setProgress)
                 // .then(function(response){
@@ -123,6 +45,7 @@
 
             function setProgress(value){
                 document.getElementById("boxDownloadProgressBar").style.width = value+"%"
+                document.getElementById("outcomeText").innerHTML = value+"%"
             }
 
 
@@ -133,7 +56,11 @@
                     document.getElementById("boxDownloadProgressBar").classList.remove("bg-danger")
                 }
             }
-            
+
+            function cancel(){
+                // widow.boxes.stopDownload(taskID)
+                electron.remote.getCurrentWindow().close()
+            }
             
             electron.remote.getCurrentWindow().on('close', function() {
                 boxDownloadManager = 0
@@ -171,7 +98,7 @@
                 <input type="text" class="form-control disableable" placeholder="Box ID on Vagrant cloud (ie. laravel/homestead)" id="vagrantBoxID" required>
             </div>
             <br>
-            <div class="container" id="progressContainer">
+            <div class="container d-none" id="progressContainer">
                 <P id="outcomeText"></P>
                 <div class="progress">
                     <div class="progress-bar progress-bar-striped" style="width:0" id="boxDownloadProgressBar"></div>

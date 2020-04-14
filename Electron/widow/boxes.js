@@ -41,7 +41,7 @@ Boxes.prototype.downloadBoxFromVagrant = function(vagrantBoxID, progressUpdateCa
         var axios = require('axios').create({
             headers: {'Content-Type': 'application/json'}
         })
-        // console.log("...")
+
         console.log("Downloading vagrant box: "+vagrantBoxID+"...")
         axios.post(this.getAddress()+"/vagrant/boxes/add", {"box_name":vagrantBoxID})
         .then(function (response) {
@@ -65,17 +65,18 @@ Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback){
     axios.get(this.getAddress() + "/vagrant/taskStatus/" + taskID)
     .then(function (response) {
         //if response says download is not 100%
-
-        
-        // this.requestTaskProgress(taskID, syncUpdateCallback)
-
-        console.log("task update received")
-        syncUpdateCallback(50)
-        
+        syncUpdateCallback(((response.data.body.current*1.0)/response.data.body.total)*100)
+        console.log(response.data)
+        if(response.data.body.current < response.data.body.total){
+            this.requestTaskProgress(taskID, syncUpdateCallback)
+        }else{
+            emitModifiedEvent(widow.boxes, null, modificationTypes.ADDED_ELEMENT, null)
+        }
+        console.log("Task status update received...")
     }.bind(this))
     .catch(function (error) {
         // handle error
-        console.log("axios encountered a problem requesting task progress...")
+        console.log("An error occured while requesting task progress...")
         
     })
 }
