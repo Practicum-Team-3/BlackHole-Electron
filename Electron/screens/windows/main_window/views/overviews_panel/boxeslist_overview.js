@@ -122,13 +122,13 @@ BoxesListOverview.prototype.update = function(){
         this.interface.addLabelPair(null, "Exploits:", "boxInstalledExploits", "")
         this.interface.addLabelPair(null, "Programs:", "boxInstalledPrograms", "")
 
-        this.interface.addDeleteAndIncludeButtons(null, function(){this.removeBox.bind(event, boxesArray[i])}, null, this.includeClicked.bind(this, i))
+        this.interface.addDeleteAndIncludeButtons(null, this.removeBox.bind(event, boxesArray[i]), null, this.includeClicked.bind(this, i))
         this.interface.selectNode(this.interface.getNodes()["boxesListCollapsiblesForm"])
     }
 }
 
 BoxesListOverview.prototype.removeBox = function(boxName){
-    window.boxes.removeBox(boxName)
+    widow.boxes.removeBox(boxName)
     emitModifiedEvent(widow.boxes, null, modificationTypes.REMOVED_ELEMENT, null)
 }
 
