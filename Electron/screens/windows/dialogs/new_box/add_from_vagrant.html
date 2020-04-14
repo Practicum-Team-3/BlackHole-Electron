@@ -24,14 +24,15 @@
 
 
             function startDownload(){
-                
+                document.getElementById("progressContainer").classList.remove("d-none")
+
                 setDisabled(true, "disableable")
-                setProgress(10)
+                updateProgressBar(10)
                 setProgressHasError(false)
 
-                document.getElementById("progressContainer").classList.remove("d-none")
                 document.getElementById("outcomeText").innerHTML = "Contacting Server..."
 
+                
                 widow.boxes.linkAndSyncPOST(document.getElementById("vagrantBoxID").value, updateProgressBar, updateGUI)
                 // .then(function(response){
                 //     //show some feedback telling user that download has begun.
@@ -67,9 +68,9 @@
                 electron.remote.getCurrentWindow().close()
             }
             
-            electron.remote.getCurrentWindow().on('close', function() {
-                boxDownloadManager = 0
-            })
+            // electron.remote.getCurrentWindow().on('close', function() {
+                
+            // })
 
 
     </script>

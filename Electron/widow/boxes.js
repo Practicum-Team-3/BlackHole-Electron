@@ -35,6 +35,9 @@ Boxes.prototype.linkAndSyncPOST = function(vagrantBoxID, syncUpdateCallback, ref
         this.requestTaskProgress(response.data.task_id, syncUpdateCallback, refreshGUICallback)
 
     }.bind(this))
+    .catch(function(){
+        console.log("an error occurred inside linkAndSyncPOST")
+    })
 
 }
 
