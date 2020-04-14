@@ -2,7 +2,7 @@ var Machine = require('./machine.js').Machine
 var Modifiable = require('./core/modifiable.js').Modifiable
 /**
  * @class Scenario
- * @version 1.3.1
+ * @version 1.4.0
  * @description Modifiable. Single scenario properties
  *              
  * @param {string} descriptor Scenario descriptor (JSON)
@@ -120,7 +120,7 @@ Scenario.prototype.setId = function(id){
  * @returns {string} Scenario description
  */
 Scenario.prototype.getDescription = function(){
-    return ""//this.descriptor["description"]
+    return this.descriptor["description"]
 }
 
 /**
@@ -130,7 +130,7 @@ Scenario.prototype.getDescription = function(){
  * @param {string} description Scenario description/summary
  */
 Scenario.prototype.setDescription = function(description){
-    //this.descriptor["description"] = description
+    this.descriptor["description"] = description
 }
 
 // === Creation date
