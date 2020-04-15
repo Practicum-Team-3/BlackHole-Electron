@@ -36,7 +36,8 @@ function BoxesListOverview(boxesListNode){
     //this.interface.getNodes()["boxesListOptions"].style = "height:20%;"
     this.interface.getNodes()["boxesListOptions"].className = "fixedFlex container boxesListOptions bg-dark"
 
-    var optionButtons = {"Create Box_primary":function(){showToast("Create Box", "Not yet implemented")}, "Upload Box_info":function(){showToast("Upload Box", "Not yet implemented")}}
+    var optionButtons = {"Add from vagrant_primary":function(){openWindow('./screens/windows/dialogs/new_box/add_from_vagrant.html', 530, 355, true, false)}, "Upload OVA_info":function(){showToast("Upload OVA", "Not yet implemented")}}
+    // openWindow('./screens/windows/dialogs/new_box/add_from_vagrant.html', 530, 355, false, true)
     this.interface.addOverviewOptionsButtons(optionButtons)
     
     this.boxesListNode.appendChild(sectionsContainer)
@@ -78,7 +79,9 @@ function BoxesListOverview(boxesListNode){
 BoxesListOverview.prototype.setBoxes = function(boxesObject){
     this.clear()
     this.boxesObject = boxesObject
-    // onModified(this.boxesObject, this.update.bind(this))
+    onModified(this.boxesObject, this.onChange.bind(this))
+    console.log("Boxes on server:")
+    console.log(this.boxesObject.getBoxesList())
     this.update()
 }
 
@@ -90,7 +93,7 @@ BoxesListOverview.prototype.clear = function(){
     if (this.boxesObject==null){
         return
     }
-    removeOnModifiedListener(this.boxesObject, this.update)
+    removeOnModifiedListener(this.boxesObject, this.onChange)
     this.boxesObject = null
 
     //clear collapsibles
@@ -114,6 +117,7 @@ BoxesListOverview.prototype.update = function(){
 
     //populate the form
     for(var i = 0;i<boxesArray.length;i++){
+
         this.interface.addCollapsibleGroup(null, boxesArray[i], "server")
         // General details
         this.interface.addLabelPair(null, "Name:", "boxName", boxesArray[i])
@@ -121,11 +125,36 @@ BoxesListOverview.prototype.update = function(){
         this.interface.addLabelPair(null, "Exploits:", "boxInstalledExploits", "")
         this.interface.addLabelPair(null, "Programs:", "boxInstalledPrograms", "")
 
-        this.interface.addDeleteAndIncludeButtons(null, function(){showToast("DeleteOnServer", "Not implemented")}, null, this.includeClicked.bind(this, i))
+        this.interface.addDeleteAndIncludeButtons(null, this.removeBox.bind(event, boxesArray[i]), null, this.includeClicked.bind(this, i))
         this.interface.selectNode(this.interface.getNodes()["boxesListCollapsiblesForm"])
     }
 }
 
-BoxesListOverview.prototype.onchange = function(nodeName, node){
-    console.log(nodeName)
+BoxesListOverview.prototype.removeBox = function(boxName){
+    console.log("Inside boxoverview, removing: " + boxName)
+    widow.boxes.removeBox(boxName)
+    .then(function(response){
+        widow.boxes.load()
+        .then(function(){
+            this.setBoxes(widow.boxes)
+        }.bind(this))
+        .catch(function(){
+            console.log("couldnt load the updated list of boxes from widow")
+        })
+    }.bind(this))
+    .catch(function(error){
+        console.log(error)
+        console.log("An error ocurred on server, couldn't remove box '" + boxName + "'")
+    })
+}
+
+BoxesListOverview.prototype.onChange = function(modificationType, argA){
+    console.log("On change was called")
+    widow.boxes.load()
+    .then(function(){
+        this.setBoxes(widow.boxes)
+    }.bind(this))
+    .catch(function(){
+        console.log("error updating GUI")
+    })
 }

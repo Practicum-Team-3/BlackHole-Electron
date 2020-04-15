@@ -1,0 +1,119 @@
+<!doctype html>
+<!-- Network view window -->
+<html style="height:100%; max-height:100%" lang="en-US">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta charset="UTF-8">
+    <title>Vagrant Box Download</title>
+
+    <script src="../../../../widow/widow.js"></script>
+    <script src="../../core_components/node_combos/utilities.js"></script>
+    
+    <script>
+
+            var boxDownloadManager = 0
+            var vagrantBoxID = 0
+            var progressBar = 0
+            var spinner = 0
+            var progressText = 0
+            var promise = 0
+
+            try{
+                window.$ = window.jQuery = require("../../../../node_modules/jquery/dist/jquery")
+            }catch{}
+
+
+            function startDownload(){
+                document.getElementById("progressContainer").classList.remove("d-none")
+
+                setDisabled(true, "disableable")
+                updateProgressBar(10)
+                setProgressHasError(false)
+
+                document.getElementById("outcomeText").innerHTML = "Contacting Server..."
+
+                
+                widow.boxes.linkAndSyncPOST(document.getElementById("vagrantBoxID").value, updateProgressBar, updateGUI)
+                // .then(function(response){
+                //     //show some feedback telling user that download has begun.
+                //     console.log("lynkAndSyncPOST has returned")
+                // }).catch(function(error){
+                //     setDisabled(false, "disableable")
+                //     setProgressHasError(true)
+                //     console.log(error)
+                // })
+            }
+
+            function updateGUI(){
+                console.log("Emitting modified event...")
+                emitModifiedEvent(widow.boxes, null, modificationTypes.ADDED_ELEMENT, null)
+            }
+
+            function updateProgressBar(value){
+                document.getElementById("boxDownloadProgressBar").style.width = value+"%"
+                document.getElementById("outcomeText").innerHTML = value+"%"
+            }
+
+
+            function setProgressHasError(hasError){
+                if (hasError){
+                    document.getElementById("boxDownloadProgressBar").classList.add("bg-danger")
+                }else{
+                    document.getElementById("boxDownloadProgressBar").classList.remove("bg-danger")
+                }
+            }
+
+            function cancel(){
+                // widow.boxes.stopDownload(taskID)
+                electron.remote.getCurrentWindow().close()
+            }
+            
+            // electron.remote.getCurrentWindow().on('close', function() {
+                
+            // })
+
+
+    </script>
+
+    <!-- -->
+    <script src="../../../../node_modules/jquery/dist/jquery.js"></script>
+    <link rel="stylesheet" href="../../core_components/css/bootstrap/bootstrap.css">
+    <script src="../../core_components/css/bootstrap/bootstrap.js"></script>
+    
+    <style type="text/css">
+        body {
+            text-align: center;
+        }
+
+        .form-group {
+            text-align: left;
+        }
+
+    </style>
+
+
+</head>
+
+<body>
+    <div class="container">
+        <br>
+        <h3>Download a Vagrant Box</h3>
+        <form onsubmit="startDownload(); return false">
+            <div class="form-group" id="rosvox">
+                <label for="vagrantBoxID">Vagrant Box ID:</label>
+                <input type="text" class="form-control disableable" placeholder="Box ID on Vagrant cloud (ie. laravel/homestead)" id="vagrantBoxID" required>
+            </div>
+            <br>
+            <div class="container d-none" id="progressContainer">
+                <P id="outcomeText"></P>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped" style="width:0" id="boxDownloadProgressBar"></div>
+                </div>
+                <br>
+            </div>
+            <button class="btn btn-primary disableable float-right ml-2" type="submit" id="subm">Download<span class="spinner-border spinner-border-sm ml-1" style="display: none" id="spinner"></span></button>
+            <button class="btn btn-danger float-right" type="button" onclick="cancel()">Cancel</button>
+        </form>
+    </div>
+</body>
+</html>
