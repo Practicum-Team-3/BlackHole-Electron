@@ -9,12 +9,12 @@
   "author": "Practicum Team 3",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^8.2.2",
-    "xmldom": "^0.3.0"
+    "electron": "^8.2.2"
   },
   "dependencies": {
     "axios": "^0.19.2",
     "jquery": "^3.4.1",
-    "jquery-ui": "^1.12.1"
+    "jquery-ui": "^1.12.1",
+    "xmldom": "^0.3.0"
   }
 }
