@@ -33,7 +33,7 @@ function NextcloudManager(widowSettings){
     this.download = function(filePath){
         return genericRequest({
             method: 'get',
-            url: getCloudAddress()+encodeURIComponent(filePath),
+            url: getCloudAddress()+encodeURI(filePath),
             auth: getCredentials()
         })
     }
@@ -41,7 +41,7 @@ function NextcloudManager(widowSettings){
     this.upload = function(buffer, filePath){
         return genericRequest({
             method: 'put',
-            url: getCloudAddress()+encodeURIComponent(filePath),
+            url: getCloudAddress()+encodeURI(filePath),
             auth: getCredentials(),
             data: buffer
         })
@@ -50,7 +50,7 @@ function NextcloudManager(widowSettings){
     this.createFolder = function(folderName){
         return genericRequest({
             method: 'mkcol',
-            url: getCloudAddress()+encodeURIComponent(folderName),
+            url: getCloudAddress()+encodeURI(folderName),
             auth: getCredentials()
         })
     }
@@ -58,7 +58,7 @@ function NextcloudManager(widowSettings){
     this.delete = function(path){
         return genericRequest({
             method: 'delete',
-            url: getCloudAddress()+encodeURIComponent(path),
+            url: getCloudAddress()+encodeURI(path),
             auth: getCredentials()
         })
     }

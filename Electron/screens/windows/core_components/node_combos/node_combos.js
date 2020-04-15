@@ -432,7 +432,15 @@ NodeCombos.prototype.addOverviewOptionsButtons = function(nameAndHandlerDictiona
 NodeCombos.prototype.addVerticalList = function(listName, listItems, itemAction, detailAction, detailActionLigature){
     var itemClassName = itemAction==null ? "list-group-item" : "list-group-item list-group-item-action"
     
-    var listNode = addListGroupNode(this.currentNode, "list-group pl-4 pr-4", itemClassName, listItems, itemAction, detailAction, detailActionLigature)
+    var listNode = addListGroupNode(this.currentNode, "list-group pl-4 pr-4")
     
-    this.addReferenceAndListenerToNode(listName, listNode)
+    addItemsToList(listNode, itemClassName, listItems, itemAction, detailAction, detailActionLigature)
+    
+    this.addReferenceToNode(listName, listNode)
+}
+
+NodeCombos.prototype.addItemsToVerticalList = function(listNode, listItems, itemAction, detailAction, detailActionLigature){
+    var itemClassName = itemAction==null ? "list-group-item" : "list-group-item list-group-item-action"
+    
+    addItemsToList(listNode, itemClassName, listItems, itemAction, detailAction, detailActionLigature)
 }

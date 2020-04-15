@@ -12,11 +12,14 @@
             window.$ = window.jQuery = require("../../../..//node_modules/jquery/dist/jquery")
         }catch{}
             
-        var isUploadingExploit = getUrlVars()["exp"]
+        var isUploadingExploit = window.process.argv.includes("--exploit-upload")
 
         //Creates a new scenario object
         function uploadFile(){
             enterLoading()
+            
+            programOs = document.getElementById("osSelect").value;
+            programDes = document.getElementById("description").value;
             
             var fileList = document.getElementById("fileSelect").files
 
@@ -34,14 +37,14 @@
                     
                     console.log(buffer)
                     
-                    widow.programs.addProgram(buffer, file.name, "linux", "desc", true, getAxiosBridge(), uploadProgressCallback)
-                    .then(function(){
+                    widow.programs.addProgram(buffer, file.name, programOs, programDes, isUploadingExploit, getAxiosBridge(), uploadProgressCallback)
+                    .then(function(program){
                         
                         //Tell the others that there are changes
-                        //emitModifiedEvent(widow.programs, null, modificationTypes.ADDED_ELEMENT, widow.programs.getProgramByName(file.name))
+                        emitModifiedEvent(widow.programs, null, modificationTypes.ADDED_ELEMENT, program)
 
                         //Close dialog window
-                        //electron.remote.getCurrentWindow().close()
+                        electron.remote.getCurrentWindow().close()
                         
                     })
                 })
@@ -70,6 +73,9 @@
             border-top-right-radius: 0;
             border-top-left-radius: 0; 
         }
+        textarea {
+            resize: none;
+        }
     </style>
 
 
@@ -84,7 +90,14 @@
                 <label for="name">File:</label>
                 <input type="file" class="form-control custom-file-input" id="fileSelect" required>
                 <label class="custom-file-label disableable" for="fileSelect">Choose file</label>
-
+                
+                <label for="osSelect">OS:</label>
+                <select name="os" class="custom-select" id="osSelect" required>
+                    <option value="linux">Linux</option>
+                    <option value="windows">Windows</option>
+                    <option value="mac os">Mac OS</option>
+                </select>
+                <br><br>
                 <label for="description">Description:</label>
                 <!--input type="text" class="form-control disableable" id="description" required>-->
                 <textarea rows="3" class="form-control disableable" placeholder="Add a descrition..." required id="description"></textarea>

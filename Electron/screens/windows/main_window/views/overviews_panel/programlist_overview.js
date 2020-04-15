@@ -1,15 +1,17 @@
 const programListOverviewTypes = {
     VULNERABILITIES: {
         origin: "getAllNonExploits",
-        modificationLookout: "getIsExploit",
+        shouldBeExploit: false,
         iconLigature: "bug",
-        uploadButtonLabel: "Upload Program"
+        uploadButtonLabel: "Upload Program",
+        uploadArgument: "--vulnerability-upload"
     },
     EXPLOITS: {
         origin: "getAllExploits",
-        modificationLookout: "getIsExploit",
+        shouldBeExploit: true,
         iconLigature: "bomb",
-        uploadButtonLabel: "Upload Exploit"
+        uploadButtonLabel: "Upload Exploit",
+        uploadArgument: "--exploit-upload"
     }
 }
 
@@ -56,6 +58,30 @@ function ProgramListOverview(programListNode, programListOverviewType){
         interface.getNode("programListCollapsibles").appendChild(formNode)
     }
     addInterface()
+    
+    this.onDeleteButtonClick = function(programToDelete, event){
+        event.target.disabled = true
+        
+        widow.programs.removeProgram(programToDelete)
+        .then(function(){
+            emitModifiedEvent(widow.programs, null, modificationTypes.REMOVED_ELEMENT, programToDelete)
+        }.bind(this)).catch(function(){
+            event.target.disabled = false
+        })
+    }
+    
+    this.onIncludeButtonClick = function(programToInclude, event){
+        var scenarioTab = getActiveScenarioTab()
+        var selectedMachine
+        if (scenarioTab!=null){
+            selectedMachine = scenarioTab.getSelectedMachine()
+            if (selectedMachine!=null){
+                selectedMachine.programs.addProgram(programToInclude.getName(), "/bin")
+                // Tell the world about this
+                emitModifiedEvent(selectedMachine, null, modificationTypes.EDITED, "programs")
+            }
+        }
+    }
 
     // Define the function that adds progran sections
     this.addProgramSection = function(programName, program){
@@ -65,14 +91,10 @@ function ProgramListOverview(programListNode, programListOverviewType){
         var group = interface.addCollapsibleGroup(null, programName, programListType.iconLigature)
         // General details of exploit
         interface.addLabelPair(null, "Name: ", "programName", programName)
-        interface.addLabelPair(null, "OS(s): ", "programOs", program.getOs())
-        interface.addLabelPair(null, "Target Program: ", "programTarget", program.getDescription())
-
-        //interface.addSingleButton("Delete Exploit", "col ml-1 mr-1 mt-2 btn btn-danger", function(){showToast("DeleteOnServer", "delete exploit from server was clicked")})
-        var addProgram = function(){
-            
-        }
-        interface.addDeleteAndIncludeButtons(null, function(){showToast("EditExploitOnServer", "editExploit on server was clicked")}, null, addProgram)
+        interface.addLabelPair(null, "OS: ", "programOs", program.getOs())
+        interface.addLabelPair(null, "Description: ", "programTarget", program.getDescription())
+        
+        interface.addDeleteAndIncludeButtons(null, this.onDeleteButtonClick.bind(this, program), null, this.onIncludeButtonClick.bind(this, program))
 
         // keep reference to group node in map
         programSections.set(program, group)
@@ -81,23 +103,34 @@ function ProgramListOverview(programListNode, programListOverviewType){
         interface.selectNode(interface.getNode("programListCollapsiblesForm"))
         
         return group
-    }
+    }.bind(this)
+    
+    this.removeProgramSection = function(program){
+        programSections.get(program).remove()
+        programSections.delete(program)
+    }.bind(this)
     
     // Create the groups for the available programs by calling addProgramSection()
     var programs = widow.programs[programListType.origin]()
-    for (programName in programs){
-        this.addProgramSection(programName, programs[programName])
-    }
+    programs.forEach(function(program){
+        
+        this.addProgramSection(program.getName(), program)
+        
+    }.bind(this))
+    
 
-
-    // section at bottom of overview column
+    //=====================================
+    // Section at bottom of overview column
+    
     interface.selectNode(interface.getNode("programListOptions"))
     interface.getNode("programListOptions").className = "fixedFlex container programListOptions bg-dark"
 
     //var optionButtons = {"Add Exploit_primary":null}
     //interface.addOverviewOptionsButtons(optionButtons)
-    interface.addSingleButton(programListType.uploadButtonLabel, "col mt-2 mb-2 btn btn-primary", function(){openWindow('./screens/windows/dialogs/upload/upload.html', 530, 355, false, true)})
+    interface.addSingleButton(programListType.uploadButtonLabel, "col mt-2 mb-2 btn btn-primary", function(){openWindow('./screens/windows/dialogs/upload/upload_program.html', 530, 455, false, true, false, [programListType.uploadArgument])})
 
+    //==============
+    // FINAL APPEND
     this.programListNode.appendChild(sectionsContainer)
     
     
@@ -112,11 +145,20 @@ function ProgramListOverview(programListNode, programListOverviewType){
     }
     
     this.programsModified = function(target, modificationType, arg){
+        
         switch(modificationType){
+            // Added Program
             case modificationTypes.ADDED_ELEMENT:
-                if (!arg.getIsExploit()){
-                    var group = this.addProgramSection(arg.name, arg)
+                
+                if (arg.getIsExploit()==programListType.shouldBeExploit){
+                    var group = this.addProgramSection(arg.getName(), arg)
                     $(group.lastChild).collapse('show')
+                }
+                break;
+            case modificationTypes.REMOVED_ELEMENT:
+                
+                if (arg.getIsExploit()==programListType.shouldBeExploit){
+                    this.removeProgramSection(arg)
                 }
                 break;
         }

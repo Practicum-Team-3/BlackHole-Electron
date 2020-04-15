@@ -56,11 +56,11 @@ function createWindow () {
 //====================
 // Child windows
 //====================
-ipcMain.on('openChildWindow', (event, address, width, height, resizable, modal, showMenu=false, external=false) => {
-    createChildWindow(mainWindow, address, width, height, resizable, modal, showMenu, external)
+ipcMain.on('openChildWindow', (event, address, width, height, resizable, modal, showMenu=false, external=false, frameless=false, arguments=[]) => {
+    createChildWindow(mainWindow, address, width, height, resizable, modal, showMenu, external, frameless, arguments)
 })
 
-function createChildWindow(parent, address, width, height, resizable, modal=false, showMenu=false, external=false){
+function createChildWindow(parent, address, width, height, resizable, modal=false, showMenu=false, external=false, frameless=false, arguments=[]){
     // Create the browser window.
     var window = new BrowserWindow({
         width: width,
@@ -68,10 +68,11 @@ function createChildWindow(parent, address, width, height, resizable, modal=fals
         parent: parent,
         resizable: resizable,
         modal: modal,
-//        show: false,
+        frame: !frameless,
         webPreferences: {
             nodeIntegration: !external,
-            enableRemoteModule: !external
+            enableRemoteModule: !external,
+            additionalArguments: arguments
         }
     })
     if (!showMenu){

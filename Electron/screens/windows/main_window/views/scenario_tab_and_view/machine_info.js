@@ -27,18 +27,42 @@ function MachineInfo(machineInfoNode){
         return this.getInterface().getNodes()[nodeName]
     }
     
+    this.machineModified = function(target, modificationType, arg){
+        switch(modificationType){
+            // EDIT
+            case modificationTypes.EDITED:
+                // Special modification cases
+                switch (arg){
+                    // Installed programs changed
+                    case "programs":
+                        this.updatePrograms()
+                    break
+                    //General update
+                    default:
+                        this.update()
+                    break
+                }
+            break;
+            case modificationTypes.DESTROYED:
+                
+            break;
+        }
+        
+    }.bind(this)
+    
     /**
      * @function update
      * @private
      * @description Fill panel with current machine info
      */
     this.update = function(){
+        
         if (this.machine==null){
             return
         }
         var machine = this.machine
         this.getNode("rename").value = machine.getName()
-        console.log(machine.getName())
+        
         this.getNode("os").innerHTML = machine.getOs()
         this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
         this.getNode("machineGui").innerHTML = machine.getGui()
@@ -47,6 +71,19 @@ function MachineInfo(machineInfoNode){
         this.getNode("setProcessors").value = machine.getProcessors()
         this.getNode("setProcessors").dispatchEvent(new Event("input"))
         this.getNode("networkValue").value = ""
+
+    }.bind(this)
+    
+    this.updatePrograms = function(){
+        if (this.machine==null){
+            return
+        }
+        var machine = this.machine
+        // Clear group
+        
+        // Add elements back
+        var installedProgramsGroup = interface.getNode("installedPrograms")
+        interface.addItemsToVerticalList(installedProgramsGroup, machine.programs.getProgramNamesList(), function(event){console.log(event)}, function(event){event.stopPropagation()}, "cog")
     }.bind(this)
 
     
@@ -59,6 +96,11 @@ function MachineInfo(machineInfoNode){
      */
     this.onchange = function(nodeName, node, value){
         this.machine[nodeName](node.value)
+    }.bind(this)
+    
+    this.onDeleteButtonClick = function(){
+        
+        
     }.bind(this)
     
     addInterfaceNodes()
@@ -124,11 +166,7 @@ function MachineInfo(machineInfoNode){
         interface.deselectNode()
         interface.addCollapsibleGroup(null, "Programs", "code", null, true)
 
-        interface.addLabelAndSelect(null, "Program:", "program", [""])
-        interface.addLabelAndInput(null, "Path:", "path", "")
-        interface.addLabelAndInput(null, "Start Time:", "startTime", "12")
-        
-        //interface.addVerticalList(null, ["sh", "rox"], function(event){console.log(event)}, function(event){event.stopPropagation()}, "cog")
+        interface.addVerticalList("installedPrograms", [], null, null, "")
 
         machineInfoNode.appendChild(formNode)
     }
@@ -143,9 +181,19 @@ function MachineInfo(machineInfoNode){
 MachineInfo.prototype.setMachine = function(machine){
     this.clear()
     this.machine = machine
-    onModified(this.machine, this.update)
+    onModified(this.machine, this.machineModified)
     this.parentNode.style.width = machineInfoDefaultWidth+"px"
     this.update()
+    this.updatePrograms()
+}
+
+/**
+ * @function getAssignedMachine
+ * @description Returns the machine that was assigned to the panel
+ * @returns {Machine} Assigned machine
+ */
+MachineInfo.prototype.getAssignedMachine = function(){
+    return this.machine
 }
 
 /**
@@ -156,7 +204,7 @@ MachineInfo.prototype.clear = function(){
     if (this.machine==null){
         return
     }
-    removeOnModifiedListener(this.machine, this.update)
+    removeOnModifiedListener(this.machine, this.machineModified)
     this.parentNode.style.width = ""
     this.machine = null
 }

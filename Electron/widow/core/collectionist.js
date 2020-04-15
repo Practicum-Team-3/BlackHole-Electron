@@ -2,24 +2,37 @@
  * @class Collectionist
  * @description Object that keeps a collection of descriptor modifiers with their descriptors
  * @version 1.0.0
- * @param {object} descriptor Programs descriptor object
+ * @param {object} descriptor Collection descriptor object
  */
 function Collectionist(descriptor, _collectableClass){
     var CollectableClass = _collectableClass
-    this.descriptor = descriptor
-    this.collection = []
-    
-    // Create InstalledMachine instance per machine from descriptor
-    this.descriptor.forEach(function(collectableDescriptor){
-        this.collection.push(new CollectableClass(collectableDescriptor))
-    }.bind(this))
     
     this.super = {}
     
     /**
+     * @function setDescriptor
+     * @description Inherited on super.
+     *                  Called upon instantiation, this method sets up the collection
+     *                  from the passed descriptor
+     * @memberof Collectionist
+     * @param {object} descriptor Collection descriptor object
+     */
+    this.super.setDescriptor = function(descriptor){
+        this.descriptor = descriptor
+        this.collection = []
+
+        // Create InstalledMachine instance per machine from descriptor
+        this.descriptor.forEach(function(collectableDescriptor){
+            this.collection.push(new CollectableClass(collectableDescriptor))
+        }.bind(this))
+    }.bind(this)
+    this.super.setDescriptor(descriptor)
+    
+    
+    /**
      * @function getAll
-     * @description Inherited on super
-     * @description Returns array with all of the items in the collection
+     * @description Inherited on super.
+     *                  Returns array with all of the items in the collection
      * @memberof Collectionist
      * @returns {Collectable[]} Array with Collectable objects
      */
@@ -28,8 +41,24 @@ function Collectionist(descriptor, _collectableClass){
     }.bind(this)
     
     /**
+     * @function getNamesList
+     * @description Inherited on super.
+     *                  Returns array with the names of collectables in the collection
+     * @memberof Collectionist
+     * @returns {string[]} Array of collectable names
+     */
+    this.super.getNamesList = function(){
+        var names = []
+        this.collection.forEach(function(collectable){
+            names.push(collectable.getName())
+        })
+        return names
+    }.bind(this)
+    
+    /**
      * @function getCollectablesByName
-     * @description Returns array with collectables that match a specific name
+     * @description Inherited on super.
+     *                  Returns array with collectables that match a specific name
      * @param {string} name Name to search
      * @returns {Collectable[]} Array with collectable items with the specified name
      */
@@ -42,11 +71,30 @@ function Collectionist(descriptor, _collectableClass){
         })
         return matches
     }.bind(this)
+    
+    /**
+     * @function getCollectablesByCharacteristic
+     * @description Inherited on super.
+     *                  Returns array of collectables that match the value
+     *                  of a specific member in their descriptor
+     * @param   {string} memberName Name of get method of descriptor call and match
+     * @param   {Any} value      Value of member to check for equality
+     * @returns {Collectable[]} Array with collectable items matching the characteristic
+     */
+    this.super.getCollectablesByCharacteristic = function(memberName, value){
+        var matches = []
+        this.collection.forEach(function(collectable){
+            if (collectable[memberName]()==value){
+                matches.push(collectable)
+            }
+        })
+        return matches
+    }.bind(this)
 
     /**
      * @function add
-     * @description inherited on super
-     * @description Adds a collectable to the descriptor and to collection. Colectable objects
+     * @description Inherited on super.
+     *                  Adds a collectable to the descriptor and to collection. Colectable objects
      *                  already on the collection will be ignored. Collectable objects may be added even
      *                  if another item already has that name, unless allowNameDuplicates is passed false
      * @memberof Collectionist
@@ -70,8 +118,8 @@ function Collectionist(descriptor, _collectableClass){
     
     /**
      * @function remove
-     * @description Inherited on super
-     * @description Removes a collectable from the descriptor and the collection
+     * @description Inherited on super.
+     *                  Removes a collectable from the descriptor and the collection
      * @memberof Collectionist
      * @param {Collectable} collectable     Collectable object to remove
      * @returns {boolean} Success of the removal

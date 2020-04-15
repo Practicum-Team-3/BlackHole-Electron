@@ -147,9 +147,9 @@ function closeScenario(scenario){
  * @param {number} height Height dimension of the window
  * @param {boolean} modal Boolean for if to make the window modal
  */
-function openWindow(address, width, height, resizable, modal){
+function openWindow(address, width, height, resizable, modal, frameless, arguments=[]){
     
-    electron.ipcRenderer.send("openChildWindow", address, width, height, resizable, modal)
+    electron.ipcRenderer.send("openChildWindow", address, width, height, resizable, modal, undefined, undefined, frameless, arguments)
 }
 
 /**

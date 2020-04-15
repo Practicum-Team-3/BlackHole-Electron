@@ -1,7 +1,7 @@
 const electron = require('electron')
 
-const defaultWidowAddress = "http://172.18.128.2:5000"
-const defaultCloudDomain = "http://0.tcp.ngrok.io:14409"
+const defaultWidowAddress = "http://localhost:8080"
+const defaultCloudDomain = "http://localhost:8081"
 const defaultCloudPath = "/remote.php/dav/files/admin/"
 /**
  * @class Widow
@@ -192,4 +192,5 @@ const modificationTypes = {
         ADDED_ELEMENT: "addedElement",   // Reference to new element in eventArg
         REMOVED_ELEMENT: "removedElement", // Pass reference to removed element in eventArg
         DESTROYED: "destroyed", // Element being observed is being destroyed
+        EDITED: "edited" // Pass string name of getter for edited member
 }
