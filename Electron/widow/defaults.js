@@ -1,25 +1,29 @@
 module.exports.scenarioDescriptor = '{\
     "scenario_name": "",\
-    "scenario_id": "928376",\
-    "creation_date": "02/03/2020 21:22:38",\
-    "last_accessed": "02/03/2020 21:22:38",\
-    "exploit_info": {\
-        "name": "spl",\
-        "type": "spl",\
-        "download_link": "link"\
+    "description": "",\
+    "scenario_id": "",\
+    "creation_date": "",\
+    "last_accessed": "",\
+    "exploit": {\
+        "name": "",\
+        "type": "",\
+        "download_link": ""\
     },\
-    "vulnerability_info": {\
-        "name": "name",\
-        "type": "type",\
-        "cve_link": "link",\
-        "download_link": "link"\
+    "vulnerability": {\
+        "name": "",\
+        "type": "",\
+        "cve_link": "",\
+        "download_link": ""\
     },\
     "machines": {}\
 }'
 
+
 module.exports.machineDescriptor = '{\
-    "os": "windows",\
-    "name": "default",\
+    "name": "",\
+    "os": "",\
+    "base_memory": "4096",\
+    "processors": "2",\
     "is_attacker": false,\
     "shared_folders": [],\
     "network_settings": {\
@@ -28,28 +32,22 @@ module.exports.machineDescriptor = '{\
         "ip_address": "",\
         "auto_config": true\
     },\
-    "provisions": {\
-        "name": "",\
-        "provision_type": "",\
-        "commands": []\
-    },\
+    "provisions": [],\
+    "programs": [],\
     "gui": false\
 }'
 
 // uploads
 module.exports.programDescriptor = '{\
-    "os": "linux",\
-    "is_exploit": false,\
-    "description": ""\
+    "name": "linux",\
+    "location": ""\
 }'
 
-// TEMP
-module.exports.installedProgramsDescriptor = '[\
-    {\
-        "name": "e0",\
-        "location": "/bin"\
-    }\
-]'
+module.exports.provisionDescriptor = '{\
+    "name": "",\
+    "provision_type": "",\
+    "commands": []\
+}'
 
 module.exports.installedProgramDescriptor = '{\
     "name": "",\

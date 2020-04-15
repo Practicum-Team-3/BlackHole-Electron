@@ -56,11 +56,13 @@ function createWindow () {
 //====================
 // Child windows
 //====================
-ipcMain.on('openChildWindow', (event, address, width, height, resizable, modal) => {
-    createChildWindow(mainWindow, address, width, height, resizable, modal)
+ipcMain.on('openChildWindow', (event, address, width, height, resizable, modal, showMenu=false, external=false) => {
+    createChildWindow(mainWindow, address, width, height, resizable, modal, showMenu, external)
 })
 
-function createChildWindow(parent, address, width, height, resizable, modal=false, showMenu=true){
+
+function createChildWindow(parent, address, width, height, resizable, modal=false, showMenu=false, external=false){
+
     // Create the browser window.
     var window = new BrowserWindow({
         width: width,
@@ -70,14 +72,20 @@ function createChildWindow(parent, address, width, height, resizable, modal=fals
         modal: modal,
 //        show: false,
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: !external,
+            enableRemoteModule: !external
         }
     })
     if (!showMenu){
         window.removeMenu()
     }
     
-    window.loadFile(address)
+    if (external){
+        window.loadURL(address)
+    }else{
+        window.loadFile(address)
+    }
+    
 //    window.once('ready-to-show', () => {
 //        window.show()
 //    })
