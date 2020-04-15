@@ -80,6 +80,8 @@ BoxesListOverview.prototype.setBoxes = function(boxesObject){
     this.clear()
     this.boxesObject = boxesObject
     onModified(this.boxesObject, this.onChange.bind(this))
+    console.log("Boxes on server:")
+    console.log(this.boxesObject.getBoxesList())
     this.update()
 }
 
@@ -100,7 +102,6 @@ BoxesListOverview.prototype.clear = function(){
 
     for(var i = 0; i<containerChildren.length;i++){
         formContainer.removeChild(containerChildren[i])
-        console.log("Removing: " + containerChildren[i])
     }
 }
 
@@ -111,14 +112,11 @@ BoxesListOverview.prototype.update = function(){
 
     //get boxesList should return a list of JSON objects with more details for each box than just OS
     var boxesArray = this.boxesObject.getBoxesList()
-    console.log("New box list:")
-    console.log(boxesArray)
 
     this.interface.selectNode(this.interface.getNodes()["boxesListCollapsiblesForm"])
 
     //populate the form
     for(var i = 0;i<boxesArray.length;i++){
-        console.log("Adding back:" + boxesArray[i])
 
         this.interface.addCollapsibleGroup(null, boxesArray[i], "server")
         // General details
@@ -133,13 +131,10 @@ BoxesListOverview.prototype.update = function(){
 }
 
 BoxesListOverview.prototype.removeBox = function(boxName){
-    console.log("Removing box '" + boxName + "'...")
+    console.log("Inside boxoverview, removing: " + boxName)
     widow.boxes.removeBox(boxName)
     .then(function(response){
-        console.log("Box removed from server.")
-        console.log("Updating GUI...")
         emitModifiedEvent(widow.boxes, null, modificationTypes.REMOVED_ELEMENT, null)
-        console.log("Done.")
     }.bind(this))
     .catch(function(error){
         console.log(error)
@@ -148,7 +143,6 @@ BoxesListOverview.prototype.removeBox = function(boxName){
 }
 
 BoxesListOverview.prototype.onChange = function(modificationType, argA){
-    this.clear()
-    console.log("Updating boxeslistoverview...")
-    this.update()
+    console.log("On change was called")
+    this.setBoxes(widow.boxes)
 }

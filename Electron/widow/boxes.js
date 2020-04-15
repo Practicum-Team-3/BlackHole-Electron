@@ -22,7 +22,12 @@ function Boxes(widowSettings){
  * @returns {string[]} Array with box names as strings
  */
 Boxes.prototype.getBoxesList = function(){
-    return this.getItemList()
+    var boxesList = this.getItemList()
+    console.log("Boxes received from backend:")
+    for(var i = 0; i<boxesList.length; i++){
+        console.log(boxesList[i])
+    }
+    return boxesList
 }
 
 
