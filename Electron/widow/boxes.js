@@ -102,8 +102,7 @@ Boxes.prototype.removeBox = function(boxName) {
         axios.post(this.getAddress()+"/vagrant/boxes/remove", {"box_name":boxName})
         .then(function (response) {
             console.log(response)
-            console.log("Box deleted...")
-            // emitModifiedEvent(widow.boxes, null, modificationTypes.REMOVED_ELEMENT, null)
+            console.log("Box deleted from server...")
             resolve(response)
         }.bind(this))
         .catch(function (error) {

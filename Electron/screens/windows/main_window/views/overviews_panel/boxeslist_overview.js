@@ -134,7 +134,13 @@ BoxesListOverview.prototype.removeBox = function(boxName){
     console.log("Inside boxoverview, removing: " + boxName)
     widow.boxes.removeBox(boxName)
     .then(function(response){
-        emitModifiedEvent(widow.boxes, null, modificationTypes.REMOVED_ELEMENT, null)
+        widow.boxes.load()
+        .then(function(){
+            this.setBoxes(widow.boxes)
+        }.bind(this))
+        .catch(function(){
+            console.log("couldnt load the updated list of boxes from widow")
+        })
     }.bind(this))
     .catch(function(error){
         console.log(error)
@@ -144,5 +150,11 @@ BoxesListOverview.prototype.removeBox = function(boxName){
 
 BoxesListOverview.prototype.onChange = function(modificationType, argA){
     console.log("On change was called")
-    this.setBoxes(widow.boxes)
+    widow.boxes.load()
+    .then(function(){
+        this.setBoxes(widow.boxes)
+    }.bind(this))
+    .catch(function(){
+        console.log("error updating GUI")
+    })
 }
