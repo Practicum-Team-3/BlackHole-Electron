@@ -53,7 +53,7 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
     }.bind(this))
     .then(function(){
         console.log("Loaded boxes")
-        syncUpdate(100)
+        syncUpdate(90)
         //Load available programs
         return this.programs.load()
         
