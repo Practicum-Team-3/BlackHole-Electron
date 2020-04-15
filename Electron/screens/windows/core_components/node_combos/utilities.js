@@ -37,3 +37,42 @@ function setDisabled(disabled, targetClassName){
         formElements[i].disabled = disabled
     }
 }
+
+/**
+ * @function showSpinner
+ * @description Changes the display to inline-block of an element with a specific ID
+ * @param {string} spinnerId ID of the spinner to handle
+ */
+function showSpinner(spinnerId){
+    document.getElementById(spinnerId).style.display = "inline-block"
+}
+
+/**
+ * @function hideSpinner
+ * @description Changes the display to none of an element with a specific ID
+ * @param {string} spinnerId ID of the spinner to handle
+ */
+function hideSpinner(spinnerId){
+    document.getElementById(spinnerId).style.display = "none"
+}
+
+/**
+ * @function setProgress
+ * @description Sets the width of a progressbar with a specific id
+ * @param {number} percent Percent to set the progressbar to
+ * @param {string} progressBarId ID of the progressbar to set
+ */
+function setProgressBarPercent(percent, progressBarId){
+    document.getElementById(progressBarId).style.width = percent+"%"
+}
+
+////// Default Loading State Helpers
+function enterLoading(){
+    setDisabled(true, "disableable")
+    showSpinner("spinner")
+}
+
+function exitLoading(){
+    setDisabled(false, "disableable")
+    hideSpinner("spinner")
+}

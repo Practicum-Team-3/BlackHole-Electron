@@ -119,6 +119,10 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         return scenario
     }
     
+    this.getSelectedMachine = function(){
+        return machineInfo.getAssignedMachine()
+    }
+    
     this.select = function(){
         $(tabNode.firstElementChild).tab('show')
     }

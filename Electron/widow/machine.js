@@ -7,7 +7,7 @@ var InstalledPrograms = require('./machine_components/installed_programs.js').In
  * @version 1.3.0
  * @description Modifiable. Machine properties
  *              
- * @param {string} descriptor Machine descriptor (JSON)
+ * @param {object} descriptor Machine descriptor object
  */
 function Machine(descriptor, externalRename){
     Modifiable.call(this)
@@ -31,7 +31,7 @@ function Machine(descriptor, externalRename){
     
     /**
      * @type {InstalledPrograms}
-     * @description Awaiting backend support. Access programs installed on the machine
+     * @description Access installed programs on the machine
      * @memberof Machine
      */
     this.programs = new InstalledPrograms(this.descriptor["programs"])
@@ -43,12 +43,11 @@ function Machine(descriptor, externalRename){
 }
 
 /**
- * @function getDescriptorAsString
- * @description Generate and return the updated descriptor (JSON)
+ * @function getDescriptor
+ * @description Returns the local descriptor
  * @memberof Machine
- * @todo Complete implementation
  *              
- * @returns {string} String representation of the machine descriptor
+ * @returns {object} Local machine descriptor
  */
 Machine.prototype.getDescriptor = function(){
     //Update shared folders

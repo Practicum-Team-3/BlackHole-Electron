@@ -381,7 +381,12 @@ NodeCombos.prototype.addRangeAndValue = function(rangeName, min, max, step, valu
     this.currentNode.appendChild(rowNode)
 }
 
-
+/**
+ * @function addMultipleSections
+ * @description Adds multiple rows
+ * @author Unknown
+ * @param {string[]} sectionsLabelsList Array with the names of the rows for the local reference
+ */
 NodeCombos.prototype.addMultipleSections = function(sectionsLabelsList){
     for(var i=0; i<sectionsLabelsList.length;i++){
         var rowNode = this.getNewRow()
@@ -427,7 +432,15 @@ NodeCombos.prototype.addOverviewOptionsButtons = function(nameAndHandlerDictiona
 NodeCombos.prototype.addVerticalList = function(listName, listItems, itemAction, detailAction, detailActionLigature){
     var itemClassName = itemAction==null ? "list-group-item" : "list-group-item list-group-item-action"
     
-    var listNode = addListGroupNode(this.currentNode, "list-group pl-4 pr-4", itemClassName, listItems, itemAction, detailAction, detailActionLigature)
+    var listNode = addListGroupNode(this.currentNode, "list-group pl-4 pr-4")
     
-    this.addReferenceAndListenerToNode(listName, listNode)
+    addItemsToList(listNode, itemClassName, listItems, itemAction, detailAction, detailActionLigature)
+    
+    this.addReferenceToNode(listName, listNode)
+}
+
+NodeCombos.prototype.addItemsToVerticalList = function(listNode, listItems, itemAction, detailAction, detailActionLigature){
+    var itemClassName = itemAction==null ? "list-group-item" : "list-group-item list-group-item-action"
+    
+    addItemsToList(listNode, itemClassName, listItems, itemAction, detailAction, detailActionLigature)
 }

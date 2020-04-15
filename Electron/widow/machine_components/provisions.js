@@ -3,7 +3,7 @@ var Collectable = require('../core/collectionist.js').Collectable
 /**
  * @class Provisions
  * @version 2.0.0
- * @param {Object} descriptor Provisions descriptor object
+ * @param {object} descriptor Provisions descriptor object
  */
 function Provisions(descriptor){
     Collectionist.call(this, descriptor, Provision)
@@ -50,6 +50,7 @@ Provisions.prototype.addProvision = function(name, provisionType, commands){
 /**
  * @function removeProvision
  * @description Removes instance of Provision
+ * @memberof Provisions
  * @param {Provision} provision Instance of Provision to remove
  * @returns {boolean} Success of the removal
  */

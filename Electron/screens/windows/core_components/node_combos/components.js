@@ -183,25 +183,29 @@ function addCheckboxNode(node, className, labelText){
  * @todo Add option for floating button
  * @param   {object}   node                 Node to add the list to
  * @param   {string}   className            Style classes to give the ul
+ * @returns {object}   The list node that was added
+ */
+function addListGroupNode(node, className){
+    var listNode = document.createElement("ul")
+    listNode.className = className
+    
+    node.appendChild(listNode)
+    return listNode
+}
+
+/**
+ * @function addItemsToList
+ * @param   {object} listNode  List node to add the items to
  * @param   {string}   itemClassName        Style classes to give the list items
  * @param   {string[]} itemList             Array with the contents of the list items
  * @param {function} itemAction           Optional: Function called when the item gets clicked
  * @param {function} detailAction         Optional: Function called with the detail icon gets clicked
  * @param {string}   detailActionLigature Optional: Ligature for the detail icon
- * @returns {object}   The list node that was added
  */
-function addListGroupNode(node, className, itemClassName, itemList, itemAction, detailAction, detailActionLigature){
-    var listNode = document.createElement("ul")
-    listNode.className = className
-    
+function addItemsToList(listNode, itemClassName, itemList, itemAction, detailAction, detailActionLigature){
     itemList.forEach(function(item){
         var itemNode = addItemToList(listNode, itemClassName, item, itemAction, detailAction, detailActionLigature)
-        
     })
-    
-    node.appendChild(listNode)
-    return listNode
-    
 }
 
 /**

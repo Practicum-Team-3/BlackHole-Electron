@@ -33,12 +33,12 @@ function Scenario(descriptor){
      */
     this.vulnerabilityInfo = new VulnerabilityInfo(this.descriptor["vulnerability_info"])
     
-    //
-    this.renameCallback = function(oldName, newName){
-        this.renameMachine(oldName, newName)
-    }.bind(this)
+    // For when the machines need to be renamed, they can make the call themselves
+    this.renameCallback = this.renameMachine.bind(this)
     
     // Create machine objects from the descriptor
+    // (and clear the local machine descriptors)
+    // Will be added back in whenever a need to generate the descriptor comes
     this.createMachinesFromDescriptor()
 }
 
@@ -430,6 +430,8 @@ Scenario.prototype.createMachinesFromDescriptor = function(){
     for (machineName in this.descriptor["machines"]){
         this.addMachine(new Machine(this.descriptor["machines"][machineName], this.renameCallback))
     }
+    // Clear machines descriptor
+    this.descriptor["machines"] = {}
 }
 
 // Add machine
