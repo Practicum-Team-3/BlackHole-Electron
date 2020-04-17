@@ -1,7 +1,7 @@
 var DOMParser = require('xmldom').DOMParser;
 /**
  * @class NextcloudManager
- * @version 0.1.0
+ * @version 0.2.0
  * @description Abstraction for Nextcloud WebDAV operations
  */
 function NextcloudManager(widowSettings){
@@ -16,17 +16,18 @@ function NextcloudManager(widowSettings){
     
     function genericRequest(config){
         return new Promise(function(resolve, reject){
-            var axios = require('axios')
-            axios(config)
-            .then(function (response) {
+            
+            axiosBridged(config, function (response) {
                 
                 resolve(response)
 
-            }.bind(this)).catch(function (error) {
-                
+            }.bind(this), function (error) {
+                console.log("NextcloudManager generic request error:")
+                console.log(error)
                 reject(error)
 
             })
+            
         }.bind(this))
     }
     
@@ -65,8 +66,8 @@ function NextcloudManager(widowSettings){
     
     this.listFolder = function(folderPath){
         return new Promise(function(resolve, reject){
-            var axios = require('axios')
-            axios({
+            
+            axiosBridged({
                 method: 'propfind',
                 url: getCloudAddress()+folderPath,
                 auth: getCredentials(),
@@ -76,8 +77,7 @@ function NextcloudManager(widowSettings){
                             <d:getlastmodified /><d:getcontentlength /><d:getetag /><d:getcontenttype /><d:resourcetype /><oc:size />\
                       </d:prop>\
                     </d:propfind>"
-            })
-            .then(function (response) {
+            }, function (response) {
                 
                 var parser = new DOMParser()
                 
@@ -86,12 +86,13 @@ function NextcloudManager(widowSettings){
                 //var nct
                 resolve(multistatus)
 
-            }.bind(this)).catch(function (error) {
+            }.bind(this), function (error) {
                 // handle error
                 console.log(error);
                 reject()
 
             })
+            
         }.bind(this))
     }
     

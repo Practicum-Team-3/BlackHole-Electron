@@ -1,11 +1,11 @@
 const electron = require('electron')
 
 const defaultWidowAddress = "http://localhost:8080"
-const defaultCloudDomain = "http://localhost:8081"
+const defaultCloudDomain = "http://127.0.0.1:8081"
 const defaultCloudPath = "/remote.php/dav/files/admin/"
 /**
  * @class Widow
- * @version 1.2.0
+ * @version 1.3.0
  * @description Abstraction for the communication to the Widow backend.
  *              No need to instantiate, just reference the shared instance widow
  *              
@@ -15,6 +15,9 @@ function Widow(){
     this.defaultAddress = defaultWidowAddress
     this.widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudDomain, defaultCloudPath)
     
+    // Make bridge to chromium
+    makeBridge()
+    
     // Make child objects and pass a reference to this.widowSettings
     var Scenarios = require('./scenarios.js').Scenarios
     var Boxes = require('./boxes.js').Boxes
@@ -23,6 +26,25 @@ function Widow(){
     this.boxes = new Boxes(this.widowSettings)
     this.programs = new Programs(this.widowSettings)
 }
+
+function makeBridge(){
+    var {BrowserWindow} = require('electron')
+    
+    addressDialog = new BrowserWindow({
+        width: 500,
+        height: 250,
+        webPreferences: {nodeIntegration: true},
+        show: false
+    })
+
+    // Load chromium instance with bridge
+    addressDialog.loadFile('./widow/bridge/bridge.html')
+}
+
+Widow.prototype.setAxiosBridge = function(_axiosBridge){
+    axiosBridged = _axiosBridge
+}
+
 
 /**
  * @function linkAndSync
@@ -104,23 +126,6 @@ function WidowSettings(_address, _cloudDomain, _cloudPath){
         return cloudAuth
     }
 }
-    
-//======================================================
-// CHROMIUM BRIDGES
-// Functions in this section are intended to wrap chromium-origin object methods
-// in objects that can be passed as parameter to nodejs-origin object methods
-//======================================================
-
-        
-function getAxiosBridge(){
-    var _axios = require('axios').create()
-    
-    return {
-        request: _axios.request,
-        responseUse: _axios.interceptors.response.use.bind(_axios.interceptors.response)
-    }
-}
-
 
 //======================================================
 //=== Automatic instance for shared Electron runtime ===
