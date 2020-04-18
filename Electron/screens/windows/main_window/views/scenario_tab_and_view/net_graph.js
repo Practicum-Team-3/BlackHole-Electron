@@ -91,6 +91,7 @@ function NetGraph(scenario, parent){
             machinePlaceholder = {
                 "name":this.nodesNamesIDs[machines[i].getName()], 
                 "type": machines[i].getIsAttacker() ? "attacker" : "victim", 
+//                "box": machines[i].getBox(),
                 "x": 442, 
                 "y": 365,
                 "ip":machines[i].networkSettings.getIpAddress()
@@ -159,6 +160,7 @@ function NetGraph(scenario, parent){
                 machine.setIsAttacker(this.graphJSON["nodes"][i]["type"] == "attacker" ? true : false)
                 machine.networkSettings.setIpAddress(this.graphJSON["nodes"][i]["ip"])
             }else{
+//                machine = this.scenario.createNewMachine(this.getKeyByValue(this.nodesNamesIDs, this.graphJSON["nodes"][i]["name"]), this.getKeyByValue(this.nodesNamesIDs, this.graphJSON["nodes"][i]["box"]))
                 machine = this.scenario.createNewMachine(this.getKeyByValue(this.nodesNamesIDs, this.graphJSON["nodes"][i]["name"]))
                 machine.setIsAttacker(this.graphJSON["nodes"][i]["type"] == "attacker" ? true : false)
                 machine.networkSettings.setIpAddress(this.graphJSON["nodes"][i]["ip"])
@@ -671,7 +673,7 @@ function NetGraph(scenario, parent){
      * @param {String} machineName name of machine.
      * @param {String} machineType either 'victim' or 'attacker'.
      */
-    this.addNewNode = function(machineName, machineType){
+    this.addNewNode = function(machineName, box, machineType){
 
         if(this.nodesNamesIDs[machineName] != null && this.nodesNamesIDs[machineName] != undefined){
             machineName = machineName + generateUniqueId()
@@ -681,6 +683,7 @@ function NetGraph(scenario, parent){
         //Clone an element from the graph.
         newNode = {
             "name":this.nodesNamesIDs[machineName],
+//            "box": box,
             "type":machineType, 
             "x":0, 
             "y":0, 
@@ -714,6 +717,7 @@ function NetGraph(scenario, parent){
         for(var i = 0; i<currentNodes.length; i++){
             var newNode = {
                 "name": currentNodes[i]["name"],
+//                "box": currentNodes[i]["box"],
                 "x": currentNodes[i]["x"],
                 "y": currentNodes[i]["y"],
                 "type": currentNodes[i]["type"]

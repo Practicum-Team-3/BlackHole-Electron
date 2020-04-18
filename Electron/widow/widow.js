@@ -1,7 +1,7 @@
 const electron = require('electron')
 
-const defaultWidowAddress = "http://localhost:8080"
-const defaultCloudDomain = "http://127.0.0.1:8081"
+const defaultWidowAddress = "http://localhost"
+const defaultCloudSubdomain = "nextcloud"
 const defaultCloudPath = "/remote.php/dav/files/admin/"
 /**
  * @class Widow
@@ -13,7 +13,7 @@ const defaultCloudPath = "/remote.php/dav/files/admin/"
  */
 function Widow(){
     this.defaultAddress = defaultWidowAddress
-    this.widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudDomain, defaultCloudPath)
+    this.widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudSubdomain, defaultCloudPath)
     
     // Make bridge to chromium
     makeBridge()
@@ -22,11 +22,32 @@ function Widow(){
     var Scenarios = require('./scenarios.js').Scenarios
     var Boxes = require('./boxes.js').Boxes
     var Programs = require('./programs.js').Programs
+    /**
+     * @type {Scenarios}
+     * @description Access the scenarios from Black Widow
+     * @memberof Widow
+     */
     this.scenarios = new Scenarios(this.widowSettings)
+    /**
+     * @type {Boxes}
+     * @description Access the vagrant boxes from Black Widow
+     * @memberof Widow
+     */
     this.boxes = new Boxes(this.widowSettings)
+    /**
+     * @type {Programs}
+     * @description Access the installable programs from Black Widow
+     * @memberof Widow
+     */
     this.programs = new Programs(this.widowSettings)
 }
 
+/**
+ * @function makeBridge
+ * @description Instantiates the background chromium instance to bridge objects
+ * @private
+ * @memberof Widow
+ */
 function makeBridge(){
     var {BrowserWindow} = require('electron')
     
@@ -41,6 +62,13 @@ function makeBridge(){
     addressDialog.loadFile('./widow/bridge/bridge.html')
 }
 
+/**
+ * @function setAxiosBridge
+ * @description Intended to be called by bridging instance. Sets the axiosBridge global access to the entire library
+ * @protected
+ * @memberof Widow
+ * @param {function} _axiosBridge Bridge function to a chromium Axios worker
+ */
 Widow.prototype.setAxiosBridge = function(_axiosBridge){
     axiosBridged = _axiosBridge
 }
@@ -54,27 +82,28 @@ Widow.prototype.setAxiosBridge = function(_axiosBridge){
  * @returns {Promise} Promise for the completion of the link and sync
  */
 Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
-    console.log("LinkAndSync....")
+    console.log("Widow::linkAndSync....")
 
     this.widowSettings.setAddress(address)
     syncUpdate(10)
     
     return this.scenarios.loadScenarios()
     .then(function(){
+        console.log("Scenario list loaded")
         syncUpdate(30)
         // Load all the scenarios from the list
         return this.scenarios.loadAllScenarios()
         
     }.bind(this))
     .then(function(){
-        console.log("Loaded scenarios")
+        console.log("Scenarios loaded")
         syncUpdate(70)
         //Load available boxes
         return this.boxes.load()
         
     }.bind(this))
     .then(function(){
-        console.log("Loaded boxes")
+        console.log("Boxes loaded")
         syncUpdate(90)
         //Load available programs
         return this.programs.load()
@@ -95,9 +124,18 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
 //=============            
 // WidowSettings
 //=============
-function WidowSettings(_address, _cloudDomain, _cloudPath){
+/**
+ * @class WidowSettings
+ * @description Used to share basic Black Widow connection settings between members
+ * @protected
+ * @param   {string} _address     Main address of Black Widow
+ * @param   {string} _cloudSubdomain Subdomain for cloud service
+ * @param   {string} _cloudPath   [[Description]]
+ * @returns {[[Type]]} [[Description]]
+ */
+function WidowSettings(_address, _cloudSubdomain, _cloudPath){
     var address = address
-    var cloudDomain = _cloudDomain
+    var cloudSubdomain = _cloudSubdomain
     var cloudPath = _cloudPath
     var cloudAuth = {
         username: 'admin',
@@ -115,7 +153,12 @@ function WidowSettings(_address, _cloudDomain, _cloudPath){
         return cloudPath
     }
     this.getCloudAddress = function(){
-        return cloudDomain+cloudPath
+        // Make url with the complete route (still missing subdomain)
+        var cloudUrl = new URL(cloudPath, address)
+        // Add sumdomain
+        cloudUrl.hostname = cloudSubdomain+"."+cloudUrl.hostname
+        
+        return cloudUrl.href
     }
     
     this.setCloudCredentials = function(username, password){
@@ -158,7 +201,7 @@ function onModified(modifiable, callback){
     try{
         modifiable.onModified(callback, electron.remote.getCurrentWebContents().id)
     }catch{
-
+        console.log("Failed to add modified listener")
     }
 }
    
@@ -172,7 +215,7 @@ function removeOnModifiedListener(modifiable, callback){
     try{
         modifiable.removeOnModifiedListener(callback, electron.remote.getCurrentWebContents().id)
     }catch{
-        
+        console.log("Failed to remove modified listener")
     }
 }
     

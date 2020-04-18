@@ -62,12 +62,13 @@ function BoxesListOverview(boxesListNode){
 
     //NAMES MUST BE UNIQUE, graph will break if box names are duplicated.
     this.includeClicked = function(i){
-
-        var boxName = this.boxesObject.getBoxesList()[i]
-        boxName = boxName.replace(/\//gi, '-').split(".").join("-")
+        console.log("INCLUDECLICKED")
+        var box = this.boxesObject.getBoxesList()[i]
+        var machineName = this.boxesObject.getBoxesList()[i]
+        machineName = machineName.replace(/\//gi, '-').split(".").join("-")
 
         // showToast("Include Node", "Implemented but disabled")
-        getActiveScenarioTab().getNetGraph().addNewNode(boxName, "victim")
+        getActiveScenarioTab().getNetGraph().addNewNode(machineName, box, "victim")
     }
 }
 

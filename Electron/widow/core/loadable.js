@@ -2,7 +2,7 @@
  * @class Loadable
  * @version 1.1.0
  * @protected
- * @description Object that handles the loading and management of items
+ * @description Object that handles the loading and management of items contained in an object
  *              
  * @param {string} widowSettings Instance of conection settings for black-widow
  * @param {string} loadPath URI to service

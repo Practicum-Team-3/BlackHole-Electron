@@ -1,4 +1,3 @@
-const { session } = require('electron')
 const Modifiable = require('./core/modifiable.js').Modifiable
 const Collectionist = require('./core/collectionist.js').Collectionist
 const Collectable = require('./core/collectionist.js').Collectable

@@ -61,9 +61,9 @@ function MachineInfo(machineInfoNode){
             return
         }
         var machine = this.machine
-        this.getNode("rename").value = machine.getName()
+        this.getNode("setName").value = machine.getName()
         
-        this.getNode("os").innerHTML = machine.getOs()
+        this.getNode("box").innerHTML = machine.getBox()
         this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
         this.getNode("machineGui").innerHTML = machine.getGui()
         this.getNode("setBaseMemory").value = machine.getBaseMemory()
@@ -119,9 +119,9 @@ function MachineInfo(machineInfoNode){
         interface.setOnchangeCallback(self.onchange)
         
         // General details
-        interface.addLabelAndInput(null, "Name:", "rename", "")
+        interface.addLabelAndInput(null, "Name:", "setName", "")
         addBrNode(formNode)
-        interface.addLabelPair(null, "OS:", "os", "")
+        interface.addLabelPair(null, "Box:", "box", "")
         interface.addLabelPair(null, "Type:", "machineType", "")
         interface.addLabelPair(null, "GUI:", "machineGui", "")
         //missing handlers that modify scenario object and then call 'netGraph.onScenarioChanged(modifiedScenario)' 

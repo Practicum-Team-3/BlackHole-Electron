@@ -1,6 +1,6 @@
 {
   "name": "BlackHole",
-  "version": "0.6.0",
+  "version": "0.6.2",
   "description": "Client for Black Widow",
   "main": "main.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "author": "Practicum Team 3",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^8.2.2"
+    "electron": "^8.2.3"
   },
   "dependencies": {
     "axios": "^0.19.2",

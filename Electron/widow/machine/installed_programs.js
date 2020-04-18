@@ -10,6 +10,16 @@ function InstalledPrograms(descriptor){
 }
 
 /**
+ * @function getProgramNamesList
+ * @description Returns an array with strings of the program names
+ * @memberof InstalledPrograms
+ * @returns {string[]} Array with program names as strings
+ */
+InstalledPrograms.prototype.getProgramNamesList = function(){
+    return this.super.getNamesList()
+}
+
+/**
  * @function getAllPrograms
  * @description Returns array with the installed programs on the machine
  * @memberof InstalledPrograms
