@@ -76,9 +76,11 @@ function ProgramListOverview(programListNode, programListOverviewType){
         if (scenarioTab!=null){
             selectedMachine = scenarioTab.getSelectedMachine()
             if (selectedMachine!=null){
-                selectedMachine.programs.addProgram(programToInclude.getName(), "/bin")
-                // Tell the world about this
-                emitModifiedEvent(selectedMachine, null, modificationTypes.EDITED, "programs")
+                var didAddProgram = selectedMachine.programs.addProgram(programToInclude.getName(), "/bin")
+                if (didAddProgram){
+                    // Tell the world about this
+                    emitModifiedEvent(selectedMachine, null, modificationTypes.EDITED, "programs")
+                }
             }
         }
     }

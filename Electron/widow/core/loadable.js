@@ -1,8 +1,8 @@
 /**
  * @class Loadable
- * @version 1.0.1
+ * @version 1.1.0
  * @protected
- * @description Object that handles the loading and management of items
+ * @description Object that handles the loading and management of items contained in an object
  *              
  * @param {string} widowSettings Instance of conection settings for black-widow
  * @param {string} loadPath URI to service
@@ -33,22 +33,22 @@ function Loadable(widowSettings, loadPath){
     this.load = function(){
         console.log("load was called")
         return new Promise(function(resolve, reject){
-
-            var axios = require('axios')
-
-            axios.get(this.getAddress()+this.getLoadPath())
-            .then(function (response) {
+            
+            axiosBridged({
+                url: this.getAddress()+this.getLoadPath()
+            }, function (response) {
                 // Keep list locally
                 //TODO: Improve wrapper integration
                 this.items = response.data.body
                 resolve()
 
-            }.bind(this)).catch(function (error) {
+            }.bind(this), function (error) {
                 // handle error
                 console.log(error);
                 reject(error)
 
             })
+            
         }.bind(this))
     }
     

@@ -21,9 +21,10 @@ module.exports.scenarioDescriptor = '{\
 
 module.exports.machineDescriptor = '{\
     "name": "",\
+    "box": "",\
     "os": "",\
-    "base_memory": "4096",\
-    "processors": "2",\
+    "base_memory": "512",\
+    "processors": "1",\
     "is_attacker": false,\
     "shared_folders": [],\
     "network_settings": {\

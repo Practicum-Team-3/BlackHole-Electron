@@ -62,12 +62,29 @@ function BoxesListOverview(boxesListNode){
 
     //NAMES MUST BE UNIQUE, graph will break if box names are duplicated.
     this.includeClicked = function(i){
-
-        var boxName = this.boxesObject.getBoxesList()[i]
-        boxName = boxName.replace(/\//gi, '-').split(".").join("-")
+        var machineName = this.boxesObject.getBoxesList()[i]
+        machineName = machineName.replace(/\//gi, '-').split(".").join("-")
 
         // showToast("Include Node", "Implemented but disabled")
-        getActiveScenarioTab().getNetGraph().addNewNode(boxName, "victim")
+        getActiveScenarioTab().getNetGraph().addNewNode(machineName, "victim")
+        
+        // \/ \/ \/ \/ \/ \/ \/ \/
+        /*
+        var machines = getActiveScenarioTab().getScenario().machines
+        
+        // Prepare name and box
+        var machineName = machines.getMachineByName("untitled")==null ? "untitled" : "untitled-"+generateUniqueId()
+        var box = this.boxesObject.getBoxesList()[i]
+        
+        var newMachine = machines.createNewMachine(machineName, box)
+        // Check if machine was created, and tell the guys about it
+        if (newMachine!=null){
+            emitModifiedEvent(machines, null, modificationTypes.ADDED_ELEMENT, newMachine)
+        }else{
+            console.log("BoxesListOverview: Unable to include machine")
+        }
+        */
+        // /\ /\ /\ /\ /\ /\ /\ /\
     }
 }
 

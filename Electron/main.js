@@ -4,8 +4,23 @@ var mainWindow = null
 var addressDialog = null
 
 
-function createWidowAddressDialog(){
-    // Create the browser window.
+function startBlackHole(){
+    //Create instance of widow
+    global.widow = require('./widow/widow.js').default
+    
+    // Open address window
+    createAddressWindow()
+}
+
+app.on('ready', startBlackHole)
+
+ipcMain.on('primaryLoad', (event, arg) => {
+    createMainWindow()
+    addressDialog.destroy()
+})
+
+function createAddressWindow(){
+    // Create window for address
     addressDialog = new BrowserWindow({
         width: 500,
         height: 250,
@@ -16,27 +31,12 @@ function createWidowAddressDialog(){
         maximizable: false
     })
     addressDialog.removeMenu()
-    
-    addressDialog.on('closed', (e) => {
-        app.quit()
-    })
 
     // and load the index.html of the app.
     addressDialog.loadFile('./screens/windows/dialogs/widow_address/widow_address.html')
-    
 }
 
-app.on('ready', createWidowAddressDialog)
-
-ipcMain.on('primaryLoad', (event, arg) => {
-    //currentHeadWindow.on('closed', null)
-    addressDialog.removeAllListeners()
-    createWindow()
-    addressDialog.destroy()
-})
-
-
-function createWindow () {
+function createMainWindow() {
   // Create the browser window.
     mainWindow = new BrowserWindow({
         width: 1200,
@@ -50,7 +50,6 @@ function createWindow () {
     
     // and load the index.html of the app.
     mainWindow.loadFile('./screens/windows/main_window/main_window.html')
-    
 }
 
 //====================
@@ -85,9 +84,6 @@ function createChildWindow(parent, address, width, height, resizable, modal=fals
         window.loadFile(address)
     }
     
-//    window.once('ready-to-show', () => {
-//        window.show()
-//    })
 }
 
 //====================
@@ -97,10 +93,7 @@ function createChildWindow(parent, address, width, height, resizable, modal=fals
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') {
+//    if (process.platform !== 'darwin') {
         app.quit()
-    }
+//    }
 })
-
-//Create instance of widow
-global.widow = require('./widow/widow.js').default

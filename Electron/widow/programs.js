@@ -1,11 +1,10 @@
-const { session } = require('electron')
 const Modifiable = require('./core/modifiable.js').Modifiable
 const Collectionist = require('./core/collectionist.js').Collectionist
 const Collectable = require('./core/collectionist.js').Collectable
 const NextcloudManager = require('./cloud/nextcloud.js').NextcloudManager
 /**
  * @class Programs
- * @version 0.3.0
+ * @version 0.4.0
  * @description Modifiable. Collectionist. Available programs
  *              
  * @param {string} descriptor Program descriptor (JSON)
@@ -34,7 +33,7 @@ function Programs(widowSettings){
     this.load = function(){
         return new Promise(function(resolve, reject){
             //this.programs["e0"] = new Program()
-            
+            console.log("fetching registry...")
             this.cloud.download(registryLocation)
             .then(function(response){
                 
@@ -44,12 +43,15 @@ function Programs(widowSettings){
                 resolve()
                 
             }.bind(this)).catch(function(error){
-                
+                console.log("unable to fetch registry")
                 // Load of the registry failed, maybe cloud needs init
                 if (error.response==null || error.response.status!=404){
                     // No hope for this, probably can't find cloud
+                    console.log("fatal, unable to recover ")
+                    console.log(error)
                     reject()
                 }else{
+                    console.log("failed with (404): performing registry setup...")
                     // 404 -> Just need to init the cloud for handling programs
                     this.initCloud()
                     .then(function(){
@@ -66,6 +68,7 @@ function Programs(widowSettings){
     this.initCloud = function(){
         
         return new Promise(function(resolve, reject){
+            console.log("::mkdir programs")
             // Create main dir
             this.cloud.createFolder("programs")
             .then(function(){
@@ -73,6 +76,7 @@ function Programs(widowSettings){
                 return this.saveRegistry()
                 
             }.bind(this)).then(function(){
+                console.log("::mkdir bin")
                 // Create bin directory
                 return this.cloud.createFolder(uploadLocation)
                 
@@ -85,7 +89,7 @@ function Programs(widowSettings){
     }
     
     this.saveRegistry = function(){
-        
+        console.log("saving registry")
         return this.cloud.upload(JSON.stringify(this.descriptor), registryLocation)
     }
     
@@ -101,20 +105,29 @@ function Programs(widowSettings){
      * @returns {Promise} Promise for the program upload process. Passes the instance of the
      *                    added program when resolved
      */
-    this.addProgram = function(buffer, name, os, description, isExploit, axiosBridge, uploadProgressCallback){
-
-        // Prepare axios instance in case a bridge was omited
-        var axios = require('axios').create()
-
-        // Prepare axios' methods from either the bridge or the local nodejs instance
-        var axiosRequest = axiosBridge.request!=null ? axiosBridge.request : axios.request
-        var responseUse = axiosBridge.responseUse!=null ? axiosBridge.responseUse : axios.interceptors.response.use
+    this.addProgram = function(buffer, name, os, description, isExploit, uploadProgressCallback){
 
         // Prepare promise to return to caller
-        var uploadPromise = new Promise(function(resolve, reject){
-            responseUse(function (response) {
-                // Need to delete cookies because Nextcloud sends back stuff it can't handle itself
-                session.defaultSession.clearStorageData(["cookies"])
+        return new Promise(function(resolve, reject){
+            
+            axiosBridged({
+                method: 'put',
+                url: this.getCloudAddress()+uploadLocation+encodeURIComponent(name),
+                auth: {
+                    username: 'admin',
+                    password: 'password'
+                },
+                onUploadProgress: function (progressEvent) {
+
+                    try{
+                        uploadProgressCallback(progressEvent.loaded, progressEvent.total)
+                    }catch{
+                        console.log("::Skipping upload progress")
+                    }
+                },
+                data: buffer
+            }, function (response) {
+                
 
                 // Create default instance of Program
                 var program = new Program()
@@ -135,36 +148,13 @@ function Programs(widowSettings){
                     reject()
                 })
 
-                return response;
             }.bind(this), function (error) {
 
                 console.log(error)
                 reject()
-                return Promise.reject(error);
-            }.bind(this));
+            }.bind(this))
+            
         }.bind(this))
-
-        // Make request for upload
-        axiosRequest({
-            method: 'put',
-            url: this.getCloudAddress()+uploadLocation+encodeURIComponent(name),
-            auth: {
-                username: 'admin',
-                password: 'password'
-            },
-            onUploadProgress: function (progressEvent) {
-
-                try{
-                    uploadProgressCallback(progressEvent.loaded, progressEvent.total)
-                }catch{
-                    console.log("Skipping upload progress")
-                }
-
-            },
-            data: buffer
-        })
-
-        return uploadPromise
     }
     
     this.removeProgram = function(program){

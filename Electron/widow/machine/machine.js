@@ -1,6 +1,8 @@
-var Modifiable = require('./core/modifiable.js').Modifiable
-var Provisions = require('./machine_components/provisions.js').Provisions
-var InstalledPrograms = require('./machine_components/installed_programs.js').InstalledPrograms
+const Modifiable = require('../core/modifiable.js').Modifiable
+const Collectable = require('../core/collectionist.js').Collectable
+const Provisions = require('./provisions.js').Provisions
+const InstalledPrograms = require('./installed_programs.js').InstalledPrograms
+const NetworkSettings = require('./network_settings.js').NetworkSettings
 
 /**
  * @class Machine
@@ -9,11 +11,9 @@ var InstalledPrograms = require('./machine_components/installed_programs.js').In
  *              
  * @param {object} descriptor Machine descriptor object
  */
-function Machine(descriptor, externalRename){
+function Machine(descriptor, changeReferenceCallback){
     Modifiable.call(this)
-    this.externalRename = externalRename
-    
-    this.descriptor = descriptor==null ? JSON.parse(require('./defaults.js').machineDescriptor) : descriptor
+    Collectable.call(this, descriptor==null ? JSON.parse(require('../defaults.js').machineDescriptor) : descriptor, changeReferenceCallback)
     
     /**
      * @type {NetworkSettings}
@@ -49,12 +49,12 @@ function Machine(descriptor, externalRename){
  *              
  * @returns {object} Local machine descriptor
  */
-Machine.prototype.getDescriptor = function(){
-    //Update shared folders
-    this.descriptor["sharedFolders"] = this.getSharedFolders()
-    
-    return this.descriptor
-}
+//Machine.prototype.getDescriptor = function(){
+//    //Update shared folders
+//    this.descriptor["sharedFolders"] = this.getSharedFolders()
+//    
+//    return this.super.getDescriptor()
+//}
 
 // === NAME
 /**
@@ -62,9 +62,7 @@ Machine.prototype.getDescriptor = function(){
  * @memberof Machine
  * @returns {string} Current internal name of the machine
  */
-Machine.prototype.getName = function(){
-    return this.descriptor["name"]
-}
+Machine.prototype.getName
 
 /**
  * @function setName
@@ -74,9 +72,7 @@ Machine.prototype.getName = function(){
  * @memberof Machine
  * @param {string} name
  */
-Machine.prototype.setName = function(name){
-    this.descriptor["name"] = name
-}
+Machine.prototype.setName
 
 /**
  * @function rename
@@ -84,13 +80,33 @@ Machine.prototype.setName = function(name){
  * @memberof Machine
  * @param {string} newName
  */
-Machine.prototype.rename = function(newName){
-    try{
-        this.externalRename(this.getName(), newName)
-    }catch{
-        console.log("Unable to call external rename")
-        console.log(this.externalRename)
-    }
+//Machine.prototype.rename = function(newName){
+//    try{
+//        this.externalRename(this.getName(), newName)
+//    }catch{
+//        console.log("Unable to call external rename")
+//        console.log(this.externalRename)
+//    }
+//}
+
+// === BOX
+
+/**
+ * @function getBox
+ * @memberof Machine
+ * @returns {string}
+ */
+Machine.prototype.getBox = function(){
+    return this.descriptor["box"]
+}
+
+/**
+ * @function setBox
+ * @memberof Machine
+ * @param {string} box
+ */
+Machine.prototype.setBox = function(box){
+    this.descriptor["box"] = box
 }
 
 // === OS
@@ -220,6 +236,8 @@ Machine.prototype.setSharedFolders = function(sharedFolders){
     sharedFolders.forEach(function(sharedFolder){
         this.sharedFolders.add(sharedFolder)
     }.bind(this))
+    // Update descriptor
+    this.descriptor["sharedFolders"] = sharedFolders
 }
 
 /**
@@ -230,6 +248,8 @@ Machine.prototype.setSharedFolders = function(sharedFolders){
  */
 Machine.prototype.addSharedFolder = function(path){
     this.sharedFolders.add(path)
+    // Update descriptor
+    this.descriptor["sharedFolders"] = this.getSharedFolders()
 }
 
 /**
@@ -240,7 +260,13 @@ Machine.prototype.addSharedFolder = function(path){
  * @returns {boolean} Deletion result
  */
 Machine.prototype.removeSharedFolder = function(path){
-    return this.sharedFolders.delete(path)
+    if (this.sharedFolders.delete(path)){
+        // Update descriptor
+        this.descriptor["sharedFolders"] = this.getSharedFolders()
+        return true
+    }
+    
+    return false
 }
 
 /**
@@ -257,95 +283,6 @@ Machine.prototype.getSharedFolders = function(){
     return sharedFolders
 }
 
-
-//=============================================================================================
-//=== Network Settings
-//=============================================================================================
-/**
- * @class NetworkSettings
- * @version 1.0.0
- * @param {Object} descriptor Network descriptor object
- */
-function NetworkSettings(descriptor){
-    this.descriptor = descriptor
-}
-
-/**
- * @function setNetworkName
- * @description Set the network name
- * @memberof NetworkSettings
- * @param {string} networkName Name to give the network
- */
-NetworkSettings.prototype.setNetworkName = function(networkName){
-    this.descriptor["network_name"] = networkName
-}
-
-/**
- * @function getNetworkName
- * @description Returns the current name of the network
- * @memberof NetworkSettings
- * @returns {string} Current name of the network
- */
-NetworkSettings.prototype.getNetworkName = function(){
-    return this.descriptor["network_name"]
-}
-
-//== Network Type
-/**
- * @function setNetworkType
- * @memberof NetworkSettings
- * @param {string} networkType Type of the network
- */
-NetworkSettings.prototype.setNetworkType = function(networkType){
-    this.descriptor["network_type"] = networkType
-}
-
-/**
- * @function getNetworkType
- * @memberof NetworkSettings
- * @returns {string} Network type
- */
-NetworkSettings.prototype.getNetworkType = function(){
-    return this.descriptor["network_type"]
-}
-
-//== IP Address
-/**
- * @function setIpAddress
- * @memberof NetworkSettings
- * @param {string} ipAddress IP Address of the machine
- */
-NetworkSettings.prototype.setIpAddress = function(ipAddress){
-    this.descriptor["ip_address"] = ipAddress
-}
-
-/**
- * @function getIpAddress
- * @memberof NetworkSettings
- * @returns {string} IP Address of the machine
- */
-NetworkSettings.prototype.getIpAddress = function(){
-    return this.descriptor["ip_address"]
-}
-
-//== Auto config
-/**
- * @function setAutoConfig
- * @memberof NetworkSettings
- * @param {boolean} autoConfig Boolean for automatic configuration
- */
-NetworkSettings.prototype.setAutoConfig = function(autoConfig){
-    this.descriptor["auto_config"] = autoConfig
-}
-
-/**
- * @function getAutoConfig
- * @memberof NetworkSettings
- * @returns {boolean} Boolean for automatic configuration
- */
-NetworkSettings.prototype.getAutoConfig = function(){
-    return this.descriptor["auto_config"]
-}
 
 
 module.exports.Machine = Machine

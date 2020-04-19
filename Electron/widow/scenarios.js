@@ -1,7 +1,7 @@
 var Modifiable = require('./core/modifiable.js').Modifiable
 /**
  * @class Scenarios
- * @version 2.2.2
+ * @version 2.3.0
  * @description Modifiable. Manager of scenarios.
  *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
@@ -208,18 +208,17 @@ Scenarios.prototype.removeScenarioByName = function(scenarioName){
         return
     }
     return new Promise(function(resolve, reject){
-
-        var axios = require('axios')
-
-        axios.get(this.getAddress()+"/scenarios/delete/"+encodeURIComponent(scenarioName))
-        .then(function (response) {
+        
+        axiosBridged({
+            url: this.getAddress()+"/scenarios/delete/"+encodeURIComponent(scenarioName)
+        }, function (response) {
             // Can delete locally
             this.nameList.splice(this.nameList.indexOf(scenarioName), 1)
             delete this.loaded[scenarioName]
             console.log("Scenario deleted")
             resolve()
 
-        }.bind(this)).catch(function (error) {
+        }.bind(this), function (error) {
             // handle error
             console.log(error);
             reject()
@@ -236,19 +235,20 @@ Scenarios.prototype.removeScenarioByName = function(scenarioName){
 // === Contact Widow and get the list of scenarios === //
 Scenarios.prototype.loadScenarios = function(){
     return new Promise(function(resolve, reject){
-        var axios = require('axios')
         console.log("Loading scenarios...")
-        axios.get(this.getAddress() + "/scenarios/all")
-        .then(function (response) {
+        
+        axiosBridged({
+            url: this.getAddress() + "/scenarios/all"
+        }, function (response) {
             // Keep list locally
             console.log("Scenarios loaded")
             //TODO: Improve wrapper integration
             this.nameList = response.data.body.scenarios
             resolve()
-        }.bind(this)).catch(function (error) {
+        }.bind(this), function (error) {
             
             // handle error
-            console.log("axios encountered a problem")
+            console.log("Error loading scenarios")
             console.log(error);
             reject()
             
@@ -261,16 +261,16 @@ Scenarios.prototype.loadScenarios = function(){
 Scenarios.prototype.loadScenarioByName = function(scenarioName){
     return new Promise(function(resolve, reject){
         var Scenario = require('./scenario.js').Scenario
-        var axios = require('axios')
         
-        axios.get(this.getAddress()+"/scenarios/"+encodeURIComponent(scenarioName))
-        .then(function (response) {
+        axiosBridged({
+            url: this.getAddress()+"/scenarios/"+encodeURIComponent(scenarioName)
+        }, function (response) {
             // Add to the loaded object
             //TODO: Improve wrapper integration
             this.loaded[scenarioName] = new Scenario(response.data.body)
             resolve()
             
-        }.bind(this)).catch(function (error) {
+        }.bind(this), function (error) {
             // handle error
             console.log(error);
             reject()
@@ -307,21 +307,23 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
     return new Promise(function(resolve, reject){
         // Check for the existance of the "new scenario", should fail if already exists
         if (!this.nameList.includes(scenarioName)){
-            var axios = require('axios')
             console.log(this.getAddress()+"/scenarios/newEmpty/"+encodeURIComponent(scenarioName))
-            axios.get(this.getAddress()+"/scenarios/newEmpty/"+encodeURIComponent(scenarioName))
-            .then(function (response) {
+            
+            axiosBridged({
+                url: this.getAddress()+"/scenarios/newEmpty/"+encodeURIComponent(scenarioName)
+            }, function (response) {
                 // Add to the loaded dictionary
                 this.nameList.push(scenarioName)
                 resolve()
 
-            }.bind(this)).catch(function (error) {
+            }.bind(this), function (error) {
                 // handle error
                 console.log("declareScenarioByName Error")
                 console.log(error);
                 reject()
 
             }.bind(this))
+            
         }else{
             reject()
         }
@@ -337,23 +339,24 @@ Scenarios.prototype.declareScenarioByName = function(scenarioName){
  */
 Scenarios.prototype.saveScenarioByName = function(scenarioName){
     return new Promise(function(resolve, reject){
-        var axios = require('axios').create({
-            headers: {'Content-Type': 'application/json'}
-        })
         console.log("...")
         //Check if the scenario exists and can be saved
         if (this.nameList.includes(scenarioName)){
             console.log("Edit Scenario "+scenarioName+"...")
-            axios.post(this.getAddress()+"/scenarios/edit", this.getScenarioByName(scenarioName).getDescriptorAsString())
-            .then(function (response) {
+            
+            axiosBridged({
+                url: this.getAddress()+"/scenarios/edit",
+                method: 'post',
+                data: this.getScenarioByName(scenarioName).getDescriptorAsString(),
+                headers: {'Content-Type': 'application/json'}
+            }, function (response) {
                 console.log("Done")
                 resolve()
-            })
-            .catch(function (error) {
+            }, function (error) {
                 console.log("Edit Scenario Failed")
                 console.log(error);
                 reject()
-            });
+            })
         }else{
             console.log("Scenario saving rejected")
             reject()
@@ -377,19 +380,20 @@ Scenarios.prototype.prepareMachinesByScenarioName = function(scenarioName){
     return new Promise(function(resolve, reject){
         // Check for the existance of the "new scenario", should fail if already exists
         if (this.nameList.includes(scenarioName)){
-            var axios = require('axios')
             
-            axios.get(this.getAddress()+"/vagrantFiles/"+encodeURIComponent(scenarioName)+"/all")
-            .then(function (response) {
+            axiosBridged({
+                url: this.getAddress()+"/vagrantFiles/"+encodeURIComponent(scenarioName)+"/all"
+            }, function (response) {
                 resolve()
 
-            }.bind(this)).catch(function (error) {
+            }.bind(this), function (error) {
                 // handle error
                 console.log("createVagrant Error")
                 console.log(error);
                 reject()
 
             }.bind(this))
+            
         }else{
             console.log("No scenario")
             reject()
@@ -408,20 +412,21 @@ Scenarios.prototype.runScenarioByName = function(scenarioName){
     return new Promise(function(resolve, reject){
         // Check for the existance of the "new scenario", should fail if already exists
         if (this.nameList.includes(scenarioName)){
-            var axios = require('axios')
             
-            axios.get(this.getAddress()+"/vagrant/"+encodeURIComponent(scenarioName)+"/run")
-            .then(function (response) {
+            axiosBridged({
+                url: this.getAddress()+"/vagrant/"+encodeURIComponent(scenarioName)+"/run"
+            }, function (response) {
                 // Add to the loaded dictionary
                 resolve()
 
-            }.bind(this)).catch(function (error) {
+            }.bind(this), function (error) {
                 // handle error
                 console.log("run Error")
                 console.log(error);
                 reject()
 
             }.bind(this))
+            
         }else{
             reject()
         }

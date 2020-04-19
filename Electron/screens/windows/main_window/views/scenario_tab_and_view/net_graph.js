@@ -34,6 +34,138 @@ function NetGraph(scenario, parent){
     this.onSelectedNodeChangedCallback = 0
     this.date = new Date()
 
+// \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ 
+    
+    //================================
+    // MAP BETWEEN MACHINES AND GRAPH NODES
+    //================================
+    // To be able to keep the relationship between graph nodes and actual machines
+    var machineMap = new WeakMap()
+    
+    //================================
+    // MODIFICATION CALLBACKS
+    //================================
+    /**
+     * function machinesModified
+     * @description Callback for when the list of machines is modified
+     */
+    this.machinesModified = function(machines, modificationType, arg){
+        switch (modificationType){
+                
+            case modificationTypes.ADDED_ELEMENT:
+                console.log("NetGraph: Notified that machine was added")
+                includeMachineInGraph(arg)
+            break
+            
+            case modificationTypes.REMOVED_ELEMENT:
+                console.log("NetGraph: Notified that machine was removed")
+                removeMachineFromGraph(arg)
+            break
+            
+            default:break
+        }
+    }.bind(this)
+    // Subscribe to events, like, now!
+    onModified(scenario.machines, this.machinesModified)
+    
+    /**
+     * @function machineModified
+     * @description Callback for when a single machine is modified
+     */
+    this.machineModified = function(machine, modificationType, arg){
+        //Check for modification type
+        switch(modificationType){
+            
+            case modificationTypes.EDITED:
+                // Retrieve the graph node related to this machine
+                var graphNode = machineMap.get(machine)
+                
+                // check for what was actually changed
+                switch(arg){
+                    case "getName"://The name was changed
+                        
+                    break
+                }
+           break
+       }
+    }
+    // When do we subscribe to the machine modification event?, whenever a machine is included in the graph
+    // Also, need to unsubscribe whenever a machine is removed from the graph, and on cleanup before closing
+    
+    /**
+     * @function subscribeToMachineModifications
+     * @description Add our listener to the modifications of a machine
+     * @param {Machine} machine Machine to listen to
+     */
+    var subscribeToMachineModifications = function(machine){
+        console.log("NetGraph: Subscribing to modified events for machine "+machine.getName())
+        onModified(machine, this.machineModified)
+    }.bind(this)
+    
+    /**
+     * @function unsubscribeFromMachineModifications
+     * @description Remove our listener from the modifications of a machine
+     * @param {Machine} machine Machine to remove listen from
+     */
+    var unsubscribeFromMachineModifications = function(machine){
+        console.log("NetGraph: Unsubscribing from modified events for machine "+machine.getName())
+        removeOnModifiedListener(machine, this.machineModified)
+    }.bind(this)
+    
+    /**
+     * @function unsubscribeFromAllMachineModifications
+     * @description Remove our listener from the modifications of all machines in the scenario
+     */
+    var unsubscribeFromAllMachineModifications = function(){
+        console.log("NetGraph: Unsubscribing from modified events of all machines...")
+        var machines = this.scenario.machines.getAllMachines()
+        machines.forEach(function(machine){
+            unsubscribeFromMachineModifications(machine)
+        })
+    }.bind(this)
+    
+    //================================
+    // PRIVATE MACHINE HANDLING
+    //================================
+    /**
+     * @function includeMachineInGraph
+     * @param {Machine} machine Instance of a machine
+     */
+    var includeMachineInGraph = function(machine){
+        console.log("NetGraph: Including machine "+machine.getName()+" in graph")
+        // Subscribe to machine modification events
+        subscribeToMachineModifications(machine)
+        
+        //At some point, add mapping from machine to graph node
+        machineMap.set(machine, "change this string for the node object")
+    }.bind(this)
+    
+    var removeMachineFromGraph = function(machine){
+        console.log("NetGraph: Removing machine "+machine.getName()+" from graph")
+        //Unsubscribe from machine modification events
+        unsubscribeFromMachineModifications(machine)
+        
+        //At some point, remove mapping from machine to graph node
+        machineMap.delete(machine)
+    }.bind(this)
+    
+    //================================
+    // CLEAN
+    //================================
+    /**
+     * @function clean
+     * @description Performs internal cleanup before being destroyed
+     */
+    this.clean = function(){
+        // remove listener from scenario.machines
+        removeOnModifiedListener(scenario.machines, this.machinesModified)
+        
+        // remove listeners on individual machines
+        unsubscribeFromAllMachineModifications()
+    }.bind(this)
+    
+// /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
+
     /**
      * @function setOnSelectedNodeChangedCallback
      * @description Set function used to notify other panels when a different node is selected, function will be passed the machine's name.
@@ -90,7 +222,7 @@ function NetGraph(scenario, parent){
             this.nodesNamesIDs[machines[i].getName()] = machines[i].getName() + "_" + generateUniqueId()
             machinePlaceholder = {
                 "name":this.nodesNamesIDs[machines[i].getName()], 
-                "type": machines[i].getIsAttacker() ? "attacker" : "victim", 
+                "type": machines[i].getIsAttacker() ? "attacker" : "victim",
                 "x": 442, 
                 "y": 365,
                 "ip":machines[i].networkSettings.getIpAddress()

@@ -142,6 +142,7 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
     this.close = function(){
         scenarioViewNode.remove()
         tabNode.remove()
+        netGraph.clean()
         machineInfo.clear()
         
         scenarioCloseCallback(this)

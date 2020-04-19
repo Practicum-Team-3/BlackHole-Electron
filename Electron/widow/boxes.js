@@ -3,7 +3,7 @@ var Modifiable = require('./core/modifiable.js').Modifiable
 
 /**
  * @class Boxes
- * @version 1.2.0
+ * @version 1.4.0
  * @description Available VM boxes
  *              No need to instantiate, just reference the shared instance on widow.boxes
  *              
@@ -48,32 +48,34 @@ Boxes.prototype.linkAndSyncPOST = function(vagrantBoxID, syncUpdateCallback, ref
 
 Boxes.prototype.downloadBoxFromVagrant = function(vagrantBoxID){
     return new Promise(function(resolve, reject){
-        var axios = require('axios').create({
-            headers: {'Content-Type': 'application/json'}
-        })
 
         console.log("Downloading vagrant box: "+vagrantBoxID+"...")
-        axios.post(this.getAddress()+"/vagrant/boxes/add", {"box_name":vagrantBoxID})
-        .then(function (response) {
+        
+        axiosBridged({
+            url: this.getAddress()+"/vagrant/boxes/addByName",
+            method: 'post',
+            data: {"box_name":vagrantBoxID},
+            headers: {'Content-Type': 'application/json'}
+        }, function (response) {
             console.log(response)
             console.log("Started download...")
             resolve(response)
-        }.bind(this))
-        .catch(function (error) {
+        }.bind(this), function (error) {
             console.log("Download Box Failed...")
             console.log(error);
             reject(error)
-        }.bind(this));
+        }.bind(this))
 
     }.bind(this))
 }
 
 
 Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, refreshGUICallback){
-    var axios = require('axios')
     console.log("Getting progress for task: "+ taskID +"...")
-    axios.get(this.getAddress() + "/vagrant/taskStatus/" + taskID)
-    .then(function (response) {
+    
+    axiosBridged({
+        url: this.getAddress() + "/vagrant/taskStatus/" + taskID
+    }, function (response) {
         //if response says download is not 100%
         syncUpdateCallback(((response.data.body.current*1.0)/response.data.body.total)*100)
         console.log(response.data)
@@ -83,33 +85,34 @@ Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, refre
             refreshGUICallback()
         }
         console.log("Task status update received...")
-    }.bind(this))
-    .catch(function (error) {
+    }.bind(this), function (error) {
         console.log(error)
         console.log("An error occured while requesting task progress...")
         
     })
+    
 }
 
 
 Boxes.prototype.removeBox = function(boxName) {
     return new Promise(function(resolve, reject){
-        var axios = require('axios').create({
-            headers: {'Content-Type': 'application/json'}
-        })
 
         console.log("Removing vagrant box: "+boxName+"...")
-        axios.post(this.getAddress()+"/vagrant/boxes/remove", {"box_name":boxName})
-        .then(function (response) {
+        
+        axiosBridged({
+            url: this.getAddress()+"/vagrant/boxes/remove",
+            method: 'post',
+            data: {"box_name":boxName},
+            headers: {'Content-Type': 'application/json'}
+        }, function (response) {
             console.log(response)
             console.log("Box deleted from server...")
             resolve(response)
-        }.bind(this))
-        .catch(function (error) {
+        }.bind(this), function (error) {
             console.log("Box Deletion Failed...")
             console.log(error);
             reject(error)
-        }.bind(this));
+        }.bind(this))
 
     }.bind(this))
 }

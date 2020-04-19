@@ -1,8 +1,8 @@
-var Machine = require('./machine.js').Machine
+var Machines = require('./machines.js').Machines
 var Modifiable = require('./core/modifiable.js').Modifiable
 /**
  * @class Scenario
- * @version 1.4.0
+ * @version 1.5.0
  * @description Modifiable. Single scenario properties
  *              
  * @param {string} descriptor Scenario descriptor (JSON)
@@ -16,8 +16,6 @@ function Scenario(descriptor){
         this.setCreationDate(new Date())
         this.setLastAccessed(new Date())
     }
-    this.machines = {}
-    this.machineLimbo = null
     
     /**
      * @type {ExploitInfo}
@@ -33,13 +31,13 @@ function Scenario(descriptor){
      */
     this.vulnerabilityInfo = new VulnerabilityInfo(this.descriptor["vulnerability_info"])
     
-    // For when the machines need to be renamed, they can make the call themselves
-    this.renameCallback = this.renameMachine.bind(this)
+    /**
+     * @type {Machines}
+     * @description Access available machines for the scenario
+     * @memberof Scenario
+     */
+    this.machines = new Machines(this.descriptor["machines"])
     
-    // Create machine objects from the descriptor
-    // (and clear the local machine descriptors)
-    // Will be added back in whenever a need to generate the descriptor comes
-    this.createMachinesFromDescriptor()
 }
 
 /**
@@ -51,15 +49,9 @@ function Scenario(descriptor){
  * @returns {string} String representation of the scenario descriptor
  */
 Scenario.prototype.getDescriptorAsString = function(){
-    // Clear machines
-    this.descriptor["machines"] = {}
-    // Add machines to descriptor
-    for (machineName in this.machines){
-        this.descriptor["machines"][machineName] = this.machines[machineName].getDescriptor()
-    }
+    
     let stringDescriptor = JSON.stringify(this.descriptor)
-    //Clear machines again
-    this.descriptor["machines"] = {}
+    
     //Return
     return stringDescriptor
 }
@@ -331,141 +323,71 @@ VulnerabilityInfo.prototype.setDownloadLink = function(downloadLink){
 
 
 //========================
-//=== Machines
+//=== Machines (DEPRECATED)
 //========================
 /**
  * @function getMachineNamesList
+ * @deprecated Access through .machines instead
  * @description Get a list with the names of the available machines
  * @memberof Scenario
  *
  * @return {string[]} Array of strings of machine names
  */
 Scenario.prototype.getMachineNamesList = function(){
-    let machineNameList = []
-    for (machineName in this.machines){
-        machineNameList.push(machineName)
-    }
-    return machineNameList
+    return this.machines.getMachineNamesList()
 }
 
 /**
  * @function createNewMachine
- * @description Creates a new default machine instance with default settings,
- *              adds it to the current list of machines and returns it
+ * @deprecated Access through .machines instead
  * @memberof Scenario
- * @param   {string} machineName Name to give to the new machine
- * @returns {Machine} New Machine instance
  */
-Scenario.prototype.createNewMachine = function(machineName){
-    let newMachine = new Machine(null, this.renameCallback)
-    newMachine.setName(machineName)
-    this.addMachine(newMachine)
-    return newMachine
+Scenario.prototype.createNewMachine = function(machineName, box){
+    return this.machines.createNewMachine(machineName, box)
 }
 
 /**
  * @function renameMachine
- * @description Renames a machine both externally and internally
+ * @deprecated No longer functional.
  * @memberof Scenario
- * @param {string} oldName Name of the machine to rename
- * @param {string} newName New name to replace the old
  */
-Scenario.prototype.renameMachine = function(oldName, newName){
-    if (this.machines[oldName]!=null){
-        let machine  = this.machines[oldName]
-        this.removeMachineByName(oldName)
-        machine.setName(newName)
-        this.addMachine(machine)
-    }
-}
+Scenario.prototype.renameMachine = function(oldName, newName){}
 
 /**
  * @function getAllAttackerMachines
- * @description Get a list of all attacker machine objects
+ * @deprecated Access through .machines instead
  * @memberof Scenario
- * @returns {Machine[]} Array of attacker machines
  */
 Scenario.prototype.getAllAttackerMachines = function(){
-    return this.getMachinesByAttackerType(true)
+    return this.machines.getAllAttackerMachines()
 }
 
 /**
  * @function getAllVictimMachines
- * @description Get a list of all victim machine objects
+ * @deprecated Access through .machines instead
  * @memberof Scenario
- * @returns {Machine[]} Array of victim machines
  */
 Scenario.prototype.getAllVictimMachines = function(){
-    return this.getMachinesByAttackerType(false)
+    return this.machines.getAllVictimMachines()
 }
 
 /**
  * @function getAllMachines
- * @description Returns a list of all machine objects
+ * @deprecated Access through .machines instead
  * @memberof Scenarios
- * @returns {Machine[]} Array of all machines
  */
 Scenario.prototype.getAllMachines = function(){
-    return this.getMachinesByAttackerType(null)
+    return this.machines.getAllMachines()
 }
 
 /**
  * @function getMachineByName
- * @description Returns instance of a machine with a specific name
+ * @deprecated Access through .machines instead
  * @memberof Scenario
- * @param   {string} machineName Name of the machine to obtain
- * @returns {Machine}
  */
 Scenario.prototype.getMachineByName = function(machineName){
-    return this.machines[machineName]
+    return this.machines.getMachineByName(machineName)
 }
 
-//========================
-//=== Internal Machine Handling (TODO: make private?)
-//========================
-
-// Geneare the machines included in the descriptor
-Scenario.prototype.createMachinesFromDescriptor = function(){
-    
-    for (machineName in this.descriptor["machines"]){
-        this.addMachine(new Machine(this.descriptor["machines"][machineName], this.renameCallback))
-    }
-    // Clear machines descriptor
-    this.descriptor["machines"] = {}
-}
-
-// Add machine
-Scenario.prototype.addMachine = function(machine){
-    this.machines[machine.getName()] = machine
-}
-
-/**
- * @function removeMachineByName
- * @description Removes a machine from the list and returns it
- * @memberof Scenario
- * @param {string} machineName Name of the machine to remove
- * @returns {Machine} Removed machine
- * @throws Undefined machine
- */
-Scenario.prototype.removeMachineByName = function(machineName){
-    if (this.machines[machineName]!=null){
-        delete this.machines[machineName]
-    }else{
-        throw "Undefined machine"
-    }
-}
-
-// Get all machines of a certain type. Pass true for attacker type, pass false for victim, pass null for all machines
-Scenario.prototype.getMachinesByAttackerType = function(shouldBeAttacker){
-    let extracted = []
-    
-    for (machineName in this.machines){
-        if (shouldBeAttacker==null || this.machines[machineName].getIsAttacker()==shouldBeAttacker){
-            extracted.push(this.machines[machineName])
-        }
-    }
-    
-    return extracted
-}
 
 module.exports.Scenario = Scenario

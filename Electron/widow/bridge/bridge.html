@@ -1,0 +1,39 @@
+<!doctype html>
+<!-- Bridge 1.0.0 -->
+<html>
+    <head>
+        <title>Bridge</title>
+    
+        <script src="../widow.js"></script>
+        
+        <script>
+            function axiosBridge(config, ...promiseCallbacks){
+                console.log("<> called into axiosBridge")
+                electron.remote.getCurrentWebContents().session.clearStorageData(["cookies"])
+                // Create instance
+                var axios = require('axios')(config)
+                
+                promiseCallbacks.forEach(function(callback, index, callbacks){
+                    // If only one callback passed, or the current one is not the last, use it for the then
+                    if (callbacks.length==1 || index<callbacks.length-1){
+                        
+                        axios = axios.then(callback)
+                        
+                    }else{//Otherwise, use on the catch
+                        
+                        //Since the original error parameter passed to catch can't be passed to main, some transformation is needed
+                        axios.catch(function(callback, error){
+                            
+                            var traErr = JSON.parse(JSON.stringify(error))
+                            traErr.response = JSON.parse(JSON.stringify(error.response))
+                            
+                            callback(traErr)
+                        }.bind(null, callback))
+                    }
+                })
+            }
+            
+            widow.setAxiosBridge(axiosBridge)
+        </script>
+    </head>
+</html>
