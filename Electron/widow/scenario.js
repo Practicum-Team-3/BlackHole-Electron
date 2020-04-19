@@ -340,12 +340,7 @@ Scenario.prototype.getMachineNamesList = function(){
 /**
  * @function createNewMachine
  * @deprecated Access through .machines instead
- * @description Creates a new default machine instance with default settings,
- *              adds it to the current list of machines and returns it
  * @memberof Scenario
- * @param   {string} machineName Name to give to the new machine
- * @param   {box}    box         Optional: Name of vagrant box to base machine on
- * @returns {Machine} New Machine instance
  */
 Scenario.prototype.createNewMachine = function(machineName, box){
     return this.machines.createNewMachine(machineName, box)
@@ -353,22 +348,15 @@ Scenario.prototype.createNewMachine = function(machineName, box){
 
 /**
  * @function renameMachine
- * @deprecated No longer functional
- * @description Renames a machine both externally and internally
+ * @deprecated No longer functional.
  * @memberof Scenario
- * @param {string} oldName Name of the machine to rename
- * @param {string} newName New name to replace the old
  */
-Scenario.prototype.renameMachine = function(oldName, newName){
-    
-}
+Scenario.prototype.renameMachine = function(oldName, newName){}
 
 /**
  * @function getAllAttackerMachines
  * @deprecated Access through .machines instead
- * @description Get a list of all attacker machine objects
  * @memberof Scenario
- * @returns {Machine[]} Array of attacker machines
  */
 Scenario.prototype.getAllAttackerMachines = function(){
     return this.machines.getAllAttackerMachines()
@@ -377,9 +365,7 @@ Scenario.prototype.getAllAttackerMachines = function(){
 /**
  * @function getAllVictimMachines
  * @deprecated Access through .machines instead
- * @description Get a list of all victim machine objects
  * @memberof Scenario
- * @returns {Machine[]} Array of victim machines
  */
 Scenario.prototype.getAllVictimMachines = function(){
     return this.machines.getAllVictimMachines()
@@ -388,9 +374,7 @@ Scenario.prototype.getAllVictimMachines = function(){
 /**
  * @function getAllMachines
  * @deprecated Access through .machines instead
- * @description Returns a list of all machine objects
  * @memberof Scenarios
- * @returns {Machine[]} Array of all machines
  */
 Scenario.prototype.getAllMachines = function(){
     return this.machines.getAllMachines()
@@ -399,10 +383,7 @@ Scenario.prototype.getAllMachines = function(){
 /**
  * @function getMachineByName
  * @deprecated Access through .machines instead
- * @description Returns instance of a machine with a specific name
  * @memberof Scenario
- * @param   {string} machineName Name of the machine to obtain
- * @returns {Machine}
  */
 Scenario.prototype.getMachineByName = function(machineName){
     return this.machines.getMachineByName(machineName)

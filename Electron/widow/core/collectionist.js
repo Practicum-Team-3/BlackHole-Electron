@@ -163,10 +163,10 @@ function Collectionist(descriptor, _collectableClass){
     this.super.add = function(collectable, allowNameDuplicates=false){
         if (this.collection.includes(collectable) ||
             (!this.isBlindDescriptor || !allowNameDuplicates) && this.super.getCollectableByName(collectable.getName())!=null){
-            console.log("NOt adding")
+            
             return false
         }
-        console.log("Adding: "+collectable.getName())
+        
         // Add to descriptor (careful to check the type of descriptor to cater to it)
         if (this.isBlindDescriptor){
             this.descriptor.push(collectable.getDescriptor())

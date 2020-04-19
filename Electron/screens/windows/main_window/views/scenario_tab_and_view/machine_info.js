@@ -39,7 +39,7 @@ function MachineInfo(machineInfoNode){
                     break
                     //General update
                     default:
-                        this.update()
+                        this.updateFields()
                     break
                 }
             break;
@@ -51,25 +51,25 @@ function MachineInfo(machineInfoNode){
     }.bind(this)
     
     /**
-     * @function update
+     * @function updateFields
      * @private
-     * @description Fill panel with current machine info
+     * @description Fill panel fields with current machine info
      */
-    this.update = function(){
+    this.updateFields = function(){
         
         if (this.machine==null){
             return
         }
         var machine = this.machine
-        this.getNode("setName").value = machine.getName()
+        this.getNode("setName-getName").value = machine.getName()
         
         this.getNode("box").innerHTML = machine.getBox()
         this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
         this.getNode("machineGui").innerHTML = machine.getGui()
-        this.getNode("setBaseMemory").value = machine.getBaseMemory()
-        this.getNode("setBaseMemory").dispatchEvent(new Event("input"))
-        this.getNode("setProcessors").value = machine.getProcessors()
-        this.getNode("setProcessors").dispatchEvent(new Event("input"))
+        this.getNode("setBaseMemory-getBaseMemory").value = machine.getBaseMemory()
+        this.getNode("setBaseMemory-getBaseMemory").dispatchEvent(new Event("input"))
+        this.getNode("setProcessors-getProcessors").value = machine.getProcessors()
+        this.getNode("setProcessors-getProcessors").dispatchEvent(new Event("input"))
         this.getNode("networkValue").value = ""
 
     }.bind(this)
@@ -83,7 +83,7 @@ function MachineInfo(machineInfoNode){
         
         // Add elements back
         var installedProgramsGroup = interface.getNode("installedPrograms")
-        interface.addItemsToVerticalList(installedProgramsGroup, machine.programs.getProgramNamesList(), function(event){console.log(event)}, function(event){event.stopPropagation()}, "cog")
+        interface.addItemsToVerticalList(installedProgramsGroup, machine.programs.getProgramNamesList(), function(event){console.log(event)}, function(event){event.stopPropagation()}, "trash")
     }.bind(this)
 
     
@@ -95,7 +95,17 @@ function MachineInfo(machineInfoNode){
      * @param {Any} Preprocessed value of the changed element
      */
     this.onchange = function(nodeName, node, value){
-        this.machine[nodeName](node.value)
+        if (this.machine==null){
+            return
+        }
+        // Get setter and getter from nodeName ('cause that's how they're named on here)
+        var setterAndGetter = nodeName.split("-")
+        var setter = setterAndGetter[0]
+        var getter = setterAndGetter[1]
+        
+        this.machine[setter](node.value)
+        // Tell everyone about it
+        emitModifiedEvent(this.machine, this.machineModified, modificationTypes.EDITED, getter)
     }.bind(this)
     
     this.onDeleteButtonClick = function(){
@@ -119,7 +129,7 @@ function MachineInfo(machineInfoNode){
         interface.setOnchangeCallback(self.onchange)
         
         // General details
-        interface.addLabelAndInput(null, "Name:", "setName", "")
+        interface.addLabelAndInput(null, "Name:", "setName-getName", "")
         addBrNode(formNode)
         interface.addLabelPair(null, "Box:", "box", "")
         interface.addLabelPair(null, "Type:", "machineType", "")
@@ -132,9 +142,9 @@ function MachineInfo(machineInfoNode){
         interface.addCollapsibleGroup(null, "Settings", "tools", null, true)
         
         interface.addLabel(null, "CPUs:")
-        interface.addRangeAndValue("setProcessors", 1, 16, 1, 2)
+        interface.addRangeAndValue("setProcessors-getProcessors", 1, 16, 1, 2)
         interface.addLabel(null, "Base Memory (MB):")
-        interface.addRangeAndValue("setBaseMemory", 512, 8192, 1, 2048)
+        interface.addRangeAndValue("setBaseMemory-getBaseMemory", 512, 8192, 1, 2048)
 
         
         // === Network
@@ -183,7 +193,7 @@ MachineInfo.prototype.setMachine = function(machine){
     this.machine = machine
     onModified(this.machine, this.machineModified)
     this.parentNode.style.width = machineInfoDefaultWidth+"px"
-    this.update()
+    this.updateFields()
     this.updatePrograms()
 }
 

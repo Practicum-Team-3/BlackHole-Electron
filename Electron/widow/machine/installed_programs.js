@@ -53,7 +53,7 @@ InstalledPrograms.prototype.addProgram = function(name, location){
     program.setLocation(location)
     
     // Add, allow duplications
-    return this.super.add(program)
+    return this.super.add(program, true)
 }
 
 /**

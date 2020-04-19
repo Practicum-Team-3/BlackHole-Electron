@@ -4,7 +4,7 @@ const Machine = require('./machine/machine.js').Machine
 /**
  * @class Machines
  * @description Modifiable. Collectionist. Holds machine instances
- * @version 0.1.0
+ * @version 1.0.0
  */
 function Machines(descriptor){
     Modifiable.call(this)
@@ -15,7 +15,7 @@ function Machines(descriptor){
 /**
  * @function getMachineNamesList
  * @description Get a list with the names of the available machines
- * @memberof Scenario
+ * @memberof Machines
  *
  * @return {string[]} Array of strings of machine names
  */
@@ -27,10 +27,10 @@ Machines.prototype.getMachineNamesList = function(){
  * @function createNewMachine
  * @description Creates a new default machine instance with default settings,
  *              adds it to the current list of machines and returns it
- * @memberof Scenario
+ * @memberof Machines
  * @param   {string} machineName Name to give to the new machine
  * @param   {box}    box         Optional: Name of vagrant box to base machine on
- * @returns {Machine} New Machine instance
+ * @returns {Machine} New Machine instance if it was added
  */
 Machines.prototype.createNewMachine = function(machineName, box){
     
@@ -39,15 +39,17 @@ Machines.prototype.createNewMachine = function(machineName, box){
     if (box!=undefined){
         newMachine.setBox(box)
     }
-    this.super.add(newMachine)
-    return newMachine
+    if (this.super.add(newMachine)){
+        return newMachine
+    }
+    return null
 }
 
 
 /**
  * @function getAllAttackerMachines
  * @description Get a list of all attacker machine objects
- * @memberof Scenario
+ * @memberof Machines
  * @returns {Machine[]} Array of attacker machines
  */
 Machines.prototype.getAllAttackerMachines = function(){
@@ -57,7 +59,7 @@ Machines.prototype.getAllAttackerMachines = function(){
 /**
  * @function getAllVictimMachines
  * @description Get a list of all victim machine objects
- * @memberof Scenario
+ * @memberof Machines
  * @returns {Machine[]} Array of victim machines
  */
 Machines.prototype.getAllVictimMachines = function(){
@@ -67,7 +69,7 @@ Machines.prototype.getAllVictimMachines = function(){
 /**
  * @function getAllMachines
  * @description Returns a list of all machine objects
- * @memberof Scenarios
+ * @memberof Machines
  * @returns {Machine[]} Array of all machines
  */
 Machines.prototype.getAllMachines = function(){
@@ -77,7 +79,7 @@ Machines.prototype.getAllMachines = function(){
 /**
  * @function getMachineByName
  * @description Returns instance of a machine with a specific name
- * @memberof Scenario
+ * @memberof Machines
  * @param   {string} machineName Name of the machine to obtain
  * @returns {Machine}
  */
@@ -89,7 +91,7 @@ Machines.prototype.getMachineByName = function(machineName){
 /**
  * @function removeMachineByName
  * @description Removes a machine from the list and returns it
- * @memberof Scenario
+ * @memberof Machines
  * @param {string} machineName Name of the machine to remove
  * @returns {Machine} Removed machine
  * @throws Undefined machine
