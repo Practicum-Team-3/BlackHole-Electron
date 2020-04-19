@@ -52,7 +52,7 @@ Boxes.prototype.downloadBoxFromVagrant = function(vagrantBoxID){
         console.log("Downloading vagrant box: "+vagrantBoxID+"...")
         
         axiosBridged({
-            url: this.getAddress()+"/vagrant/boxes/addByName",
+            url: this.getAddress()+"/vagrant/boxes/add",
             method: 'post',
             data: {"box_name":vagrantBoxID},
             headers: {'Content-Type': 'application/json'}

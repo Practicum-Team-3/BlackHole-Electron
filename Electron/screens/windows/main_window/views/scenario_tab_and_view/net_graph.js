@@ -40,7 +40,8 @@ function NetGraph(scenario, parent){
     // MAP BETWEEN MACHINES AND GRAPH NODES
     //================================
     // To be able to keep the relationship between graph nodes and actual machines
-    var machineMap = new WeakMap()
+    this.machineMap = new WeakMap()
+
     
     //================================
     // MODIFICATION CALLBACKS
@@ -61,7 +62,7 @@ function NetGraph(scenario, parent){
                 console.log("NetGraph: Notified that machine was removed")
                 removeMachineFromGraph(arg)
             break
-            
+
             default:break
         }
     }.bind(this)
@@ -77,18 +78,22 @@ function NetGraph(scenario, parent){
         switch(modificationType){
             
             case modificationTypes.EDITED:
+
                 // Retrieve the graph node related to this machine
-                var graphNode = machineMap.get(machine)
+                var graphNode = this.machineMap.get(machine)
                 
                 // check for what was actually changed
                 switch(arg){
                     case "getName"://The name was changed
-                        
+                        console.log(this.machineMap)
+                        graphNode.name = machine.getName()
                     break
                 }
            break
        }
-    }
+        //redraw the graph
+        this.redrawGraph(this.graphJSON)
+    }.bind(this)
     // When do we subscribe to the machine modification event?, whenever a machine is included in the graph
     // Also, need to unsubscribe whenever a machine is removed from the graph, and on cleanup before closing
     
@@ -136,17 +141,21 @@ function NetGraph(scenario, parent){
         // Subscribe to machine modification events
         subscribeToMachineModifications(machine)
         
+        var newJSONNode = this.addNewNode(machine)
+        
         //At some point, add mapping from machine to graph node
-        machineMap.set(machine, "change this string for the node object")
+        this.machineMap.set(machine, newJSONNode)
     }.bind(this)
     
     var removeMachineFromGraph = function(machine){
         console.log("NetGraph: Removing machine "+machine.getName()+" from graph")
         //Unsubscribe from machine modification events
         unsubscribeFromMachineModifications(machine)
+
+        //refresh the graph here
         
         //At some point, remove mapping from machine to graph node
-        machineMap.delete(machine)
+        this.machineMap.delete(machine)
     }.bind(this)
     
     //================================
@@ -218,6 +227,7 @@ function NetGraph(scenario, parent){
         //create nodes
         var nameIndex = {}
         var machinePlaceholder = 0
+        this.machineMap = new WeakMap()
         for(var i = 0; i<machines.length; i++){
             this.nodesNamesIDs[machines[i].getName()] = machines[i].getName() + "_" + generateUniqueId()
             machinePlaceholder = {
@@ -227,6 +237,10 @@ function NetGraph(scenario, parent){
                 "y": 365,
                 "ip":machines[i].networkSettings.getIpAddress()
             }
+
+            //Add to machine map
+            this.machineMap.set(machines[i], machinePlaceholder)
+
             JSONObj["nodes"].push(machinePlaceholder)
             nameIndex[this.nodesNamesIDs[machines[i].getName()]] = i
         }
@@ -287,12 +301,13 @@ function NetGraph(scenario, parent){
         for(var i = 0; i<this.graphJSON["nodes"].length; i++){
             machine = this.scenario.getMachineByName(this.getKeyByValue(this.nodesNamesIDs, this.graphJSON["nodes"][i]["name"]))
             if(machine != undefined && machine != null){
-                machine.setName(this.getKeyByValue(this.nodesNamesIDs, this.graphJSON["nodes"][i]["name"]))
-                machine.setIsAttacker(this.graphJSON["nodes"][i]["type"] == "attacker" ? true : false)
+                //machine.setName(this.getKeyByValue(this.nodesNamesIDs, this.graphJSON["nodes"][i]["name"]))
+                //machine.setIsAttacker(this.graphJSON["nodes"][i]["type"] == "attacker" ? true : false)
                 machine.networkSettings.setIpAddress(this.graphJSON["nodes"][i]["ip"])
-            }else{
-                machine = this.scenario.createNewMachine(this.getKeyByValue(this.nodesNamesIDs, this.graphJSON["nodes"][i]["name"]))
-                machine.setIsAttacker(this.graphJSON["nodes"][i]["type"] == "attacker" ? true : false)
+            }
+            else{
+                // machine = this.scenario.createNewMachine(this.getKeyByValue(this.nodesNamesIDs, this.graphJSON["nodes"][i]["name"]))
+                // machine.setIsAttacker(this.graphJSON["nodes"][i]["type"] == "attacker" ? true : false)
                 machine.networkSettings.setIpAddress(this.graphJSON["nodes"][i]["ip"])
             }
         }
@@ -743,6 +758,9 @@ function NetGraph(scenario, parent){
 
         //trigger callback
         if(this.onSelectedNodeChangedCallback != 0){
+            console.log("inside the trigger callback, nodesNamesIDs: ")
+            console.log(this.nodesNamesIDs)
+            console.log(this.getKeyByValue(this.nodesNamesIDs, d.name))
             var machineFromScenario = this.scenario.getMachineByName(this.getKeyByValue(this.nodesNamesIDs, d.name))
             if(machineFromScenario!= undefined || machineFromScenario != null){
                 this.onSelectedNodeChangedCallback(machineFromScenario)
@@ -755,6 +773,9 @@ function NetGraph(scenario, parent){
         this.d3.select("#" + d.name).attr("fill", this.VMColor(d))
         this.selectedJSON = d;
     }
+
+
+
 
 
     /**
@@ -803,7 +824,9 @@ function NetGraph(scenario, parent){
      * @param {String} machineName name of machine.
      * @param {String} machineType either 'victim' or 'attacker'.
      */
-    this.addNewNode = function(machineName, machineType){
+    this.addNewNode = function(machine){
+
+        var machineName = machine.getName()
 
         if(this.nodesNamesIDs[machineName] != null && this.nodesNamesIDs[machineName] != undefined){
             machineName = machineName + generateUniqueId()
@@ -813,7 +836,7 @@ function NetGraph(scenario, parent){
         //Clone an element from the graph.
         newNode = {
             "name":this.nodesNamesIDs[machineName],
-            "type":machineType, 
+            "type":machine.getIsAttacker() == true ? "attacker" : "victim", 
             "x":0, 
             "y":0, 
             "px":0, 
@@ -824,14 +847,14 @@ function NetGraph(scenario, parent){
             }
 
         this.graphJSON["nodes"].push(newNode);
-        // this.updateJSONString(this.graphJSON);
-        // this.resetGraphData();
         
         //temporary workaround, uncomment code above once netmasks are implemented//////////////////////////////////////////////////////////
         this.connectToAll(newNode)
 
         //update the scenario object
         this.updateScenarioFromJSONGraph(this.graphJSON)
+
+        return newNode
     }
 
     /**
