@@ -65,7 +65,7 @@ function makeBridge(){
 /**
  * @function setAxiosBridge
  * @description Intended to be called by bridging instance. Sets the axiosBridge global access to the entire library
- * @protected
+ * @private
  * @memberof Widow
  * @param {function} _axiosBridge Bridge function to a chromium Axios worker
  */
@@ -127,11 +127,10 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
 /**
  * @class WidowSettings
  * @description Used to share basic Black Widow connection settings between members
- * @protected
+ * @private
  * @param   {string} _address     Main address of Black Widow
  * @param   {string} _cloudSubdomain Subdomain for cloud service
- * @param   {string} _cloudPath   [[Description]]
- * @returns {[[Type]]} [[Description]]
+ * @param   {string} _cloudPath   Path to cloud files
  */
 function WidowSettings(_address, _cloudSubdomain, _cloudPath){
     var address = address

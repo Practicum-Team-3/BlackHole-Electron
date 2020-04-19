@@ -95,13 +95,14 @@ function Programs(widowSettings){
     
     /**
      * @function addProgram
-     * @param   {[[Type]]} buffer                 [[Description]]
-     * @param   {[[Type]]} name                   [[Description]]
-     * @param   {object}   os                     [[Description]]
-     * @param   {[[Type]]} description            [[Description]]
-     * @param   {[[Type]]} isExploit              [[Description]]
-     * @param   {object}   axiosBridge            [[Description]]
-     * @param   {[[Type]]} uploadProgressCallback [[Description]]
+     * @description Uploads a program into Black Widow
+     * @memberof Program
+     * @param   {ArrayBuffer} buffer                 Byte array of the file
+     * @param   {string} name                   Name of the file
+     * @param   {string}   os                   Operating system target
+     * @param   {string} description            Description of the program
+     * @param   {boolean} isExploit             Pass true if program is an exploit
+     * @param   {function} uploadProgressCallback Callback to update on the upload progress, should accept two int parameters: upload progress, upload total.
      * @returns {Promise} Promise for the program upload process. Passes the instance of the
      *                    added program when resolved
      */
