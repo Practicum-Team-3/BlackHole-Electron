@@ -85,7 +85,6 @@ function NetGraph(scenario, parent){
                 // check for what was actually changed
                 switch(arg){
                     case "getName"://The name was changed
-                        console.log(this.machineMap)
                         graphNode.name = machine.getName()
                     break
                 }
@@ -231,11 +230,12 @@ function NetGraph(scenario, parent){
         for(var i = 0; i<machines.length; i++){
             this.nodesNamesIDs[machines[i].getName()] = machines[i].getName() + "_" + generateUniqueId()
             machinePlaceholder = {
-                "name":this.nodesNamesIDs[machines[i].getName()], 
+                "name":this.nodesNamesIDs[machines[i].getName()],
                 "type": machines[i].getIsAttacker() ? "attacker" : "victim",
                 "x": 442, 
                 "y": 365,
-                "ip":machines[i].networkSettings.getIpAddress()
+                "ip":machines[i].networkSettings.getIpAddress(),
+                "machine":machines[i]
             }
 
             //Add to machine map
@@ -758,10 +758,11 @@ function NetGraph(scenario, parent){
 
         //trigger callback
         if(this.onSelectedNodeChangedCallback != 0){
-            console.log("inside the trigger callback, nodesNamesIDs: ")
-            console.log(this.nodesNamesIDs)
-            console.log(this.getKeyByValue(this.nodesNamesIDs, d.name))
-            var machineFromScenario = this.scenario.getMachineByName(this.getKeyByValue(this.nodesNamesIDs, d.name))
+
+            console.log("d.machine is:")
+            console.log(d.machine)
+
+            var machineFromScenario = d.machine
             if(machineFromScenario!= undefined || machineFromScenario != null){
                 this.onSelectedNodeChangedCallback(machineFromScenario)
             }else{
@@ -843,7 +844,8 @@ function NetGraph(scenario, parent){
             "py":0, 
             "fixed":0,
             "selected":"false",
-            "ip":this.getAvailableIpByNetMask("192.168.50")//must guard for case where no ip is available
+            "ip":this.getAvailableIpByNetMask("192.168.50"),//must guard for case where no ip is available
+            "machine":machine
             }
 
         this.graphJSON["nodes"].push(newNode);
