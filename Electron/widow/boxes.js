@@ -77,12 +77,16 @@ Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, refre
         url: this.getAddress() + "/vagrant/taskStatus/" + taskID
     }, function (response) {
         //if response says download is not 100%
-        syncUpdateCallback(((response.data.body.current*1.0)/response.data.body.total)*100)
+        if(syncUpdateCallback != null){
+            syncUpdateCallback(((response.data.body.current*1.0)/response.data.body.total)*100)
+        }
         console.log(response.data)
-        if(response.data.body.current < response.data.body.total){
+        if(response.data.body.state == "PROGRESS"){
             this.requestTaskProgress(taskID, syncUpdateCallback, refreshGUICallback)
         }else{
-            refreshGUICallback()
+            if(refreshGUICallback != null){
+                refreshGUICallback()
+            }
         }
         console.log("Task status update received...")
     }.bind(this), function (error) {

@@ -193,7 +193,6 @@ function NetGraph(scenario, parent){
      */
     this.onScenarioChanged = function(modifiedScenarioJSON){
         this.graphJSON = this.getGraphJSONFromScenario(modifiedScenarioJSON)
-        this.graphJSONString = JSON.stringify(this.graphJSON);
         this.startGraph()
     }
 
@@ -285,7 +284,7 @@ function NetGraph(scenario, parent){
         return JSONObj
     }
 
-    this.graphJSONString = JSON.stringify(this.getGraphJSONFromScenario(this.scenario));
+    this.graphJSON = this.getGraphJSONFromScenario(this.scenario);
 
     /**
      * @function updateScenarioFromJSONGraph
@@ -889,18 +888,7 @@ function NetGraph(scenario, parent){
             }
             updatedModelObject["links"].push(newLink);
         }
-        this.graphJSONString = JSON.stringify(updatedModelObject);
-    }
-
-    /**
-     * @function getJSONStringGraph
-     * @description Returns a string JSON with the current state of graphJSON. 
-     * 
-     */ 
-    this.getJSONStringGraph = function(){
-        console.log(this.graphJSONString)
-        return this.graphJSONString
-    }      
+    }     
 
     /**
      * @function addFloatingFooterButtons
@@ -978,8 +966,7 @@ function NetGraph(scenario, parent){
      * 
      */ 
     this.startGraph = function(){
-        test = JSON.parse(this.graphJSONString)
-        this.redrawGraph(test)
+        this.redrawGraph(this.graphJSON)
     }
 }
 

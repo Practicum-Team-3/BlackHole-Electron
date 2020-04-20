@@ -152,13 +152,8 @@ BoxesListOverview.prototype.removeBox = function(boxName){
     console.log("Inside boxoverview, removing: " + boxName)
     widow.boxes.removeBox(boxName)
     .then(function(response){
-        widow.boxes.load()
-        .then(function(){
-            this.setBoxes(widow.boxes)
-        }.bind(this))
-        .catch(function(){
-            console.log("couldnt load the updated list of boxes from widow")
-        })
+        console.log("back in boxeslist overview")
+        widow.boxes.requestTaskProgress(response.data.task_id, null, this.onChange.bind(this))
     }.bind(this))
     .catch(function(error){
         console.log(error)
