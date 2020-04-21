@@ -13,33 +13,30 @@ function BoxesListOverview(boxesListNode){
 
     this.interface = new NodeCombos(sectionsContainer)
 
+    this.boxSections = new WeakMap()
+
     var sections = ["boxesListCollapsibles", "boxesListOptions"]
     this.interface.addMultipleSections(sections)
 
     //populate the collapsibles
-    this.interface.selectNode(this.interface.getNodes()["boxesListCollapsibles"])
-    this.interface.getNodes()["boxesListCollapsibles"].style = "overflow-y:scroll; overflow-x:hidden"
-    this.interface.getNodes()["boxesListCollapsibles"].className = "stretchFlex boxesListCollapsibles bg-light"
+    this.interface.selectNode(this.interface.getNode("boxesListCollapsibles"))
+    this.interface.getNode("boxesListCollapsibles").style = "overflow-y:scroll; overflow-x:hidden"
+    this.interface.getNode("boxesListCollapsibles").className = "stretchFlex programListCollapsibles bg-light"
 
     // Create a form to put all of the components in
     var formNode = document.createElement("form")
-    // formNode.style = "background-color:red"
+
     formNode.className = "boxesListCollapsiblesForm"
     formNode.setAttribute("onSubmit", "return false")
 
     this.interface.addReferenceToNode(formNode.className, formNode)
-    this.interface.getNodes()["boxesListCollapsibles"].appendChild(formNode)
+    this.interface.getNode("boxesListCollapsibles").appendChild(formNode)
 
     this.interface.selectNode(this.interface.getNodes()["boxesListCollapsiblesForm"])
-
     this.interface.selectNode(this.interface.getNodes()["boxesListOptions"])
-    //this.interface.getNodes()["boxesListOptions"].style = "height:20%;"
     this.interface.getNodes()["boxesListOptions"].className = "fixedFlex container boxesListOptions bg-dark"
-
     var optionButtons = {"Add from vagrant_primary":function(){openWindow('./screens/windows/dialogs/new_box/add_from_vagrant.html', 530, 355, true, false)}, "Upload OVA_info":function(){showToast("Upload OVA", "Not yet implemented")}}
-    // openWindow('./screens/windows/dialogs/new_box/add_from_vagrant.html', 530, 355, false, true)
     this.interface.addOverviewOptionsButtons(optionButtons)
-    
     this.boxesListNode.appendChild(sectionsContainer)
 
 
@@ -61,113 +58,200 @@ function BoxesListOverview(boxesListNode){
     }
 
     //NAMES MUST BE UNIQUE, graph will break if box names are duplicated.
-    this.includeClicked = function(i){
-        // var machineName = this.boxesObject.getBoxesList()[i]
-        // machineName = machineName.replace(/\//gi, '-').split(".").join("-")
+    // this.includeClicked = function(i){
+        
+    //     var machines = getActiveScenarioTab().getScenario().machines
+        
+    //     // Prepare name and box
+    //     var machineName = machines.getMachineByName("untitled")==null ? "untitled" : "untitled-"+generateUniqueId()
+    //     var box = this.boxesObject.getBoxesList()[i]
 
-        // // showToast("Include Node", "Implemented but disabled")
-        // getActiveScenarioTab().getNetGraph().addNewNode(machineName)
+    //     var newMachine = machines.createNewMachine(machineName, box)
+
+    //     // Check if machine was created, and tell the guys about it
+    //     if (newMachine!=null){
+    //         emitModifiedEvent(machines, null, modificationTypes.ADDED_ELEMENT, newMachine)
+    //     }else{
+    //         console.log("BoxesListOverview: Unable to include machine")
+    //     }
         
-        // \/ \/ \/ \/ \/ \/ \/ \/
+    // }
+
+    this.onDeleteButtonClick = function(boxToDelete){
+        // event.target.disabled = true
         
+        widow.boxes.removeBox(boxToDelete)
+        .then(function(){
+            emitModifiedEvent(widow.boxes, null, modificationTypes.REMOVED_ELEMENT, boxToDelete)
+        }.bind(this)).catch(function(){
+            console.log("Error while calling widow.boxes.removeBox()")
+        })
+    }
+    
+    this.onIncludeButtonClick = function(boxName){
         var machines = getActiveScenarioTab().getScenario().machines
         
         // Prepare name and box
         var machineName = machines.getMachineByName("untitled")==null ? "untitled" : "untitled-"+generateUniqueId()
-        var box = this.boxesObject.getBoxesList()[i]
 
-        var newMachine = machines.createNewMachine(machineName, box)
+        var newMachine = machines.createNewMachine(machineName, boxName)
 
         // Check if machine was created, and tell the guys about it
         if (newMachine!=null){
             emitModifiedEvent(machines, null, modificationTypes.ADDED_ELEMENT, newMachine)
         }else{
-            console.log("BoxesListOverview: Unable to include machine")
+            console.log("BoxesListOverview: Unable to include box " + boxName)
         }
+    }
+
+    // Define the function that adds box sections
+    this.addBoxSection = function(boxName, box){
+        //Select the area for the groups
+        this.interface.selectNode(interface.getNode("boxesListCollapsiblesForm"))
         
-        // /\ /\ /\ /\ /\ /\ /\ /\
-    }
-}
+        var group = interface.addCollapsibleGroup(null, boxName, "server")
+        // General details of exploit
+        this.interface.addLabelPair(null, "Name: ", "programName", boxName)
+        this.interface.addLabelPair(null, "Description: ", "programTarget", box.getDescription())
+        
+        this.interface.addDeleteAndIncludeButtons(null, this.onDeleteButtonClick.bind(this, box), null, this.onIncludeButtonClick.bind(this, box))
 
-/**
- * @function setBoxes
- * @description Take the list of boxes from the server and populate the list.
- * @param {Boxes} boxesList Boxes object to use
- */
-BoxesListOverview.prototype.setBoxes = function(boxesObject){
-    this.clear()
-    this.boxesObject = boxesObject
-    onModified(this.boxesObject, this.onChange.bind(this))
-    console.log("Boxes on server:")
-    console.log(this.boxesObject.getBoxesList())
-    this.update()
-}
+        // keep reference to group node in map
+        boxSections.set(box, group)
+        
+        // Select form again
+        interface.selectNode(interface.getNode("boxesListCollapsiblesForm"))
+        
+        return group
+    }.bind(this)
 
-/**
- * @function clear
- * @description Call to unassign the scenario from the machine info
- */
-BoxesListOverview.prototype.clear = function(){
-    if (this.boxesObject==null){
-        return
-    }
-    removeOnModifiedListener(this.boxesObject, this.onChange)
-    this.boxesObject = null
 
-    //clear collapsibles
-    var formContainer = this.interface.getNodes()["boxesListCollapsiblesForm"]
-    var containerChildren = formContainer.children
-
-    for(var i = 0; i<containerChildren.length;i++){
-        formContainer.removeChild(containerChildren[i])
-    }
-}
-
-BoxesListOverview.prototype.update = function(){
-    if (this.boxesObject==null){
-        return
+    this.removeBoxSection = function(box){
+        boxSections.get(box).remove()
+        boxSections.delete(box)
+    }.bind(this)
+    
+    // Create the groups for the available programs by calling addProgramSection()
+    var boxes = widow.boxes.getBoxesList()
+    for(var key in boxes){
+        this.addBoxSection(key, boxes[key])
     }
 
-    //get boxesList should return a list of JSON objects with more details for each box than just OS
-    var boxesArray = this.boxesObject.getBoxesList()
+    this.boxesModified = function(target, modificationType, arg){
+        
+        switch(modificationType){
+            // Added Program
+            case modificationTypes.ADDED_ELEMENT:
+                
+                var group = this.addBoxSection(arg.getName(), arg)
+                $(group.lastChild).collapse('show')
+                
+                break;
+            case modificationTypes.REMOVED_ELEMENT:
+                
+                this.removeBoxSection(arg)
+                
+                break;
+        }
+    }.bind(this)
 
-    this.interface.selectNode(this.interface.getNodes()["boxesListCollapsiblesForm"])
+    // /**
+    //  * @function loadBoxes
+    //  * @description Take the list of boxes from widow and populate the list.
+    //  */
+    // this.loadBoxes = function(){
+    //     // console.log("boxeslist overview, setBoxes called")
+    //     this.clear()
+    //     this.update()
+    // }
 
-    //populate the form
-    for(var i = 0;i<boxesArray.length;i++){
 
-        this.interface.addCollapsibleGroup(null, boxesArray[i], "server")
-        // General details
-        this.interface.addLabelPair(null, "Name:", "boxName", boxesArray[i])
-        this.interface.addLabelPair(null, "OS:", "boxOs", boxesArray[i])
-        this.interface.addLabelPair(null, "Exploits:", "boxInstalledExploits", "")
-        this.interface.addLabelPair(null, "Programs:", "boxInstalledPrograms", "")
+    // /**
+    //  * @function clear
+    //  * @description Call to unassign the scenario from the machine info
+    //  */
+    // this.clear = function(){
 
-        this.interface.addDeleteAndIncludeButtons(null, this.removeBox.bind(event, boxesArray[i]), null, this.includeClicked.bind(this, i))
-        this.interface.selectNode(this.interface.getNodes()["boxesListCollapsiblesForm"])
-    }
+    //     //clear collapsibles
+    //     var formContainer = this.interface.getNodes()["boxesListCollapsiblesForm"]
+    //     var containerChildren = formContainer.children
+
+    //     console.log("number of children in container: " + containerChildren.length)
+
+    //     if(containerChildren.length > 0){
+    //         for(var i = 0; i<containerChildren.length;i++){
+    //             formContainer.removeChild(containerChildren[i])
+    //         }
+    //     }else{
+    //         console.log("BoxesList already contains no children")
+    //     }
+    // }
+
+
+    // this.update = function(){
+    //     console.log("update called")
+    //     widow.boxes.load()
+    //     .then(function(){
+
+    //         //get boxesList should return a list of JSON objects with more details for each box than just OS
+    //         var boxesArray = widow.boxes.getBoxesList()
+
+    //         console.log("boxeslist to be populated with:")
+    //         for(var i  = 0; i<boxesArray.length; i++){
+    //             console.log(boxesArray[i])
+    //         }
+        
+    //         this.interface.selectNode(this.interface.getNodes()["boxesListCollapsiblesForm"])
+        
+    //         //populate the form
+    //         for(var i = 0;i<boxesArray.length;i++){
+        
+    //             this.interface.addCollapsibleGroup(null, boxesArray[i], "server")
+    //             // General details
+    //             this.interface.addLabelPair(null, "Name:", "boxName", boxesArray[i])
+    //             this.interface.addLabelPair(null, "OS:", "boxOs", boxesArray[i])
+    //             this.interface.addLabelPair(null, "Exploits:", "boxInstalledExploits", "")
+    //             this.interface.addLabelPair(null, "Programs:", "boxInstalledPrograms", "")
+        
+    //             this.interface.addDeleteAndIncludeButtons(null, this.removeBoxClicked.bind(this, boxesArray[i]), null, this.includeClicked.bind(this, boxesArray[i]))
+    //             this.interface.selectNode(this.interface.getNodes()["boxesListCollapsiblesForm"])
+    //         }
+
+    //     }.bind(this))
+    //     .catch(function(){
+    //         console.log("Error ocurred while attempting to update boxes")
+    //     }.bind(this))
+    // }
+
+    // this.emitEvent = function(eventType){
+    //     emitModifiedEvent(widow.boxes, null, eventType, null)
+    // }
+
+    // this.removeBoxClicked = function(boxName){
+    //     console.log("Removing box: " + boxName)
+    //     widow.boxes.removeBox(boxName, null, this.emitEvent.bind(this, modificationTypes.REMOVED_ELEMENT))
+    // }
+
+    // this.boxesModified = function(target, modificationType, arg){
+        
+    //     switch(modificationType){
+    //         // Added BOx
+    //         case modificationTypes.ADDED_ELEMENT:
+    //             console.log("boxesModified.ADDED_ELEMENT")
+    //             this.loadBoxes()
+    //             break;
+    //         case modificationTypes.REMOVED_ELEMENT:
+    //             console.log("boxesModified.REMOVED_ELEMENT")
+    //             this.loadBoxes()
+    //             break;
+    //     }
+    // }.bind(this)
+
+    onModified(widow.boxes, this.boxesModified.bind(this))
 }
 
-BoxesListOverview.prototype.removeBox = function(boxName){
-    console.log("Inside boxoverview, removing: " + boxName)
-    widow.boxes.removeBox(boxName)
-    .then(function(response){
-        console.log("back in boxeslist overview")
-        widow.boxes.requestTaskProgress(response.data.task_id, null, this.onChange.bind(this))
-    }.bind(this))
-    .catch(function(error){
-        console.log(error)
-        console.log("An error ocurred on server, couldn't remove box '" + boxName + "'")
-    })
-}
 
-BoxesListOverview.prototype.onChange = function(modificationType, argA){
-    console.log("On change was called")
-    widow.boxes.load()
-    .then(function(){
-        this.setBoxes(widow.boxes)
-    }.bind(this))
-    .catch(function(){
-        console.log("error updating GUI")
-    })
-}
+
+
+
+
