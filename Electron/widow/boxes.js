@@ -11,84 +11,78 @@ var Modifiable = require('./core/modifiable.js').Modifiable
  */
 function Boxes(widowSettings){
     //Inherit loading and item handling capabilities from loadable
+    console.log("inside Boxes, calling load...")
     Loadable.call(this, widowSettings, "/vagrant/boxes/all")
     Modifiable.call(this)
+
+    this.boxesList = []
 }
+
 
 /**
  * @function getBoxesList
- * @description Returns an array with strings of the box names
+ * @description Returns an array with box objects
  * @memberof Boxes
- * @returns {string[]} Array with box names as strings
+ * @returns {string[]} Array with box objects
  */
 Boxes.prototype.getBoxesList = function(){
     var boxesList = this.getItemList()
-    console.log("Boxes received from backend:")
-    for(var i = 0; i<boxesList.length; i++){
-        console.log(boxesList[i])
-    }
     return boxesList
 }
 
-
-Boxes.prototype.linkAndSyncPOST = function(vagrantBoxID, syncUpdateCallback, refreshGUICallback){
-    console.log("LinkAndSyncPOST....")
-    
-    return this.downloadBoxFromVagrant(vagrantBoxID)
-    .then(function(response){
-        
-        this.requestTaskProgress(response.data.task_id, syncUpdateCallback, refreshGUICallback)
-
-    }.bind(this))
-    .catch(function(){
-        console.log("an error occurred inside linkAndSyncPOST")
-    })
-
-}
-
-Boxes.prototype.downloadBoxFromVagrant = function(vagrantBoxID){
-    return new Promise(function(resolve, reject){
-
-        console.log("Downloading vagrant box: "+vagrantBoxID+"...")
-        
-        axiosBridged({
-            url: this.getAddress()+"/vagrant/boxes/add",
-            method: 'post',
-            data: {"box_name":vagrantBoxID},
-            headers: {'Content-Type': 'application/json'}
-        }, function (response) {
-            console.log(response)
-            console.log("Started download...")
-            resolve(response)
-        }.bind(this), function (error) {
-            console.log("Download Box Failed...")
-            console.log(error);
-            reject(error)
-        }.bind(this))
-
-    }.bind(this))
-}
-
-
-Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, refreshGUICallback){
+Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, modificationType, arg){
     console.log("Getting progress for task: "+ taskID +"...")
     
     axiosBridged({
         url: this.getAddress() + "/vagrant/taskStatus/" + taskID
     }, function (response) {
+
+        try{
+
         //if response says download is not 100%
         if(syncUpdateCallback != null){
             syncUpdateCallback(((response.data.body.current*1.0)/response.data.body.total)*100)
         }
         console.log(response.data)
         if(response.data.body.state == "PROGRESS"){
-            this.requestTaskProgress(taskID, syncUpdateCallback, refreshGUICallback)
+            console.log("calling requestTaskProgress...")
+            this.requestTaskProgress(taskID, syncUpdateCallback, modificationType, arg)
         }else{
-            if(refreshGUICallback != null){
-                refreshGUICallback()
+            if(response.data.body.state == "SUCCESS"){
+                console.log("Task complete...")
+                //Update local list of boxes to reflect changes made on server
+                if(modificationType != null && arg != null){
+    
+                    console.log("Updating boxesList...")
+                    switch(modificationType){
+                        case "addedElement":
+                            this.boxesList.push(arg)
+                            console.log("addedElement")
+                            break;
+
+                        case "removedElement":
+                            this.boxesList.splice(this.boxesList.indexOf(arg), 1)
+                            console.log("removedElement")
+                            break;
+
+                        default:
+                            console.log("Modification type not recognized")
+                            break;
+                    }
+                    console.log("Emitting modified event...")
+                    this.emitModifiedEvent(null, modificationType, arg)
+                }else{
+                    console.log("modificationtype is null, can't emit...")
+                }
+            }else{
+                console.log("Server has suddenly stopped replying with 'PROGRESS'")
             }
         }
-        console.log("Task status update received...")
+
+        }catch(error){
+            console.log(error)
+        }
+
     }.bind(this), function (error) {
         console.log(error)
         console.log("An error occured while requesting task progress...")
@@ -98,27 +92,52 @@ Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, refre
 }
 
 
-Boxes.prototype.removeBox = function(boxName) {
-    return new Promise(function(resolve, reject){
-
-        console.log("Removing vagrant box: "+boxName+"...")
+Boxes.prototype.downloadBoxFromVagrant = function(vagrantBoxID, syncUpdateCallback, modificationType){
+    
+    console.log("Downloading vagrant box: "+vagrantBoxID+"...")
+    
+    axiosBridged({
+        url: this.getAddress()+"/vagrant/boxes/add",
+        method: 'post',
+        data: {"box_name":vagrantBoxID},
+        headers: {'Content-Type': 'application/json'}
+    }, function (response) {
+        console.log("Starting download...")
+        try{
+            this.requestTaskProgress(response.data.task_id, syncUpdateCallback, modificationType, vagrantBoxID)
+        }catch(error){
+            console.log(error)
+        }
         
-        axiosBridged({
-            url: this.getAddress()+"/vagrant/boxes/remove",
-            method: 'post',
-            data: {"box_name":boxName},
-            headers: {'Content-Type': 'application/json'}
-        }, function (response) {
-            console.log(response)
-            console.log("Box deleted from server...")
-            resolve(response)
-        }.bind(this), function (error) {
-            console.log("Box Deletion Failed...")
-            console.log(error);
-            reject(error)
-        }.bind(this))
-
+    }.bind(this), function (error) {
+        console.log(error);
+        console.log("Download Box Failed...")
     }.bind(this))
+
+}
+
+
+Boxes.prototype.removeBox = function(boxName) {
+
+    
+    axiosBridged({
+        url: this.getAddress()+"/vagrant/boxes/remove",
+        method: 'post',
+        data: {"box_name":boxName},
+        headers: {'Content-Type': 'application/json'}
+    }, function (response) {
+
+        try{
+            this.requestTaskProgress(response.data.task_id, null, "removedElement", boxName)
+        }catch(error){
+            console.log(error)
+        }
+        
+    }.bind(this), function (error) {
+        console.log(error);
+        console.log("Box Deletion Failed...")
+    }.bind(this))
+    
 }
 
 module.exports.Boxes = Boxes

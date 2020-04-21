@@ -31,7 +31,7 @@ function Loadable(widowSettings, loadPath){
      * @returns {Promise} Promise for the completion of the loading
      */
     this.load = function(){
-        console.log("load was called")
+        console.log("loadable's load was called")
         return new Promise(function(resolve, reject){
             
             axiosBridged({

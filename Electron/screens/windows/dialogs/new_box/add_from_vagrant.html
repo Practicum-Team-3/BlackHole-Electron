@@ -32,24 +32,11 @@
 
                 document.getElementById("outcomeText").innerHTML = "Contacting Server..."
 
-                
-                widow.boxes.linkAndSyncPOST(document.getElementById("vagrantBoxID").value, updateProgressBar, updateGUI)
-                // .then(function(response){
-                //     //show some feedback telling user that download has begun.
-                //     console.log("lynkAndSyncPOST has returned")
-                // }).catch(function(error){
-                //     setDisabled(false, "disableable")
-                //     setProgressHasError(true)
-                //     console.log(error)
-                // })
-            }
-
-            function updateGUI(){
-                console.log("Emitting modified event...")
-                emitModifiedEvent(widow.boxes, null, modificationTypes.ADDED_ELEMENT, null)
+                widow.boxes.downloadBoxFromVagrant(document.getElementById("vagrantBoxID").value, updateProgressBar, modificationTypes.ADDED_ELEMENT)
             }
 
             function updateProgressBar(value){
+                console.log("updateProgressBar called")
                 document.getElementById("boxDownloadProgressBar").style.width = value+"%"
                 document.getElementById("outcomeText").innerHTML = value+"%"
             }
