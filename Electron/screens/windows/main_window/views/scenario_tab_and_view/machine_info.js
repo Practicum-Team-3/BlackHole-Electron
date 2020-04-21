@@ -95,6 +95,7 @@ function MachineInfo(machineInfoNode){
      * @param {Any} Preprocessed value of the changed element
      */
     this.onchange = function(nodeName, node, value){
+        console.log("onChange was called...")
         if (this.machine==null){
             return
         }
