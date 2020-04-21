@@ -60,24 +60,6 @@ function BoxesListOverview(boxesListNode){
     this.onDeleteButtonClick = function(boxName){
         widow.boxes.removeBox(boxName)
     }
-    
-
-    this.onIncludeButtonClick = function(boxName){
-        var machines = getActiveScenarioTab().getScenario().machines
-        
-        // Prepare name and box
-        var machineName = machines.getMachineByName("untitled")==null ? "untitled" : "untitled-"+generateUniqueId()
-
-        var newMachine = machines.createNewMachine(machineName, boxName)
-
-        // Check if machine was created, and tell the guys about it
-        if (newMachine!=null){
-            emitModifiedEvent(machines, null, modificationTypes.ADDED_ELEMENT, newMachine)
-        }else{
-            console.log("BoxesListOverview: Unable to include box " + boxName)
-        }
-    }
-
 
 
     // Define the function that adds box sections
@@ -143,6 +125,25 @@ function BoxesListOverview(boxesListNode){
     }.bind(this)
 
     onModified(widow.boxes, this.boxesModified.bind(this))
+}
+
+
+
+BoxesListOverview.prototype.onIncludeButtonClick = function(boxName){
+
+    var machines = getActiveScenarioTab().getScenario().machines
+    
+    // Prepare name and box
+    var machineName = machines.getMachineByName("untitled")==null ? "untitled" : "untitled-"+generateUniqueId()
+
+    var newMachine = machines.createNewMachine(machineName, boxName)
+
+    // Check if machine was created, and tell the guys about it
+    if (newMachine!=null){
+        emitModifiedEvent(machines, null, modificationTypes.ADDED_ELEMENT, newMachine)
+    }else{
+        console.log("BoxesListOverview: Unable to include box " + boxName)
+    }
 }
 
 
