@@ -25,6 +25,7 @@ function OverviewsPanel(overviewsPanelNode){
     this.boxesListNode = document.getElementById("boxesListOverview")
     this.boxesListNode.className = "boxesListNode"
     this.boxesListOverview = new BoxesListOverview(this.boxesListNode)
+    this.boxesListOverview.loadBoxes()
 
     // Create instance for ExploitListOverview
     this.exploitListNode = document.getElementById("exploitListOverview")

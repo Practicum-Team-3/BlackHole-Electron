@@ -15,8 +15,7 @@ function Boxes(widowSettings){
     Loadable.call(this, widowSettings, "/vagrant/boxes/all")
     Modifiable.call(this)
 
-    //dictionary to contain all the Box objects for those currently on server
-    this.boxesList = {}
+    this.boxesList = []
 }
 
 
@@ -27,34 +26,9 @@ function Boxes(widowSettings){
  * @returns {string[]} Array with box objects
  */
 Boxes.prototype.getBoxesList = function(){
-    return this.boxesList
+    var boxesList = this.getItemList()
+    return boxesList
 }
-
-Boxes.prototype.downloadBoxFromVagrant = function(vagrantBoxID, syncUpdateCallback){
-    return new Promise(function(resolve, reject){
-
-        console.log("Downloading vagrant box: "+vagrantBoxID+"...")
-        
-        axiosBridged({
-            url: this.getAddress()+"/vagrant/boxes/add",
-            method: 'post',
-            data: {"box_name":vagrantBoxID},
-            headers: {'Content-Type': 'application/json'}
-        }, function (response) {
-            console.log(response)
-            console.log("Starting download...")
-            var placeHolderBox = new Box(vagrantBoxID)
-            this.requestTaskProgress(response.data.task_id, syncUpdateCallback, modificationTypes.ADDED_ELEMENT, placeHolderBox)
-            resolve(response)
-        }.bind(this), function (error) {
-            console.log("Download Box Failed...")
-            console.log(error);
-            reject(error)
-        }.bind(this))
-
-    }.bind(this))
-}
-
 
 Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, modificationType, arg){
     console.log("Getting progress for task: "+ taskID +"...")
@@ -62,6 +36,9 @@ Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, modif
     axiosBridged({
         url: this.getAddress() + "/vagrant/taskStatus/" + taskID
     }, function (response) {
+
+        try{
+
         //if response says download is not 100%
         if(syncUpdateCallback != null){
             syncUpdateCallback(((response.data.body.current*1.0)/response.data.body.total)*100)
@@ -78,18 +55,22 @@ Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, modif
     
                     console.log("Updating boxesList...")
                     switch(modificationType){
-                        case modificationTypes.ADDED_ELEMENT:
-                            this.boxesList[arg.getName()] = arg
+                        case "addedElement":
+                            this.boxesList.push(arg)
+                            console.log("addedElement")
                             break;
 
-                        case modificationTypes.REMOVED_ELEMENT:
-                            if(this.boxesList.hasOwnProperty(arg.getName())){
-                                delete this.boxesList[arg.getName()]
-                            }
+                        case "removedElement":
+                            this.boxesList.splice(this.boxesList.indexOf(arg), 1)
+                            console.log("removedElement")
+                            break;
+
+                        default:
+                            console.log("Modification type not recognized")
                             break;
                     }
                     console.log("Emitting modified event...")
-                    emitModifiedEvent(this, null, modificationType, arg)
+                    this.emitModifiedEvent(null, modificationType, arg)
                 }else{
                     console.log("modificationtype is null, can't emit...")
                 }
@@ -97,7 +78,11 @@ Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, modif
                 console.log("Server has suddenly stopped replying with 'PROGRESS'")
             }
         }
-        console.log("Task status update received...")
+
+        }catch(error){
+            console.log(error)
+        }
+
     }.bind(this), function (error) {
         console.log(error)
         console.log("An error occured while requesting task progress...")
@@ -107,7 +92,33 @@ Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, modif
 }
 
 
-Boxes.prototype.removeBox = function(boxName, modificationType, arg) {
+Boxes.prototype.downloadBoxFromVagrant = function(vagrantBoxID, syncUpdateCallback, modificationType){
+    
+    console.log("Downloading vagrant box: "+vagrantBoxID+"...")
+    
+    axiosBridged({
+        url: this.getAddress()+"/vagrant/boxes/add",
+        method: 'post',
+        data: {"box_name":vagrantBoxID},
+        headers: {'Content-Type': 'application/json'}
+    }, function (response) {
+        console.log("Starting download...")
+        try{
+            this.requestTaskProgress(response.data.task_id, syncUpdateCallback, modificationType, vagrantBoxID)
+        }catch(error){
+            console.log(error)
+        }
+        
+    }.bind(this), function (error) {
+        console.log(error);
+        console.log("Download Box Failed...")
+    }.bind(this))
+
+}
+
+
+Boxes.prototype.removeBox = function(boxName) {
+
     
     axiosBridged({
         url: this.getAddress()+"/vagrant/boxes/remove",
@@ -115,30 +126,18 @@ Boxes.prototype.removeBox = function(boxName, modificationType, arg) {
         data: {"box_name":boxName},
         headers: {'Content-Type': 'application/json'}
     }, function (response) {
-        console.log(response)
-        this.requestTaskProgress(response.data.task_id, null, modificationType, arg)
+
+        try{
+            this.requestTaskProgress(response.data.task_id, null, "removedElement", boxName)
+        }catch(error){
+            console.log(error)
+        }
+        
     }.bind(this), function (error) {
         console.log(error);
         console.log("Box Deletion Failed...")
     }.bind(this))
     
-}
-
-function Box(boxName){
-    this.name = boxName
-    this.description = "No description provided"
-
-    this.setDescription = function(text){
-        this.description = text
-    }
-    
-    this.getName = function(){
-        return this.name
-    }
-
-    this.getDescription = function(){
-        return this.description
-    }
 }
 
 module.exports.Boxes = Boxes

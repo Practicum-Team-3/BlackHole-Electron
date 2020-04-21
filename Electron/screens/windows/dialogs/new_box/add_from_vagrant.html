@@ -32,10 +32,11 @@
 
                 document.getElementById("outcomeText").innerHTML = "Contacting Server..."
 
-                widow.boxes.downloadBoxFromVagrant(document.getElementById("vagrantBoxID").value, updateProgressBar)
+                widow.boxes.downloadBoxFromVagrant(document.getElementById("vagrantBoxID").value, updateProgressBar, modificationTypes.ADDED_ELEMENT)
             }
 
             function updateProgressBar(value){
+                console.log("updateProgressBar called")
                 document.getElementById("boxDownloadProgressBar").style.width = value+"%"
                 document.getElementById("outcomeText").innerHTML = value+"%"
             }
