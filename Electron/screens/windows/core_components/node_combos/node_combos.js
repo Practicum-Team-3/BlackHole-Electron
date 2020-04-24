@@ -124,10 +124,9 @@ function NodeCombos(parentNode){
             var target = event.target
             // Preprocess value (for when the element does not already return the desired value format)
             var value = target.value
+            //Handle values for special types
             switch (target.type){
-                case "select-one": 
-                    value = target.value == "on" ? true : false
-                    break;
+                
             }
             onchangeCallback(event.target.getAttribute("comboname"), event.target, value)
         }
@@ -195,8 +194,8 @@ NodeCombos.prototype.addCollapsibleGroup = function(groupName, title, iconLigatu
 NodeCombos.prototype.addLabelPair = function(leftLabelName, leftLabelText, rightLabelName, rightLabelText){
     var rowNode = this.getNewRow()
     
-    var leftLabelNode = addLabelNode(rowNode, "col alignRight", leftLabelText)
-    var rightLabelNode = addLabelNode(rowNode, "col alignLeft", rightLabelText)
+    var leftLabelNode = addLabelNode(rowNode, "col-6 alignRight", leftLabelText)
+    var rightLabelNode = addLabelNode(rowNode, "col-6 alignLeft", rightLabelText)
     
     this.addReferenceToNode(leftLabelName, leftLabelNode)
     
@@ -308,8 +307,8 @@ NodeCombos.prototype.addLabelAndInput = function(labelName, labelText, inputName
     
     var inputId = generateUniqueId()
     
-    var labelNode = addLabelNode(rowNode, "col-5 my-1 alignRight", labelText, inputId)
-    var inputNode = addInputNode(rowNode, "col form-control mb-1 mr-4", "text", inputText)
+    var labelNode = addLabelNode(this.currentNode, "ml-4 mb-0 alignRight", labelText, inputId)
+    var inputNode = addInputNode(rowNode, "col form-control ml-4 mr-4 mb-1", "text", inputText)
     
     inputNode.setAttribute("id", inputId)
     
@@ -331,8 +330,8 @@ NodeCombos.prototype.addLabelAndInput = function(labelName, labelText, inputName
 NodeCombos.prototype.addLabelAndSelect = function(labelName, labelText, selectName, selectOptions){
     var rowNode = this.getNewRow()
     
-    var labelNode = addLabelNode(rowNode, "col-5 my-1 alignRight", labelText)
-    var selectNode = addSelectNode(rowNode, "col form-control mb-1 mr-4", selectOptions)
+    var labelNode = addLabelNode(this.currentNode, "ml-4 mb-0 alignRight", labelText)
+    var selectNode = addSelectNode(rowNode, "col form-control ml-4 mr-4 mb-1", selectOptions)
     
     this.addReferenceToNode(labelName, labelNode)
     this.addReferenceAndListenerToNode(selectName, selectNode)

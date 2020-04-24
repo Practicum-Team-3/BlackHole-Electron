@@ -58,3 +58,8 @@
 .list-group-item-action{
     cursor: pointer;
 }
+
+/* Form */
+.form-control{
+    height: 32px;
+}

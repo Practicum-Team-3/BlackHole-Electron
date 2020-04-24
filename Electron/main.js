@@ -51,6 +51,7 @@ function createMainWindow() {
         height: 700,
         minWidth: 600,
         minHeight: 300,
+        backgroundColor: '#222724',
         webPreferences: {
             nodeIntegration: true
         }

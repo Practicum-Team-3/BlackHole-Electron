@@ -64,7 +64,7 @@ function MachineInfo(machineInfoNode){
         this.getNode("setName-getName").value = machine.getName()
         
         this.getNode("box").innerHTML = machine.getBox()
-        this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
+        this.getNode("setIsAttacker-getIsAttacker").selectedIndex = machine.getIsAttacker() ? 1 : 0
         this.getNode("machineGui").innerHTML = machine.getGui()
         this.getNode("setBaseMemory-getBaseMemory").value = machine.getBaseMemory()
         this.getNode("setBaseMemory-getBaseMemory").dispatchEvent(new Event("input"))
@@ -99,14 +99,28 @@ function MachineInfo(machineInfoNode){
         if (this.machine==null){
             return
         }
+        
+        //Adjust value for special cases
+        switch(nodeName){
+            case "setIsAttacker-getIsAttacker":
+                value = value == "Attacker"
+            break
+        }
+        
         // Get setter and getter from nodeName ('cause that's how they're named on here)
         var setterAndGetter = nodeName.split("-")
-        var setter = setterAndGetter[0]
-        var getter = setterAndGetter[1]
-        
-        this.machine[setter](node.value)
-        // Tell everyone about it
-        emitModifiedEvent(this.machine, this.machineModified, modificationTypes.EDITED, getter)
+        if (setterAndGetter.length==2){// Quick sanity check
+            
+            var setter = setterAndGetter[0]
+            var getter = setterAndGetter[1]
+
+            //Set new value on machine
+            this.machine[setter](value)
+
+            // Tell everyone about it
+            emitModifiedEvent(this.machine, this.machineModified, modificationTypes.EDITED, getter)
+            
+        }
     }.bind(this)
     
     this.onDeleteButtonClick = function(){
@@ -129,17 +143,24 @@ function MachineInfo(machineInfoNode){
         // Setup change event
         interface.setOnchangeCallback(self.onchange)
         
+        interface.addEditDeleteButtons("editMachineButton", function(){showToast("Edit Machine", "Not yet implemented")}, "deleteMachineButton", function(){showToast("Delete Clicked", "Not yet implemented")})
+        
+        addBrNode(formNode)
+        
+        // === General
+        interface.addCollapsibleGroup(null, "General", "tools", null, true)
+        
         // General details
         interface.addLabelAndInput(null, "Name:", "setName-getName", "")
-        addBrNode(formNode)
+        //addBrNode(formNode)
         interface.addLabelPair(null, "Box:", "box", "")
-        interface.addLabelPair(null, "Type:", "machineType", "")
+        //interface.addLabelPair(null, "Type:", "machineType", "")
+        interface.addLabelAndSelect(null, "Type:", "setIsAttacker-getIsAttacker", ["Victim", "Attacker"])
         interface.addLabelPair(null, "GUI:", "machineGui", "")
-        //missing handlers that modify scenario object and then call 'netGraph.onScenarioChanged(modifiedScenario)' 
-        interface.addEditDeleteButtons("editMachineButton", function(){showToast("Edit Machine", "Not yet implemented")}, "deleteMachineButton", function(){showToast("Delete Clicked", "Not yet implemented")})
-        addBrNode(formNode)
+        
 
         // === Settings
+        interface.deselectNode()
         interface.addCollapsibleGroup(null, "Settings", "tools", null, true)
         
         interface.addLabel(null, "CPUs:")
