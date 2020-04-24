@@ -11,12 +11,15 @@ function startBlackHole(){
     // Open address window
     createAddressWindow()
 }
-
 app.on('ready', startBlackHole)
+
+function closeBlackHole(e){
+    app.quit()
+}
 
 ipcMain.on('primaryLoad', (event, arg) => {
     createMainWindow()
-    addressDialog.destroy()
+    closeAddressWindow()
 })
 
 function createAddressWindow(){
@@ -25,15 +28,20 @@ function createAddressWindow(){
         width: 500,
         height: 250,
         resizable: false,
+        autoHideMenuBar: true,
         webPreferences: {
             nodeIntegration: true
         },
         maximizable: false
     })
-    addressDialog.removeMenu()
-
-    // and load the index.html of the app.
+    //addressDialog.removeMenu()
+    addressDialog.on('closed', closeBlackHole)
+    
     addressDialog.loadFile('./screens/windows/dialogs/widow_address/widow_address.html')
+}
+function closeAddressWindow(){
+    addressDialog.removeListener('closed', closeBlackHole)
+    addressDialog.destroy()
 }
 
 function createMainWindow() {
@@ -47,6 +55,7 @@ function createMainWindow() {
             nodeIntegration: true
         }
     })
+    mainWindow.on('closed', closeBlackHole)
     
     // and load the index.html of the app.
     mainWindow.loadFile('./screens/windows/main_window/main_window.html')

@@ -51,15 +51,19 @@ function Widow(){
 function makeBridge(){
     var {BrowserWindow} = require('electron')
     
-    addressDialog = new BrowserWindow({
+    var bridge = new BrowserWindow({
         width: 500,
         height: 250,
         webPreferences: {nodeIntegration: true},
         show: false
     })
+    
+    bridge.once('ready-to-show', () => {
+        bridge.setEnabled(false)
+    })
 
     // Load chromium instance with bridge
-    addressDialog.loadFile('./widow/bridge/bridge.html')
+    bridge.loadFile('./widow/bridge/bridge.html')
 }
 
 /**
