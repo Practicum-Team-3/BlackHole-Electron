@@ -3,11 +3,11 @@ var Modifiable = require('./core/modifiable.js').Modifiable
 
 /**
  * @class Boxes
- * @version 1.4.0
+ * @version 1.5.0
  * @description Available VM boxes
  *              No need to instantiate, just reference the shared instance on widow.boxes
  *              
- * @param {string} widowAddress Address to back-end "Widow"
+ * @param {WidowSettings} widowSettings
  */
 function Boxes(widowSettings){
     //Inherit loading and item handling capabilities from loadable
@@ -15,7 +15,6 @@ function Boxes(widowSettings){
     Loadable.call(this, widowSettings, "/vagrant/boxes/all")
     Modifiable.call(this)
 
-    this.boxesList = []
 }
 
 
@@ -26,9 +25,15 @@ function Boxes(widowSettings){
  * @returns {string[]} Array with box objects
  */
 Boxes.prototype.getBoxesList = function(){
-    var boxesList = this.getItemList()
-    return boxesList
+    return this.super.getItemList()
 }
+
+
+/////////////////////////////////////
+// Audit: 
+//        > Split task observer into a separate class
+//             > Hide task observer from public
+//        > Add documentation comments
 
 Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, modificationType, arg){
     console.log("Getting progress for task: "+ taskID +"...")
@@ -39,45 +44,45 @@ Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, modif
 
         try{
 
-        //if response says download is not 100%
-        if(syncUpdateCallback != null){
-            syncUpdateCallback(((response.data.body.current*1.0)/response.data.body.total)*100)
-        }
-        console.log(response.data)
-        if(response.data.body.state == "PROGRESS"){
-            console.log("calling requestTaskProgress...")
-            this.requestTaskProgress(taskID, syncUpdateCallback, modificationType, arg)
-        }else{
-            if(response.data.body.state == "SUCCESS"){
-                console.log("Task complete...")
-                //Update local list of boxes to reflect changes made on server
-                if(modificationType != null && arg != null){
-    
-                    console.log("Updating boxesList...")
-                    switch(modificationType){
-                        case "addedElement":
-                            this.boxesList.push(arg)
-                            console.log("addedElement")
-                            break;
-
-                        case "removedElement":
-                            this.boxesList.splice(this.boxesList.indexOf(arg), 1)
-                            console.log("removedElement")
-                            break;
-
-                        default:
-                            console.log("Modification type not recognized")
-                            break;
-                    }
-                    console.log("Emitting modified event...")
-                    this.emitModifiedEvent(null, modificationType, arg)
-                }else{
-                    console.log("modificationtype is null, can't emit...")
-                }
-            }else{
-                console.log("Server has suddenly stopped replying with 'PROGRESS'")
+            //if response says download is not 100%
+            if(syncUpdateCallback != null){
+                syncUpdateCallback(((response.data.body.current*1.0)/response.data.body.total)*100)
             }
-        }
+            console.log(response.data)
+            if(response.data.body.state == "PROGRESS"){
+                console.log("calling requestTaskProgress...")
+                this.requestTaskProgress(taskID, syncUpdateCallback, modificationType, arg)
+            }else{
+                if(response.data.body.state == "SUCCESS"){
+                    console.log("Task complete...")
+                    //Update local list of boxes to reflect changes made on server
+                    if(modificationType != null && arg != null){
+
+                        console.log("Updating boxesList...")
+                        switch(modificationType){
+                            case "addedElement":
+                                this.items[arg] = arg
+                                console.log("addedElement")
+                                break;
+
+                            case "removedElement":
+                                this.super.removeItem(arg)
+                                console.log("removedElement")
+                                break;
+
+                            default:
+                                console.log("Modification type not recognized")
+                                break;
+                        }
+                        console.log("Emitting modified event...")
+                        this.emitModifiedEvent(null, modificationType, arg)
+                    }else{
+                        console.log("modificationtype is null, can't emit...")
+                    }
+                }else{
+                    console.log("Server has suddenly stopped replying with 'PROGRESS'")
+                }
+            }
 
         }catch(error){
             console.log(error)

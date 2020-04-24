@@ -57,7 +57,9 @@ function BoxesListOverview(boxesListNode){
         this.boxesListNode = element
     }
 
-    this.onDeleteButtonClick = function(boxName){
+    this.onDeleteButtonClick = function(boxName, event){
+        event.target.disabled = true
+        
         widow.boxes.removeBox(boxName)
     }
 
@@ -86,7 +88,7 @@ function BoxesListOverview(boxesListNode){
     this.removeBoxSection = function(boxName){
         var formNode = this.interface.getNode("boxesListCollapsiblesForm")
         formNode.removeChild(this.boxSections[boxName])
-        this.boxSections.splice(this.boxSections.indexOf(boxName), 1)
+        delete this.boxSections[boxName]
     }.bind(this)
 
 
