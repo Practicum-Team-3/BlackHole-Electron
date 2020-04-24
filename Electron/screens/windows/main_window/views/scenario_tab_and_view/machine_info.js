@@ -95,6 +95,7 @@ function MachineInfo(machineInfoNode){
      * @param {Any} Preprocessed value of the changed element
      */
     this.onchange = function(nodeName, node, value){
+        console.log("onChange was called...")
         if (this.machine==null){
             return
         }
@@ -135,7 +136,7 @@ function MachineInfo(machineInfoNode){
         interface.addLabelPair(null, "Type:", "machineType", "")
         interface.addLabelPair(null, "GUI:", "machineGui", "")
         //missing handlers that modify scenario object and then call 'netGraph.onScenarioChanged(modifiedScenario)' 
-        interface.addEditDeleteButtons("editMachineButton", function(){showToast("Edit Machine", "Not yet implemented")}, "deleteMachineButton", function(){showToast("Delete Machine", "Not yet implemented")})
+        interface.addEditDeleteButtons("editMachineButton", function(){showToast("Edit Machine", "Not yet implemented")}, "deleteMachineButton", function(){showToast("Delete Clicked", "Not yet implemented")})
         addBrNode(formNode)
 
         // === Settings
@@ -182,6 +183,13 @@ function MachineInfo(machineInfoNode){
     }
 }
 
+MachineInfo.prototype.deleteMachine = function(){
+    try{
+        getActiveScenarioTab().getScenario().machines.removeMachineByName(this.machine.getName())
+    }catch(error){
+        console.log(error)
+    }
+}
 
 /**
  * @function setMachine

@@ -262,6 +262,8 @@ Scenarios.prototype.loadScenarioByName = function(scenarioName){
     return new Promise(function(resolve, reject){
         var Scenario = require('./scenario.js').Scenario
         
+        
+
         axiosBridged({
             url: this.getAddress()+"/scenarios/"+encodeURIComponent(scenarioName)
         }, function (response) {
