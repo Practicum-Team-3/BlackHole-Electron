@@ -1,8 +1,8 @@
 /**
  * @class Loadable
- * @version 1.1.0
+ * @version 1.2.0
  * @protected
- * @description Object that handles the loading and management of items contained in an object
+ * @description Object that handles the loading and basic management of items contained in an object
  *              
  * @param {string} widowSettings Instance of conection settings for black-widow
  * @param {string} loadPath URI to service
@@ -20,7 +20,8 @@ function Loadable(widowSettings, loadPath){
     }
     
     this.items = {}
-
+    
+    this.super = {}
 
     /**
      * @function load
@@ -56,22 +57,50 @@ function Loadable(widowSettings, loadPath){
 
     /**
      * @function getList
-     * @description Returns an array with the contents of each item's value
+     * @description Inherited on super.
+     *                  Returns an array with the contents of each item's value
      * @protected
      * @memberof Loadable
-     * @returns {string[]} Array with box names as strings
+     * @returns {Any[]} Array with loaded items
      */
-    this.getItemList = function(){
+    this.super.getItemList = function(){
         var itemList = []
-        for (itemNum in this.items){
-            itemList.push(this.items[itemNum])
+        for (itemName in this.items){
+            itemList.push(this.items[itemName])
         }
         return itemList
-    }
+    }.bind(this)
     
-    this.getItemByName = function(itemName){
+    /**
+     * @function getItemByName
+     * @description Inherited on super.
+     *                  Returns the item referenced in the list by a the name passed
+     * @param   {string} itemName Name of the item to get
+     * @returns {Any} The item
+     */
+    this.super.getItemByName = function(itemName){
         return this.items[itemName]
-    }
+    }.bind(this)
+    
+    /**
+     * @function removeItem
+     * @description Inherited on super.
+     *                  Removes a specific item from the list of items. 
+     * @param {Any} item                  The instance of the item to remove
+     * @param {boolean} onlyFirstInstance Optional: By default, the remove operation removes all instances of
+     *                                    the item from the list. Pass true on onlyFirstInstance to only remove the first instance.
+     */
+    this.super.removeItem = function(item, onlyFirstInstance=false){
+        for (itemName in this.items){
+            
+            if (this.items[itemName]==item){
+                delete this.items[itemName]
+                if (onlyFirstInstance){
+                    break
+                }
+            }
+        }
+    }.bind(this)
     
 }
 
