@@ -3,6 +3,10 @@
     src: url(../css/webfonts/icons_solid.otf);
 }
 
+label{
+    margin-bottom: 0;
+}
+
 .iconArea{
     font-family: icons;
     float: left;

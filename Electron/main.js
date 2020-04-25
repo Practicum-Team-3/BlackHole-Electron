@@ -78,15 +78,13 @@ function createChildWindow(parent, address, width, height, resizable, modal=fals
         resizable: resizable,
         modal: modal,
         frame: !frameless,
+        autoHideMenuBar: !showMenu,
         webPreferences: {
             nodeIntegration: !external,
             enableRemoteModule: !external,
             additionalArguments: arguments
         }
     })
-    if (!showMenu){
-        window.removeMenu()
-    }
     
     if (external){
         window.loadURL(address)

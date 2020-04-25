@@ -71,18 +71,7 @@ function ProgramListOverview(programListNode, programListOverviewType){
     }
     
     this.onIncludeButtonClick = function(programToInclude, event){
-        var scenarioTab = getActiveScenarioTab()
-        var selectedMachine
-        if (scenarioTab!=null){
-            selectedMachine = scenarioTab.getSelectedMachine()
-            if (selectedMachine!=null){
-                var didAddProgram = selectedMachine.programs.addProgram(programToInclude.getName(), "/bin")
-                if (didAddProgram){
-                    // Tell the world about this
-                    emitModifiedEvent(selectedMachine, null, modificationTypes.EDITED, "programs")
-                }
-            }
-        }
+        installProgram(programToInclude)
     }
 
     // Define the function that adds progran sections

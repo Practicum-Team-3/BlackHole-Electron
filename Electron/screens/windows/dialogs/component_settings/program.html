@@ -1,21 +1,44 @@
-﻿<!doctype html>
-<!-- Network view window -->
+<!doctype html>
+<!-- Program settings window -->
 <html style="height:100%; max-height:100%" lang="en-US">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <meta charset="UTF-8">
-    <title>Upload</title>
+    <title>Program</title>
     <script src="../../core_components/node_combos/utilities.js"></script>
     <script src="../../../../widow/widow.js"></script>
     <script>
         try{
             window.$ = window.jQuery = require("../../../..//node_modules/jquery/dist/jquery")
         }catch{}
+        
+        var arguments = getArguments()
+        const editMode = arguments["--edit-mode"]
+        var scenario, machine, programName
+        
+        if (editMode==null){
             
-        var isUploadingExploit = window.process.argv.includes("--exploit-upload")
+            console.log("Program editor: Fatal. Cannot find valid edit mode")
+            
+        }else{
+            
+            scenario = widow.scenarios.getScenarioByName(arguments["--scenario-name"])
+            if (scenario!=null){
+                machine = scenario.machines.getMachineByName(arguments["--machine-name"])
+                programName = arguments["--program-name"]
+            }
+        }
+        
+        
+        
 
+            
+        function saveProgram(){
+            
+        }
+            
         //Creates a new scenario object
-        function uploadFile(){
+        function install(){
             enterLoading()
             
             programOs = document.getElementById("osSelect").value;
@@ -34,6 +57,8 @@
                     var uploadProgressCallback = function(uploaded, total){
                         setProgressBarPercent(Math.ceil(100/total*uploaded), "progressBar")
                     }
+                    
+                    console.log(buffer)
                     
                     widow.programs.addProgram(buffer, file.name, programOs, programDes, isUploadingExploit, uploadProgressCallback)
                     .then(function(program){
@@ -83,11 +108,8 @@
     <div class="container">
         <br>
         <h3>Upload</h3>
-        <form onsubmit="uploadFile(); return false">
+        <form onsubmit="saveProgram(); return false">
             <div class="form-group" id="rosvox">
-                <label for="name">File:</label>
-                <input type="file" class="form-control custom-file-input" id="fileSelect" required>
-                <label class="custom-file-label disableable" for="fileSelect">Choose file</label>
                 
                 <label for="osSelect">OS:</label>
                 <select name="os" class="custom-select" id="osSelect" required>
@@ -109,11 +131,5 @@
         </form>
     </div>
     
-    <script>
-        $(".custom-file-input").on("change", function() {
-          var fileName = $(this).val().split("\\").pop();
-          $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-        });
-    </script>
 </body>
 </html>

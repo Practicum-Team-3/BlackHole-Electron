@@ -194,11 +194,22 @@ NodeCombos.prototype.addCollapsibleGroup = function(groupName, title, iconLigatu
 NodeCombos.prototype.addLabelPair = function(leftLabelName, leftLabelText, rightLabelName, rightLabelText){
     var rowNode = this.getNewRow()
     
-    var leftLabelNode = addLabelNode(rowNode, "col-6 alignRight", leftLabelText)
+    var leftLabelNode = addLabelNode(rowNode, "col-6 alignRight font-weight-bold", leftLabelText)
     var rightLabelNode = addLabelNode(rowNode, "col-6 alignLeft", rightLabelText)
     
     this.addReferenceToNode(leftLabelName, leftLabelNode)
+    this.addReferenceToNode(rightLabelName, rightLabelNode)
     
+    this.currentNode.appendChild(rowNode)
+}
+
+NodeCombos.prototype.addLabelPairLeft = function(leftLabelName, leftLabelText, rightLabelName, rightLabelText){
+    var rowNode = this.getNewRow()
+    
+    var leftLabelNode = addLabelNode(rowNode, "ml-4 font-weight-bold", leftLabelText)
+    var rightLabelNode = addLabelNode(rowNode, "col-6 alignLeft", rightLabelText)
+    
+    this.addReferenceToNode(leftLabelName, leftLabelNode)
     this.addReferenceToNode(rightLabelName, rightLabelNode)
     
     this.currentNode.appendChild(rowNode)
@@ -206,7 +217,7 @@ NodeCombos.prototype.addLabelPair = function(leftLabelName, leftLabelText, right
 
 NodeCombos.prototype.addLabel = function(labelName, labelText){
     
-    var labelNode = addLabelNode(this.currentNode, "ml-4", labelText)
+    var labelNode = addLabelNode(this.currentNode, "ml-4 font-weight-bold", labelText)
     
     this.addReferenceToNode(labelName, labelNode)
 }
@@ -268,29 +279,12 @@ NodeCombos.prototype.addEditDeleteButtons = function(editName, editOnClick, dele
     this.addButtonPair(editName, "Edit", "col ml-5 mr-1 mt-2 btn btn-primary", editOnClick, deleteName, "Delete", "col ml-1 mr-5 mt-2 btn btn-danger", deleteOnClick)
 }
 
-/**
- * @function addOpenEditButtons
- * @author Jose Guillen
- * @description Adds two buttons side by side, one for an open operation, the other for a edit operation
- * @param {string} openName    Name to give the open button on the local reference
- * @param {function} opemOnClick Reference to a function to call when the open button gets clicked
- * @param {string} editName      Name to give the edit button on the local reference
- * @param {function} editOnClick Reference to a function to call when the edit button gets clicked
- */
 NodeCombos.prototype.addOpenEditButtons = function(openName, openOnClick, editName, editOnClick){
     this.addButtonPair(openName, "Open", "col ml-5 mr-1 mt-2 btn btn-success", openOnClick, editName, "Delete", "col ml-1 mr-5 mt-2 btn btn-danger", editOnClick)
 }
 
-
 NodeCombos.prototype.addDeleteAndIncludeButtons = function(deleteName, deleteOnClick, includeName, includeMachineOnClick){
-    var rowNode = this.getNewRow()
-    var deleteButtonNode = addButtonNode(rowNode, "col ml-5 mr-1 mt-2 btn btn-danger", deleteOnClick, "Delete")
-    var includeButtonNode = addButtonNode(rowNode, "col ml-1 mr-5 mt-2 btn btn-success", includeMachineOnClick, "Include")
-    
-    this.addReferenceToNode(deleteName, deleteButtonNode)
-    this.addReferenceToNode(includeName, includeButtonNode)
-    
-    this.currentNode.appendChild(rowNode)
+    this.addButtonPair(deleteName, "Delete", "col ml-5 mr-1 mt-2 btn btn-danger", deleteOnClick, includeName, "Include", "col ml-1 mr-5 mt-2 btn btn-success", includeMachineOnClick)
 }
 
 /**
@@ -307,8 +301,8 @@ NodeCombos.prototype.addLabelAndInput = function(labelName, labelText, inputName
     
     var inputId = generateUniqueId()
     
-    var labelNode = addLabelNode(this.currentNode, "ml-4 mb-0 alignRight", labelText, inputId)
-    var inputNode = addInputNode(rowNode, "col form-control ml-4 mr-4 mb-1", "text", inputText)
+    var labelNode = addLabelNode(this.currentNode, "ml-4 mb-0 alignRight font-weight-bold", labelText, inputId)
+    var inputNode = addInputNode(rowNode, "col form-control ml-5 mr-5 mb-1", "text", inputText)
     
     inputNode.setAttribute("id", inputId)
     
@@ -330,8 +324,8 @@ NodeCombos.prototype.addLabelAndInput = function(labelName, labelText, inputName
 NodeCombos.prototype.addLabelAndSelect = function(labelName, labelText, selectName, selectOptions){
     var rowNode = this.getNewRow()
     
-    var labelNode = addLabelNode(this.currentNode, "ml-4 mb-0 alignRight", labelText)
-    var selectNode = addSelectNode(rowNode, "col form-control ml-4 mr-4 mb-1", selectOptions)
+    var labelNode = addLabelNode(this.currentNode, "ml-4 mb-0 alignRight font-weight-bold", labelText)
+    var selectNode = addSelectNode(rowNode, "col form-control ml-5 mr-5 mb-1", selectOptions)
     
     this.addReferenceToNode(labelName, labelNode)
     this.addReferenceAndListenerToNode(selectName, selectNode)
@@ -429,11 +423,9 @@ NodeCombos.prototype.addOverviewOptionsButtons = function(nameAndHandlerDictiona
  * @param {string} detailActionLigature Optional: String with the ligature of the icon to use for the item details
  */
 NodeCombos.prototype.addVerticalList = function(listName, listItems, itemAction, detailAction, detailActionLigature){
-    var itemClassName = itemAction==null ? "list-group-item" : "list-group-item list-group-item-action"
-    
     var listNode = addListGroupNode(this.currentNode, "list-group pl-4 pr-4")
     
-    addItemsToList(listNode, itemClassName, listItems, itemAction, detailAction, detailActionLigature)
+    this.addItemsToVerticalList(listNode, listItems, itemAction, detailAction, detailActionLigature)
     
     this.addReferenceToNode(listName, listNode)
 }

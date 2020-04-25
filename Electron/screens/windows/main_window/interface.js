@@ -3,6 +3,7 @@ var scenarioViewsNode = null
 var overviewsPanel = null
 // To store references to central views indexed by scenario name
 var scenarioTabAndViews = {}
+const { dialog } = require('electron').remote
 
 try{
     window.$ = window.jQuery = require("../../../node_modules/jquery/dist/jquery")
@@ -159,6 +160,29 @@ function openWindow(address, width, height, resizable, modal, frameless, argumen
  */
 function openBrowserWindow(address){
     electron.ipcRenderer.send("openChildWindow", address, 1000, 600, true, false, true, true)
+}
+
+//======================
+// Specialized windows
+//======================
+function installProgram(programToInstall){
+    var scenarioTab = getActiveScenarioTab()
+    var selectedMachine
+    if (scenarioTab!=null){
+        selectedMachine = scenarioTab.getSelectedMachine()
+        if (selectedMachine!=null){
+            openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 455, false, true, false, ["--edit-mode=install", "--scenario-name="+scenarioTab.getScenario().getName(), "--machine-name="+selectedMachine.getName(), "--program-name="+programToInstall.getName()])
+//            var didAddProgram = selectedMachine.programs.addProgram(programToInclude.getName(), "/bin")
+//            if (didAddProgram){
+//                // Tell the world about this
+//                emitModifiedEvent(selectedMachine, null, modificationTypes.EDITED, "programs")
+//            }
+        }else{
+            dialog.showErrorBox("No machine selected", "Please select a machine to continue")
+        }
+    }else{
+        dialog.showErrorBox("No scenario opened", "Please open a scenario to continue")
+    }
 }
 
 //======================

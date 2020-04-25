@@ -2,9 +2,10 @@ const Modifiable = require('./core/modifiable.js').Modifiable
 const Collectionist = require('./core/collectionist.js').Collectionist
 const Collectable = require('./core/collectionist.js').Collectable
 const NextcloudManager = require('./cloud/nextcloud.js').NextcloudManager
+const crypto = require('crypto')
 /**
  * @class Programs
- * @version 0.4.0
+ * @version 0.5.0
  * @description Modifiable. Collectionist. Available programs
  *              
  * @param {string} descriptor Program descriptor (JSON)
@@ -106,8 +107,13 @@ function Programs(widowSettings){
      * @returns {Promise} Promise for the program upload process. Passes the instance of the
      *                    added program when resolved
      */
-    this.addProgram = function(buffer, name, os, description, isExploit, uploadProgressCallback){
+    this.addProgram = function(arrayBuffer, name, os, description, isExploit, uploadProgressCallback){
 
+        // Get hash before anything
+        // Convert the passed array buffer into a buffer
+        var buffer = Buffer.from(arrayBuffer)
+        var programHash = crypto.createHash("sha256").update(buffer).digest("hex")
+        
         // Prepare promise to return to caller
         return new Promise(function(resolve, reject){
             
@@ -126,7 +132,7 @@ function Programs(widowSettings){
                         console.log("::Skipping upload progress")
                     }
                 },
-                data: buffer
+                data: arrayBuffer
             }, function (response) {
                 
 
@@ -137,6 +143,8 @@ function Programs(widowSettings){
                 program.setOs(os)
                 program.setDescription(description)
                 program.setIsExploit(isExploit)
+                
+                //program.setHash(hhash)
 
                 //Add without duplicates
                 this.super.add(program, false)
@@ -272,6 +280,24 @@ Program.prototype.setDescription = function(description){
  */
 Program.prototype.getDescription = function(){
     return this.descriptor["description"]
+}
+
+// === HASH
+/**
+ * @function setHash
+ * @memberof Program
+ * @param {string} Hexadecimal hash
+ */
+Program.prototype.setHash = function(hash){
+    this.descriptor["hash"] = hash
+}
+/**
+ * @function getHash
+ * @memberof Program
+ * @returns {string}
+ */
+Program.prototype.getHash = function(){
+    return this.descriptor["hash"]
 }
 
 

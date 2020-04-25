@@ -34,7 +34,7 @@ InstalledPrograms.prototype.getAllPrograms = function(){
  * @description Returns all programs with a speficied name
  * @memberof InstalledPrograms
  * @param   {string} name Name to match
- * @returns {Provision[]} Array of InstalledProgram objects
+ * @returns {InstalledProgram[]} Array of InstalledProgram objects
  */
 InstalledPrograms.prototype.getProgramsByName = function(name){
     return this.super.getCollectablesByName(name)

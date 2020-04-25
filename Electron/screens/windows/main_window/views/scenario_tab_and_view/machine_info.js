@@ -71,6 +71,7 @@ function MachineInfo(machineInfoNode){
         this.getNode("setProcessors-getProcessors").value = machine.getProcessors()
         this.getNode("setProcessors-getProcessors").dispatchEvent(new Event("input"))
         this.getNode("networkValue").value = ""
+        this.getNode("setIpAddress-getIpAddress").innerHTML = machine.networkSettings.getIpAddress()
 
     }.bind(this)
     
@@ -143,17 +144,17 @@ function MachineInfo(machineInfoNode){
         // Setup change event
         interface.setOnchangeCallback(self.onchange)
         
+        interface.addLabelPair(null, "Box:", "box", "")
         interface.addEditDeleteButtons("editMachineButton", function(){showToast("Edit Machine", "Not yet implemented")}, "deleteMachineButton", function(){showToast("Delete Clicked", "Not yet implemented")})
         
         addBrNode(formNode)
         
         // === General
-        interface.addCollapsibleGroup(null, "General", "tools", null, true)
+        interface.addCollapsibleGroup(null, "General", "cog", null, true)
         
         // General details
         interface.addLabelAndInput(null, "Name:", "setName-getName", "")
         //addBrNode(formNode)
-        interface.addLabelPair(null, "Box:", "box", "")
         //interface.addLabelPair(null, "Type:", "machineType", "")
         interface.addLabelAndSelect(null, "Type:", "setIsAttacker-getIsAttacker", ["Victim", "Attacker"])
         interface.addLabelPair(null, "GUI:", "machineGui", "")
@@ -175,7 +176,14 @@ function MachineInfo(machineInfoNode){
         interface.addCollapsibleGroup(null, "Network", "network-wired", null, true)
 
         interface.addLabelAndInput(null, "Network:", "networkValue", "")
-        interface.addLabelPair(null, "IP:", "ipValue", "")
+        interface.addLabelPairLeft(null, "IP:", "setIpAddress-getIpAddress", "")
+
+        // === Program
+        // Exit previous group, create new group, then add components into it
+        interface.deselectNode()
+        interface.addCollapsibleGroup(null, "Programs", "code", null, true)
+
+        interface.addVerticalList("installedPrograms", [], null, null, "")
         
         
         // === Collector
@@ -192,13 +200,6 @@ function MachineInfo(machineInfoNode){
         interface.addLabelAndSelect(null, "Start:", "startCondition", ["Total Eclipse", "Pandemic"])
         interface.addLabelAndSelect(null, "Stop:", "stopCondition", ["Earthquake"])
         interface.addCheckbox("timeout", "Timeout")
-
-        // === Program
-        // Exit previous group, create new group, then add components into it
-        interface.deselectNode()
-        interface.addCollapsibleGroup(null, "Programs", "code", null, true)
-
-        interface.addVerticalList("installedPrograms", [], null, null, "")
 
         machineInfoNode.appendChild(formNode)
     }
