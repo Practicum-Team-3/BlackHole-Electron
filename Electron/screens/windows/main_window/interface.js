@@ -171,18 +171,17 @@ function installProgram(programToInstall){
     if (scenarioTab!=null){
         selectedMachine = scenarioTab.getSelectedMachine()
         if (selectedMachine!=null){
-            openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 455, false, true, false, ["--edit-mode=install", "--scenario-name="+scenarioTab.getScenario().getName(), "--machine-name="+selectedMachine.getName(), "--program-name="+programToInstall.getName()])
-//            var didAddProgram = selectedMachine.programs.addProgram(programToInclude.getName(), "/bin")
-//            if (didAddProgram){
-//                // Tell the world about this
-//                emitModifiedEvent(selectedMachine, null, modificationTypes.EDITED, "programs")
-//            }
+            openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 220, false, true, false, ["--edit-mode=install", "--scenario-name="+scenarioTab.getScenario().getName(), "--machine-name="+selectedMachine.getName(), "--program-name="+programToInstall.getName()])
         }else{
             dialog.showErrorBox("No machine selected", "Please select a machine to continue")
         }
     }else{
         dialog.showErrorBox("No scenario opened", "Please open a scenario to continue")
     }
+}
+
+function editInstalledProgram(scenarioName, machineName, programName){
+    openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 220, false, true, false, ["--edit-mode=modify", "--scenario-name="+scenarioName, "--machine-name="+machineName, "--program-name="+programName])
 }
 
 //======================

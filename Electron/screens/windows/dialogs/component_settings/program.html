@@ -21,7 +21,6 @@
             console.log("Program editor: Fatal. Cannot find valid edit mode")
             
         }else{
-            
             scenario = widow.scenarios.getScenarioByName(arguments["--scenario-name"])
             if (scenario!=null){
                 machine = scenario.machines.getMachineByName(arguments["--machine-name"])
@@ -29,50 +28,36 @@
             }
         }
         
-        
-        
-
             
+        function init(){
+            // Set title
+            var title = document.getElementById("title")
+            title.innerText = programName
+        }
+        
+        
         function saveProgram(){
+            var path = document.getElementById("path").value;
+            var didAddProgram
             
-        }
-            
-        //Creates a new scenario object
-        function install(){
-            enterLoading()
-            
-            programOs = document.getElementById("osSelect").value;
-            programDes = document.getElementById("description").value;
-            
-            var fileList = document.getElementById("fileSelect").files
-
-            var formData = new FormData();
-            if (fileList.length>0){
-                var file = fileList[0]
+            switch (editMode){
+                case "install":
+                    didAddProgram = machine.programs.addProgram(programName, path)
+                break
+                case "modify":
                 
-                formData.append("program", file, file.name)
-                
-                file.arrayBuffer().then(function(buffer){
-                    
-                    var uploadProgressCallback = function(uploaded, total){
-                        setProgressBarPercent(Math.ceil(100/total*uploaded), "progressBar")
-                    }
-                    
-                    console.log(buffer)
-                    
-                    widow.programs.addProgram(buffer, file.name, programOs, programDes, isUploadingExploit, uploadProgressCallback)
-                    .then(function(program){
-                        
-                        //Tell the others that there are changes
-                        emitModifiedEvent(widow.programs, null, modificationTypes.ADDED_ELEMENT, program)
-
-                        //Close dialog window
-                        electron.remote.getCurrentWindow().close()
-                        
-                    })
-                })
+                break
             }
+            
+//            if (didAddProgram){
+            emitModifiedEvent(machine, null, modificationTypes.EDITED, "programs")
+//            }
+            
+            //Close dialog window
+            electron.remote.getCurrentWindow().close()
         }
+            
+        
         function cancel(){
             electron.remote.getCurrentWindow().close()
         }
@@ -104,29 +89,19 @@
 
 </head>
 
-<body>
+<body onload="init()">
     <div class="container">
         <br>
-        <h3>Upload</h3>
+        <h3 id="title">Upload</h3>
         <form onsubmit="saveProgram(); return false">
             <div class="form-group" id="rosvox">
                 
-                <label for="osSelect">OS:</label>
-                <select name="os" class="custom-select" id="osSelect" required>
-                    <option value="linux">Linux</option>
-                    <option value="windows">Windows</option>
-                    <option value="mac os">Mac OS</option>
-                </select>
-                <br><br>
-                <label for="description">Description:</label>
-                <!--input type="text" class="form-control disableable" id="description" required>-->
-                <textarea rows="3" class="form-control disableable" placeholder="Add a descrition..." required id="description"></textarea>
-                <div class="progress">
-                    <div class="progress-bar progress-bar-striped" style="width:0" id="progressBar"></div>
-                </div>
+                
+                <label for="name">Installation path:</label>
+                <input type="text" class="form-control disableable" id="path" required>
             </div>
             
-            <button class="btn btn-primary disableable float-right ml-3" type="submit" id="subm">Upload<span class="spinner-border spinner-border-sm ml-1" style="display: none" id="spinner"></span></button>
+            <button class="btn btn-primary disableable float-right ml-3" type="submit" id="subm">Save</button>
             <button class="btn btn-danger disableable float-right" type="button" onclick="cancel()">Cancel</button>
         </form>
     </div>

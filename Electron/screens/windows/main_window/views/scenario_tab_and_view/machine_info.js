@@ -84,7 +84,10 @@ function MachineInfo(machineInfoNode){
         
         // Add elements back
         var installedProgramsGroup = interface.getNode("installedPrograms")
-        interface.addItemsToVerticalList(installedProgramsGroup, machine.programs.getProgramNamesList(), function(event){console.log(event)}, function(event){event.stopPropagation()}, "trash")
+        var editClicked = function(event){
+//            editInstalledProgram(scenarioName, machineName, programName)
+        }
+        interface.addItemsToVerticalList(installedProgramsGroup, machine.programs.getProgramNamesList(), editClicked, function(event){event.stopPropagation()}, "trash")
     }.bind(this)
 
     
@@ -162,7 +165,7 @@ function MachineInfo(machineInfoNode){
 
         // === Settings
         interface.deselectNode()
-        interface.addCollapsibleGroup(null, "Settings", "tools", null, true)
+        interface.addCollapsibleGroup(null, "Settings", "sliders-h", null, true)
         
         interface.addLabel(null, "CPUs:")
         interface.addRangeAndValue("setProcessors-getProcessors", 1, 16, 1, 2)
@@ -181,7 +184,7 @@ function MachineInfo(machineInfoNode){
         // === Program
         // Exit previous group, create new group, then add components into it
         interface.deselectNode()
-        interface.addCollapsibleGroup(null, "Programs", "code", null, true)
+        interface.addCollapsibleGroup(null, "Programs", "file-code", null, true)
 
         interface.addVerticalList("installedPrograms", [], null, null, "")
         

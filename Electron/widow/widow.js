@@ -241,8 +241,11 @@ function emitModifiedEvent(modifiable, ignoredCallback, eventType, eventArg){
  * @constant {Object} modificationTypes Generic modification types for use with Modifiable
  */
 const modificationTypes = {
+        // Modification of member element
         ADDED_ELEMENT: "addedElement",   // Reference to new element in eventArg
         REMOVED_ELEMENT: "removedElement", // Pass reference to removed element in eventArg
+        EDITED_ELEMENT: "editedElement", // Pass reference to edited element in eventArg
+        // Modification of self
         DESTROYED: "destroyed", // Element being observed is being destroyed
         EDITED: "edited" // Pass string name of getter for edited member
 }

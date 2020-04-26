@@ -2,14 +2,14 @@ const programListOverviewTypes = {
     VULNERABILITIES: {
         origin: "getAllNonExploits",
         shouldBeExploit: false,
-        iconLigature: "bug",
+        iconLigature: "file-code",
         uploadButtonLabel: "Upload Program",
         uploadArgument: "--vulnerability-upload"
     },
     EXPLOITS: {
         origin: "getAllExploits",
         shouldBeExploit: true,
-        iconLigature: "bomb",
+        iconLigature: "file-code",
         uploadButtonLabel: "Upload Exploit",
         uploadArgument: "--exploit-upload"
     }
@@ -19,7 +19,7 @@ const programListOverviewTypes = {
  * @class ProgramOverview
  * @description Program List in the overview panel
  */
-function ProgramListOverview(programListNode, programListOverviewType){
+function ProgramListOverview(programListNode, programListOverviewType, nodeId="programListForm"){
     this.nameForTabLabel = "ProgramList"
     this.programListNode = programListNode
     
@@ -51,6 +51,7 @@ function ProgramListOverview(programListNode, programListOverviewType){
         var formNode = document.createElement("form")
         //formNode.style ="background-color:red"
         formNode.className = "programListCollapsiblesForm"
+        formNode.id = nodeId
         formNode.setAttribute("onSubmit", "return false")
 
         // Add a reference to formNode on node combos, and append it
@@ -79,7 +80,7 @@ function ProgramListOverview(programListNode, programListOverviewType){
         //Select the area for the groups
         interface.selectNode(interface.getNode("programListCollapsiblesForm"))
         
-        var group = interface.addCollapsibleGroup(null, programName, programListType.iconLigature)
+        var group = interface.addCollapsibleGroup(null, programName, programListType.iconLigature, "#"+nodeId)
         // General details of exploit
         interface.addLabelPair(null, "Name: ", "programName", programName)
         interface.addLabelPair(null, "OS: ", "programOs", program.getOs())
@@ -125,15 +126,6 @@ function ProgramListOverview(programListNode, programListOverviewType){
     this.programListNode.appendChild(sectionsContainer)
     
     
-
-
-    this.setExploits = function(exploit){
-        for(var i = 0; i < exploit.length; i++){
-            this.getNode("exploitName").innerHTML = exploit[i].getName()
-            this.getNode("exploitOs").innerHTML = exploits[i].getOs()
-
-        }
-    }
     
     this.programsModified = function(target, modificationType, arg){
         
