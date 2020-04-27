@@ -51,6 +51,8 @@ function NetGraph(scenario, parent){
      * @description Callback for when the list of machines is modified
      */
     this.machinesModified = function(machines, modificationType, arg){
+
+        console.log("Graph received a " + modificationType + " modificationType")
         switch (modificationType){
                 
             case modificationTypes.ADDED_ELEMENT:
@@ -58,8 +60,8 @@ function NetGraph(scenario, parent){
                 includeMachineInGraph(arg)
             break
             
-            case modificationTypes.REMOVED_ELEMENT:
-                console.log("NetGraph: Notified that machine was removed")
+            case modificationTypes.DESTROYED:
+                console.log("NetGraph: Notified that machine was destroyed")
                 removeMachineFromGraph(arg)
             break
 
@@ -75,6 +77,7 @@ function NetGraph(scenario, parent){
      */
     this.machineModified = function(machine, modificationType, arg){
         //Check for modification type
+
         switch(modificationType){
             
             case modificationTypes.EDITED:
@@ -88,7 +91,14 @@ function NetGraph(scenario, parent){
                         graphNode.name = machine.getName()
                     break
                 }
-           break
+            break
+
+
+            case modificationTypes.DESTROYED:
+
+                removeMachineFromGraph(machine)
+
+            break
        }
         //redraw the graph
         this.redrawGraph(this.graphJSON)
@@ -151,7 +161,7 @@ function NetGraph(scenario, parent){
         //Unsubscribe from machine modification events
         unsubscribeFromMachineModifications(machine)
 
-        //refresh the graph here
+        this.deleteNode(this.nodesNamesIDs[machine.getName()])
         
         //At some point, remove mapping from machine to graph node
         this.machineMap.delete(machine)
@@ -486,7 +496,7 @@ function NetGraph(scenario, parent){
         })
         this.link.attr("stroke", "#f8f9fa");
         this.link.attr("stroke-width", "6");
-        this.link.on("click", this.deleteConnection.bind(this));
+        this.link.on("click", function(){showToast("Delete Connection", "Function is implemented, but temporarily disabled")});
 
 
         //create the node objects and set their common behavior.
@@ -653,6 +663,7 @@ function NetGraph(scenario, parent){
      * @param d linkJSON object.
      */
     this.deleteConnection = function(d){
+    
         if(this.connectionDeleteEnabled){
             //search for link in graph and delete
             var index = -1;
@@ -672,7 +683,7 @@ function NetGraph(scenario, parent){
                 console.log("Element does not exist");
             }
         }else{
-            showToast("Delete Connection", "Implemented but disabled")
+            showToast("Operation Disabled", "ConnectionDelete is disabled.")
         }
 
         this.updateScenarioFromJSONGraph(this.graphJSON)
