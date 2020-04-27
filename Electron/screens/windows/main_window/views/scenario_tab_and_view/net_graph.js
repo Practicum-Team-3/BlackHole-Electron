@@ -299,8 +299,6 @@ function NetGraph(scenario, parent){
                             JSONObj["links"].push({
                                 "source": nameIndex[pair[0]],
                                 "target": nameIndex[pair[1]],
-                                "sName": pair[0],
-                                "tName": pair[1],
                                 "netMask": netMasks[i]
                             })
                         }
@@ -308,6 +306,7 @@ function NetGraph(scenario, parent){
                 }
             }
         }
+        console.log(JSONObj)
         return JSONObj
     }
 
@@ -692,7 +691,7 @@ function NetGraph(scenario, parent){
 
             if(index >= 0){
                 this.graphJSON.links.splice(index, 1);
-                this.d3.select("#" + d.sName + "_to_" + d.tName).remove()
+                this.d3.select("#" + d.source.name + "_to_" + d.target.name).remove()
                 this.updateJSONString(this.graphJSON);
                 this.resetGraphData()
                 this.selectedJSON = 0;
@@ -746,7 +745,7 @@ function NetGraph(scenario, parent){
             //remove all link
             var linksToRemove = []
             for(var i = 0; i<this.graphJSON.links.length; i++){
-                if((this.graphJSON.links[i].sName == nodeName) || (this.graphJSON.links[i].tName == nodeName)){
+                if((this.graphJSON.links[i].source.name == nodeName) || (this.graphJSON.links[i].target.name == nodeName)){
                     linksToRemove.push(this.graphJSON.links[i])
                 }
             }
@@ -810,7 +809,7 @@ function NetGraph(scenario, parent){
      * @param {String} destJSON destination machine's JSON object.
      */
     this.connectNodes = function(sourceJSON, destJSON){
-        newLink = {"source":sourceJSON, "target":destJSON, "sName":sourceJSON.name, "tName":destJSON.name, }
+        newLink = {"source":sourceJSON, "target":destJSON}
         this.graphJSON.links.push(newLink);
         this.updateJSONString(this.graphJSON);
         this.svg.selectAll("*").remove();
@@ -907,8 +906,6 @@ function NetGraph(scenario, parent){
             var newLink = {
                 "source":currentLinks[i]["source"]["index"],
                 "target":currentLinks[i]["target"]["index"],
-                "sName":currentLinks[i]["source"]["name"],
-                "tName":currentLinks[i]["target"]["name"],
                 "netMask":currentLinks[i]["netMask"]
             }
             updatedModelObject["links"].push(newLink);
