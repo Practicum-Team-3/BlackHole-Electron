@@ -58,9 +58,6 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         netGraph.addFloatingFooterButtons(footerButtons)
         netGraph.drawGraphOptionButtons()
 
-        //remove on production
-        netGraph.setConnectionDeleteOnClick(false)
-
         //This gets real (Add to centralView's node)
         scenarioViewNode.appendChild(netGraphNode)
 
