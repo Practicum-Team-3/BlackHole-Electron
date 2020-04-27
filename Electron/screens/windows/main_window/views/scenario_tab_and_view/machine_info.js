@@ -80,14 +80,30 @@ function MachineInfo(machineInfoNode){
             return
         }
         var machine = this.machine
+        
+        var installedProgramsList = interface.getNode("installedPrograms")
+        
         // Clear group
+        installedProgramsList.innerHTML = ""
         
         // Add elements back
-        var installedProgramsGroup = interface.getNode("installedPrograms")
+        
         var editClicked = function(event){
-//            editInstalledProgram(scenarioName, machineName, programName)
+            editInstalledProgram(machine, event.target.label)
         }
-        interface.addItemsToVerticalList(installedProgramsGroup, machine.programs.getProgramNamesList(), editClicked, function(event){event.stopPropagation()}, "trash")
+        
+        var trashcanClicked = function(event){
+            event.stopPropagation()
+            // Get the program
+            var programToRemove = machine.programs.getProgramsByName(event.target.parentNode.label)[0]
+            if (programToRemove!=null){
+                
+                machine.programs.removeProgram(programToRemove)
+                event.target.parentNode.remove()
+            }
+        }
+        
+        interface.addItemsToVerticalList(installedProgramsList, machine.programs.getProgramNamesList(), editClicked, trashcanClicked, "trash")
     }.bind(this)
 
     
@@ -99,7 +115,7 @@ function MachineInfo(machineInfoNode){
      * @param {Any} Preprocessed value of the changed element
      */
     this.onchange = function(nodeName, node, value){
-        console.log("onChange was called...")
+        //console.log("onChange was called...")
         if (this.machine==null){
             return
         }

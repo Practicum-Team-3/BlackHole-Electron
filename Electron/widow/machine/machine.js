@@ -43,6 +43,15 @@ function Machine(descriptor, changeReferenceCallback){
 }
 
 /**
+ * @function hold
+ * @description Makes this instance of a machine available on the global pocket
+ * @memberof Machine
+ */
+Machine.prototype.hold = function(){
+    pocket = this
+}
+
+/**
  * @function getDescriptor
  * @description Returns the local descriptor
  * @memberof Machine

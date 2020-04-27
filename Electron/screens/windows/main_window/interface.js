@@ -170,8 +170,19 @@ function installProgram(programToInstall){
     var selectedMachine
     if (scenarioTab!=null){
         selectedMachine = scenarioTab.getSelectedMachine()
+        
+        //Check if not already installed
+        if (selectedMachine.programs.getProgramsByName(programToInstall.getName()).length>0){
+            dialog.showErrorBox("Already Included", "This program is already included on "+selectedMachine.getName())
+            return
+        }
+        
+        
         if (selectedMachine!=null){
-            openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 220, false, true, false, ["--edit-mode=install", "--scenario-name="+scenarioTab.getScenario().getName(), "--machine-name="+selectedMachine.getName(), "--program-name="+programToInstall.getName()])
+            //Store the machine in the pocket so the installed program setup can retrieve
+            selectedMachine.hold()
+            
+            openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 220, false, true, false, ["--edit-mode=install", "--program-name="+programToInstall.getName()])
         }else{
             dialog.showErrorBox("No machine selected", "Please select a machine to continue")
         }
@@ -180,8 +191,9 @@ function installProgram(programToInstall){
     }
 }
 
-function editInstalledProgram(scenarioName, machineName, programName){
-    openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 220, false, true, false, ["--edit-mode=modify", "--scenario-name="+scenarioName, "--machine-name="+machineName, "--program-name="+programName])
+function editInstalledProgram(machine, programName){
+    machine.hold()
+    openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 220, false, true, false, ["--edit-mode=modify", "--program-name="+programName])
 }
 
 //======================

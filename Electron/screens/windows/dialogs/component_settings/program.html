@@ -14,18 +14,13 @@
         
         var arguments = getArguments()
         const editMode = arguments["--edit-mode"]
-        var scenario, machine, programName
+        var programName = arguments["--program-name"]
+        var machine = widow.getHeldItem()
+        var programToModify
         
         if (editMode==null){
-            
             console.log("Program editor: Fatal. Cannot find valid edit mode")
-            
-        }else{
-            scenario = widow.scenarios.getScenarioByName(arguments["--scenario-name"])
-            if (scenario!=null){
-                machine = scenario.machines.getMachineByName(arguments["--machine-name"])
-                programName = arguments["--program-name"]
-            }
+            electron.remote.getCurrentWindow().close()
         }
         
             
@@ -33,6 +28,15 @@
             // Set title
             var title = document.getElementById("title")
             title.innerText = programName
+            // Populate if on modify
+            if (editMode=="modify"){
+                
+                programToModify = machine.programs.getProgramsByName(programName)[0]
+                if (programToModify!=null){
+                    document.getElementById("path").value = programToModify.getLocation()
+                }
+                
+            }
         }
         
         
@@ -45,13 +49,14 @@
                     didAddProgram = machine.programs.addProgram(programName, path)
                 break
                 case "modify":
-                
+                    // Get the actual program
+                    if (programToModify!=null){
+                        programToModify.setLocation(path)
+                    }
                 break
             }
             
-//            if (didAddProgram){
             emitModifiedEvent(machine, null, modificationTypes.EDITED, "programs")
-//            }
             
             //Close dialog window
             electron.remote.getCurrentWindow().close()

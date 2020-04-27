@@ -12,6 +12,7 @@ function Machines(descriptor){
     Collectionist.call(this, descriptor, Machine)
 }
 
+
 /**
  * @function getMachineNamesList
  * @description Get a list with the names of the available machines

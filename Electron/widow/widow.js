@@ -15,6 +15,9 @@ function Widow(){
     this.defaultAddress = defaultWidowAddress
     this.widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudSubdomain, defaultCloudPath)
     
+    // Start global pocket
+    pocket = null
+    
     // Make bridge to chromium
     makeBridge()
     
@@ -40,6 +43,17 @@ function Widow(){
      * @memberof Widow
      */
     this.programs = new Programs(this.widowSettings)
+}
+
+/**
+ * @function getHeldItem
+ * @description Returns item held in global pocket and clears pocket
+ * @returns {Any} Item in global pocket
+ */
+Widow.prototype.getHeldItem = function(){
+    var tempPocket = pocket
+    pocket = null
+    return tempPocket
 }
 
 /**

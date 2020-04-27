@@ -210,7 +210,7 @@ function addItemsToList(listNode, itemClassName, itemList, itemAction, detailAct
 
 /**
  * @function addItemToList
- * @description Adds an item node to a list node
+ * @description Adds an item node to a list node. Sets the original label on the .label property of the node
  * @param   {object} listNode  List node to add the item to
  * @param   {string} className Style classes to give the li item
  * @param   {string} innerHTML HTML to place inside the item
@@ -221,6 +221,7 @@ function addItemsToList(listNode, itemClassName, itemList, itemAction, detailAct
  */
 function addItemToList(listNode, className, innerHTML, itemAction, detailAction, detailActionLigature){
     var itemNode = addNode(listNode, "li", className, innerHTML)
+    itemNode.label = innerHTML
     
     if (itemAction!=null){
         itemNode.onclick = itemAction
