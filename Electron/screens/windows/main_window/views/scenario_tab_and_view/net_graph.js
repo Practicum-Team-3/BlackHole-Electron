@@ -52,7 +52,7 @@ function NetGraph(scenario, parent){
      */
     this.machinesModified = function(machines, modificationType, arg){
 
-        console.log("Graph received a " + modificationType + " modificationType")
+        
         switch (modificationType){
                 
             case modificationTypes.ADDED_ELEMENT:
@@ -88,7 +88,24 @@ function NetGraph(scenario, parent){
                 // check for what was actually changed
                 switch(arg){
                     case "getName"://The name was changed
-                        graphNode.name = machine.getName()
+
+                        //use the name of the grapNode to update the nodeNamesIDs entry
+                        var newName = machine.getName() + "_" + generateUniqueId()
+
+                        this.nodesNamesIDs[machine.getName()] = newName
+
+                        delete this.nodesNamesIDs[this.getKeyByValue(this.nodesNamesIDs, graphNode.name)]
+
+
+                        graphNode.name = newName
+
+                        //missing updating nodeNamesIDs
+                        console.log(this.graphJSON)
+                        console.log(this.nodesNamesIDs)
+                    break
+
+                    case "getIsAttacker":
+                        graphNode.type = machine.getIsAttacker() ? "attacker" : "victim"
                     break
                 }
             break
@@ -768,9 +785,6 @@ function NetGraph(scenario, parent){
 
         //trigger callback
         if(this.onSelectedNodeChangedCallback != 0){
-
-            console.log("d.machine is:")
-            console.log(d.machine)
 
             var machineFromScenario = d.machine
             if(machineFromScenario!= undefined || machineFromScenario != null){
