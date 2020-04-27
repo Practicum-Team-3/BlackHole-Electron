@@ -2,9 +2,10 @@ const Modifiable = require('./core/modifiable.js').Modifiable
 const Collectionist = require('./core/collectionist.js').Collectionist
 const Collectable = require('./core/collectionist.js').Collectable
 const NextcloudManager = require('./cloud/nextcloud.js').NextcloudManager
+const crypto = require('crypto')
 /**
  * @class Programs
- * @version 0.4.0
+ * @version 0.5.0
  * @description Modifiable. Collectionist. Available programs
  *              
  * @param {string} descriptor Program descriptor (JSON)
@@ -30,6 +31,12 @@ function Programs(widowSettings){
         return widowSettings.getCloudAddress()
     }
     
+    /**
+     * @function load
+     * @memberof Programs
+     * @description Performs loading of the registry, or cloud initialization upon a 404
+     * @returns {Promise} Promise for the completion of the loading/inititalization
+     */
     this.load = function(){
         return new Promise(function(resolve, reject){
             //this.programs["e0"] = new Program()
@@ -47,13 +54,13 @@ function Programs(widowSettings){
                 // Load of the registry failed, maybe cloud needs init
                 if (error.response==null || error.response.status!=404){
                     // No hope for this, probably can't find cloud
-                    console.log("fatal, unable to recover ")
+                    console.log("fatal, unable to recover")
                     console.log(error)
                     reject()
                 }else{
                     console.log("failed with (404): performing registry setup...")
                     // 404 -> Just need to init the cloud for handling programs
-                    this.initCloud()
+                    initCloud()
                     .then(function(){
                         resolve()
                     })
@@ -65,7 +72,13 @@ function Programs(widowSettings){
         }.bind(this))
     }
     
-    this.initCloud = function(){
+    /**
+     * @function initCloud
+     * @private
+     * @description Performs the initialization of the file structure required on the cloud
+     * @returns {Promise} Promise for the completion of the initialization
+     */
+    var initCloud = function(){
         
         return new Promise(function(resolve, reject){
             console.log("::mkdir programs")
@@ -73,7 +86,7 @@ function Programs(widowSettings){
             this.cloud.createFolder("programs")
             .then(function(){
                 // Save registry
-                return this.saveRegistry()
+                return saveRegistry()
                 
             }.bind(this)).then(function(){
                 console.log("::mkdir bin")
@@ -86,30 +99,52 @@ function Programs(widowSettings){
                 reject()
             })
         }.bind(this))
-    }
+    }.bind(this)
     
-    this.saveRegistry = function(){
-        console.log("saving registry")
+    /**
+     * @function saveRegitry
+     * @private
+     * @description Saves the current status of the regitry back to the cloud
+     * @returns {Promise} Promise for the completion of the saving process
+     */
+    var saveRegistry = function(){
+        console.log("saving registry...")
         return this.cloud.upload(JSON.stringify(this.descriptor), registryLocation)
-    }
+    }.bind(this)
     
     /**
      * @function addProgram
-     * @param   {[[Type]]} buffer                 [[Description]]
-     * @param   {[[Type]]} name                   [[Description]]
-     * @param   {object}   os                     [[Description]]
-     * @param   {[[Type]]} description            [[Description]]
-     * @param   {[[Type]]} isExploit              [[Description]]
-     * @param   {object}   axiosBridge            [[Description]]
-     * @param   {[[Type]]} uploadProgressCallback [[Description]]
+     * @description Uploads a program into Black Widow. Will throw in an attempt to upload a files with a duplicate hash.
+     * @memberof Program
+     * @param   {ArrayBuffer} arrayBuffer       Buffer of the file
+     * @param   {string} name                   Name of the file
+     * @param   {string}   os                   Operating system target
+     * @param   {string} description            Description of the program
+     * @param   {boolean} isExploit             Pass true if program is an exploit
+     * @param   {function} uploadProgressCallback Callback to update on the upload progress, should accept two int parameters: upload progress, upload total.
      * @returns {Promise} Promise for the program upload process. Passes the instance of the
      *                    added program when resolved
      */
-    this.addProgram = function(buffer, name, os, description, isExploit, uploadProgressCallback){
+    this.addProgram = function(arrayBuffer, name, os, description, isExploit, uploadProgressCallback){
 
+        // Get hash before anything
+        // Convert the passed array buffer into a buffer
+        var buffer = Buffer.from(arrayBuffer)
+        var programHash = crypto.createHash("sha256").update(buffer).digest("hex")
+        
+        //See if there's another program with the same hash
+        var duplicates = this.super.getCollectablesByCharacteristic("getHash", programHash)
+        
+        
         // Prepare promise to return to caller
         return new Promise(function(resolve, reject){
             
+            if (duplicates.length>0){//There are duplicates
+                reject(duplicates)
+                return
+            }
+            
+            // Perform the upload
             axiosBridged({
                 method: 'put',
                 url: this.getCloudAddress()+uploadLocation+encodeURIComponent(name),
@@ -118,14 +153,13 @@ function Programs(widowSettings){
                     password: 'password'
                 },
                 onUploadProgress: function (progressEvent) {
-
                     try{
                         uploadProgressCallback(progressEvent.loaded, progressEvent.total)
                     }catch{
                         console.log("::Skipping upload progress")
                     }
                 },
-                data: buffer
+                data: arrayBuffer
             }, function (response) {
                 
 
@@ -136,12 +170,18 @@ function Programs(widowSettings){
                 program.setOs(os)
                 program.setDescription(description)
                 program.setIsExploit(isExploit)
+                program.setHash(programHash)
 
-                //Add without duplicates
-                this.super.add(program, false)
+                //Add without duplicates, but with replacements
+                var addSuccess = this.super.add(program, false, true)
+                if (!addSuccess){
+                    console.log("Unable to do dis")
+                    reject()
+                    return
+                }
 
                 //Save descriptor
-                this.saveRegistry()
+                saveRegistry()
                 .then(function(){
                     resolve(program)
                 }).catch(function(){
@@ -152,6 +192,7 @@ function Programs(widowSettings){
 
                 console.log(error)
                 reject()
+                
             }.bind(this))
             
         }.bind(this))
@@ -165,7 +206,7 @@ function Programs(widowSettings){
             this.super.remove(program)
             
             // Save registry, and return promise
-            return this.saveRegistry()
+            return saveRegistry()
         }.bind(this))
     }
 }
@@ -191,6 +232,8 @@ Programs.prototype.getAllExploits = function(){
 Programs.prototype.getAllNonExploits = function(){
     return this.super.getCollectablesByCharacteristic("getIsExploit", false)
 }
+
+
 
 //=========================
 // Single Program
@@ -271,6 +314,24 @@ Program.prototype.setDescription = function(description){
  */
 Program.prototype.getDescription = function(){
     return this.descriptor["description"]
+}
+
+// === HASH
+/**
+ * @function setHash
+ * @memberof Program
+ * @param {string} Hexadecimal hash
+ */
+Program.prototype.setHash = function(hash){
+    this.descriptor["hash"] = hash
+}
+/**
+ * @function getHash
+ * @memberof Program
+ * @returns {string}
+ */
+Program.prototype.getHash = function(){
+    return this.descriptor["hash"]
 }
 
 

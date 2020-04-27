@@ -15,6 +15,9 @@ function Widow(){
     this.defaultAddress = defaultWidowAddress
     this.widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudSubdomain, defaultCloudPath)
     
+    // Start global pocket
+    pocket = null
+    
     // Make bridge to chromium
     makeBridge()
     
@@ -43,6 +46,17 @@ function Widow(){
 }
 
 /**
+ * @function getHeldItem
+ * @description Returns item held in global pocket and clears pocket
+ * @returns {Any} Item in global pocket
+ */
+Widow.prototype.getHeldItem = function(){
+    var tempPocket = pocket
+    pocket = null
+    return tempPocket
+}
+
+/**
  * @function makeBridge
  * @description Instantiates the background chromium instance to bridge objects
  * @private
@@ -51,21 +65,25 @@ function Widow(){
 function makeBridge(){
     var {BrowserWindow} = require('electron')
     
-    addressDialog = new BrowserWindow({
+    var bridge = new BrowserWindow({
         width: 500,
         height: 250,
         webPreferences: {nodeIntegration: true},
         show: false
     })
+    
+    bridge.once('ready-to-show', () => {
+        bridge.setEnabled(false)
+    })
 
     // Load chromium instance with bridge
-    addressDialog.loadFile('./widow/bridge/bridge.html')
+    bridge.loadFile('./widow/bridge/bridge.html')
 }
 
 /**
  * @function setAxiosBridge
  * @description Intended to be called by bridging instance. Sets the axiosBridge global access to the entire library
- * @protected
+ * @private
  * @memberof Widow
  * @param {function} _axiosBridge Bridge function to a chromium Axios worker
  */
@@ -127,11 +145,10 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
 /**
  * @class WidowSettings
  * @description Used to share basic Black Widow connection settings between members
- * @protected
+ * @private
  * @param   {string} _address     Main address of Black Widow
  * @param   {string} _cloudSubdomain Subdomain for cloud service
- * @param   {string} _cloudPath   [[Description]]
- * @returns {[[Type]]} [[Description]]
+ * @param   {string} _cloudPath   Path to cloud files
  */
 function WidowSettings(_address, _cloudSubdomain, _cloudPath){
     var address = address
@@ -238,8 +255,11 @@ function emitModifiedEvent(modifiable, ignoredCallback, eventType, eventArg){
  * @constant {Object} modificationTypes Generic modification types for use with Modifiable
  */
 const modificationTypes = {
+        // Modification of member element
         ADDED_ELEMENT: "addedElement",   // Reference to new element in eventArg
         REMOVED_ELEMENT: "removedElement", // Pass reference to removed element in eventArg
+        EDITED_ELEMENT: "editedElement", // Pass reference to edited element in eventArg
+        // Modification of self
         DESTROYED: "destroyed", // Element being observed is being destroyed
         EDITED: "edited" // Pass string name of getter for edited member
 }

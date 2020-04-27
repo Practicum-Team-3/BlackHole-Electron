@@ -4,13 +4,14 @@ const Machine = require('./machine/machine.js').Machine
 /**
  * @class Machines
  * @description Modifiable. Collectionist. Holds machine instances
- * @version 1.0.0
+ * @version 1.1.0
  */
 function Machines(descriptor){
     Modifiable.call(this)
     // Inherit from collectionist and pass empty descriptor object
     Collectionist.call(this, descriptor, Machine)
 }
+
 
 /**
  * @function getMachineNamesList
@@ -90,17 +91,27 @@ Machines.prototype.getMachineByName = function(machineName){
 
 /**
  * @function removeMachineByName
- * @description Removes a machine from the list and returns it
+ * @description Removes a machine with a specific name from the list
  * @memberof Machines
  * @param {string} machineName Name of the machine to remove
- * @returns {Machine} Removed machine
- * @throws Undefined machine
+ * @returns {boolean} Success flag of the removal
  */
 Machines.prototype.removeMachineByName = function(machineName){
     var machineToDelete = this.super.getCollectableByName(machineName)
     if (machineToDelete!=null){
-        this.super.remove(machineToDelete)
+        return this.super.remove(machineToDelete)
     }
+    return false
+}
+
+/**
+ * @function removeMachine
+ * @description Removes a machine instance
+ * @param   {Machine} machine Machine instance to remove
+ * @returns {boolean} Success flag of the removal
+ */
+Machines.prototype.removeMachine = function(machine){
+    return this.super.remove(machine)
 }
 
 module.exports.Machines = Machines

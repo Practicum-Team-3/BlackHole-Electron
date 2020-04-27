@@ -5,9 +5,10 @@ var machineInfoDefaultWidth = 300
  * @description Model for the machine info panel
  * @param   {object} machineInfoNode Node where the machine info components should get added
  */
-function MachineInfo(machineInfoNode){
+function MachineInfo(machineInfoNode, scenario){
     var self = this
     this.parentNode = machineInfoNode
+    this.scenario = scenario
     this.machine = null
     
     // Create a form to put all of the components in
@@ -44,7 +45,7 @@ function MachineInfo(machineInfoNode){
                 }
             break;
             case modificationTypes.DESTROYED:
-                
+                this.clear()
             break;
         }
         
@@ -64,13 +65,14 @@ function MachineInfo(machineInfoNode){
         this.getNode("setName-getName").value = machine.getName()
         
         this.getNode("box").innerHTML = machine.getBox()
-        this.getNode("machineType").innerHTML = machine.getIsAttacker() ? "Attacker" : "Victim"
+        this.getNode("setIsAttacker-getIsAttacker").selectedIndex = machine.getIsAttacker() ? 1 : 0
         this.getNode("machineGui").innerHTML = machine.getGui()
         this.getNode("setBaseMemory-getBaseMemory").value = machine.getBaseMemory()
         this.getNode("setBaseMemory-getBaseMemory").dispatchEvent(new Event("input"))
         this.getNode("setProcessors-getProcessors").value = machine.getProcessors()
         this.getNode("setProcessors-getProcessors").dispatchEvent(new Event("input"))
         this.getNode("networkValue").value = ""
+        this.getNode("setIpAddress-getIpAddress").innerHTML = machine.networkSettings.getIpAddress()
 
     }.bind(this)
     
@@ -79,11 +81,30 @@ function MachineInfo(machineInfoNode){
             return
         }
         var machine = this.machine
+        
+        var installedProgramsList = interface.getNode("installedPrograms")
+        
         // Clear group
+        installedProgramsList.innerHTML = ""
         
         // Add elements back
-        var installedProgramsGroup = interface.getNode("installedPrograms")
-        interface.addItemsToVerticalList(installedProgramsGroup, machine.programs.getProgramNamesList(), function(event){console.log(event)}, function(event){event.stopPropagation()}, "trash")
+        
+        var editClicked = function(event){
+            editInstalledProgram(machine, event.target.label)
+        }
+        
+        var trashcanClicked = function(event){
+            event.stopPropagation()
+            // Get the program
+            var programToRemove = machine.programs.getProgramsByName(event.target.parentNode.label)[0]
+            if (programToRemove!=null){
+                
+                machine.programs.removeProgram(programToRemove)
+                event.target.parentNode.remove()
+            }
+        }
+        
+        interface.addItemsToVerticalList(installedProgramsList, machine.programs.getProgramNamesList(), editClicked, trashcanClicked, "trash")
     }.bind(this)
 
     
@@ -95,18 +116,32 @@ function MachineInfo(machineInfoNode){
      * @param {Any} Preprocessed value of the changed element
      */
     this.onchange = function(nodeName, node, value){
-        console.log("onChange was called...")
+        //console.log("onChange was called...")
         if (this.machine==null){
             return
         }
+        
+        //Adjust value for special cases
+        switch(nodeName){
+            case "setIsAttacker-getIsAttacker":
+                value = value == "Attacker"
+            break
+        }
+        
         // Get setter and getter from nodeName ('cause that's how they're named on here)
         var setterAndGetter = nodeName.split("-")
-        var setter = setterAndGetter[0]
-        var getter = setterAndGetter[1]
-        
-        this.machine[setter](node.value)
-        // Tell everyone about it
-        emitModifiedEvent(this.machine, this.machineModified, modificationTypes.EDITED, getter)
+        if (setterAndGetter.length==2){// Quick sanity check
+            
+            var setter = setterAndGetter[0]
+            var getter = setterAndGetter[1]
+
+            //Set new value on machine
+            this.machine[setter](value)
+
+            // Tell everyone about it
+            emitModifiedEvent(this.machine, this.machineModified, modificationTypes.EDITED, getter)
+            
+        }
     }.bind(this)
     
     this.onDeleteButtonClick = function(){
@@ -114,10 +149,9 @@ function MachineInfo(machineInfoNode){
         
     }.bind(this)
     
-    addInterfaceNodes()
     
     // Generates the interface by making calls to NodeCombos (interface)
-    function addInterfaceNodes(){
+    const addInterfaceNodes = function(){
 //        var floating = addFloatingButtonNode(formNode, function(){
 //            
 //        }, "eye-slash")
@@ -129,18 +163,38 @@ function MachineInfo(machineInfoNode){
         // Setup change event
         interface.setOnchangeCallback(self.onchange)
         
+        interface.addLabelPair(null, "Box:", "box", "")
+        
+        var deleteMachineClicked = function(){
+            if (this.machine!=null){
+                if (scenario.machines.removeMachine(this.machine)){
+                    
+                    // Emit event on scenario
+                    emitModifiedEvent(this.scenario, null, modificationTypes.REMOVED_ELEMENT, this.machine)
+                    // Emit event on machine
+                    emitModifiedEvent(this.machine, null, modificationTypes.DESTROYED)
+                }
+            }
+        }.bind(this)
+        
+        interface.addEditDeleteButtons("editMachineButton", null, "deleteMachineButton", deleteMachineClicked)
+        
+        addBrNode(formNode)
+        
+        // === General
+        interface.addCollapsibleGroup(null, "General", "cog", null, true)
+        
         // General details
         interface.addLabelAndInput(null, "Name:", "setName-getName", "")
-        addBrNode(formNode)
-        interface.addLabelPair(null, "Box:", "box", "")
-        interface.addLabelPair(null, "Type:", "machineType", "")
+        //addBrNode(formNode)
+        //interface.addLabelPair(null, "Type:", "machineType", "")
+        interface.addLabelAndSelect(null, "Type:", "setIsAttacker-getIsAttacker", ["Victim", "Attacker"])
         interface.addLabelPair(null, "GUI:", "machineGui", "")
-        //missing handlers that modify scenario object and then call 'netGraph.onScenarioChanged(modifiedScenario)' 
-        interface.addEditDeleteButtons("editMachineButton", function(){showToast("Edit Machine", "Not yet implemented")}, "deleteMachineButton", function(){showToast("Delete Clicked", "Not yet implemented")})
-        addBrNode(formNode)
+        
 
         // === Settings
-        interface.addCollapsibleGroup(null, "Settings", "tools", null, true)
+        interface.deselectNode()
+        interface.addCollapsibleGroup(null, "Settings", "sliders-h", null, true)
         
         interface.addLabel(null, "CPUs:")
         interface.addRangeAndValue("setProcessors-getProcessors", 1, 16, 1, 2)
@@ -154,7 +208,14 @@ function MachineInfo(machineInfoNode){
         interface.addCollapsibleGroup(null, "Network", "network-wired", null, true)
 
         interface.addLabelAndInput(null, "Network:", "networkValue", "")
-        interface.addLabelPair(null, "IP:", "ipValue", "")
+        interface.addLabelPairLeft(null, "IP:", "setIpAddress-getIpAddress", "")
+
+        // === Program
+        // Exit previous group, create new group, then add components into it
+        interface.deselectNode()
+        interface.addCollapsibleGroup(null, "Programs", "file-code", null, true)
+
+        interface.addVerticalList("installedPrograms", [], null, null, "")
         
         
         // === Collector
@@ -172,15 +233,10 @@ function MachineInfo(machineInfoNode){
         interface.addLabelAndSelect(null, "Stop:", "stopCondition", ["Earthquake"])
         interface.addCheckbox("timeout", "Timeout")
 
-        // === Program
-        // Exit previous group, create new group, then add components into it
-        interface.deselectNode()
-        interface.addCollapsibleGroup(null, "Programs", "code", null, true)
-
-        interface.addVerticalList("installedPrograms", [], null, null, "")
-
         machineInfoNode.appendChild(formNode)
-    }
+    }.bind(this)
+    
+    addInterfaceNodes()
 }
 
 MachineInfo.prototype.deleteMachine = function(){

@@ -2,7 +2,7 @@
  * @class Collectionist
  * @description Object that keeps a collection of descriptor modifiers with their descriptors
  *              The descriptor can be either an object or an array
- * @version 2.0.0
+ * @version 2.1.0
  * @param {object} descriptor Collection descriptor object
  */
 function Collectionist(descriptor, _collectableClass){
@@ -151,20 +151,34 @@ function Collectionist(descriptor, _collectableClass){
     /**
      * @function add
      * @description Inherited on super.
-     *                  Adds a collectable to the descriptor and to collection. Colectable objects
-     *                  already on the collection will be ignored. Collectable objects may be added even
-     *                  if another item already has that name, unless allowNameDuplicates is passed false or descriptor is non-blind
+     *                  Adds a collectable to the descriptor and to collection.
+     *                  Collectable object won't be added if already on collection.
+     *                  When descriptor is blind, collectable objects may be added even if another item exists with that name. Pass true on allowNameDuplicates.
      * @memberof Collectionist
-     * @param {Collectable} collectable     Collectable object to add
-     * @param {boolean} allowNameDuplicates     Pass false for the add operation to fail if another
-     *                                      collectable exists with the same name
-     * @returns {boolean} Success of the operation. Always returns true if duplicates are allowed
+     * @param {Collectable} collectable             Collectable object to add
+     * @param {boolean}     allowNameDuplicates     Optional: Pass false for the add operation to fail if another
+     *                                              collectable exists with the same name
+     * @param {boolean}     allowReplacing          Optional: Valid when allowNameDuplicates is passed false. Allows for replacing
+     * @returns {boolean} Success of the operation.
      */
-    this.super.add = function(collectable, allowNameDuplicates=false){
-        if (this.collection.includes(collectable) ||
-            (!this.isBlindDescriptor || !allowNameDuplicates) && this.super.getCollectableByName(collectable.getName())!=null){
-            
+    this.super.add = function(collectable, allowNameDuplicates=false, allowReplacing=false){
+        // Check if collectable object instance is already on the collection (array). Fail immediately.
+        if (this.collection.includes(collectable)){
             return false
+        }
+        
+        // Wasn't on collection, ok. Now check for name duplication.
+        var duplicate = this.super.getCollectableByName(collectable.getName())
+        if (duplicate!=null && !allowReplacing && (!this.isBlindDescriptor || !allowNameDuplicates)){
+            // There is a duplicate, can't replace, and duplication is not available. So return false.
+            return false
+        }else if (duplicate!=null && allowReplacing){
+            // There is a duplicate and we can replace, prepare to replace by removing the original first. Add new one below.
+            var removalSuccess = this.super.remove(duplicate)
+            if (!removalSuccess){
+                return false
+            }
+            
         }
         
         // Add to descriptor (careful to check the type of descriptor to cater to it)
@@ -174,6 +188,7 @@ function Collectionist(descriptor, _collectableClass){
             collectable.super.setChangeReferenceCallback(this.super.changeReference)
             this.descriptor[collectable.getName()] = collectable.getDescriptor()
         }
+        
         // Add to collection
         this.collection.push(collectable)
         
@@ -204,6 +219,31 @@ function Collectionist(descriptor, _collectableClass){
         return true
     }.bind(this)
     
+    /**
+     * @function findSafeName
+     * @description Inherited directly.
+     *                  Finds a name that won't collide with an existing collectable, by appending a duplication index.
+     *                  Supports the use of extensions for the name, and adds duplication index before the extension.
+     * @param   {string}   baseName        Name to base safe name from
+     * @param   {int}      indexLimit      Limit for the duplication index
+     * @returns {string}   Safe name
+     */
+    this.findSafeName = function(baseName, indexLimit=1000){
+        var extensionIndex = baseName.lastIndexOf(".")
+        var baseFilename = baseName.substring(0, extensionIndex)
+        var extension = baseName.substring(extensionIndex+1)
+
+        var safeName = baseName
+        var iteration
+        for(iteration=2; this.getProgramByName(safeName)!=null && iteration<indexLimit; iteration++){
+            if (extensionIndex!=-1){//There is extension
+                safeName = baseFilename+"-"+iteration+"."+extension
+            }else{
+                safeName = baseName+"-"+iteration
+            }
+        }
+        return safeName
+    }
 }
 
 module.exports.Collectionist = Collectionist

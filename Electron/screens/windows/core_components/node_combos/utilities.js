@@ -25,6 +25,19 @@ function getUrlVars() {
     return vars;
 }
 
+function getArguments(){
+    var argumentMap = {}
+    var index, split, argument
+    for (index=0; index<window.process.argv.length; index++){
+        argument = window.process.argv[index]
+        split = argument.split("=")
+        if (split.length==2){
+            argumentMap[split[0]] = split[1]
+        }
+    }
+    return argumentMap
+}
+
 /**
  * @function setDisabled
  * @description Set the disabled property of all elements of a specific class name

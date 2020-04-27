@@ -3,6 +3,7 @@ var scenarioViewsNode = null
 var overviewsPanel = null
 // To store references to central views indexed by scenario name
 var scenarioTabAndViews = {}
+const { dialog } = require('electron').remote
 
 try{
     window.$ = window.jQuery = require("../../../node_modules/jquery/dist/jquery")
@@ -159,6 +160,40 @@ function openWindow(address, width, height, resizable, modal, frameless, argumen
  */
 function openBrowserWindow(address){
     electron.ipcRenderer.send("openChildWindow", address, 1000, 600, true, false, true, true)
+}
+
+//======================
+// Specialized windows
+//======================
+function installProgram(programToInstall){
+    var scenarioTab = getActiveScenarioTab()
+    var selectedMachine
+    if (scenarioTab!=null){
+        selectedMachine = scenarioTab.getSelectedMachine()
+        
+        //Check if not already installed
+        if (selectedMachine.programs.getProgramsByName(programToInstall.getName()).length>0){
+            dialog.showErrorBox("Already Included", "This program is already included on "+selectedMachine.getName())
+            return
+        }
+        
+        
+        if (selectedMachine!=null){
+            //Store the machine in the pocket so the installed program setup can retrieve
+            selectedMachine.hold()
+            
+            openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 220, false, true, false, ["--edit-mode=install", "--program-name="+programToInstall.getName()])
+        }else{
+            dialog.showErrorBox("No machine selected", "Please select a machine to continue")
+        }
+    }else{
+        dialog.showErrorBox("No scenario opened", "Please open a scenario to continue")
+    }
+}
+
+function editInstalledProgram(machine, programName){
+    machine.hold()
+    openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 220, false, true, false, ["--edit-mode=modify", "--program-name="+programName])
 }
 
 //======================

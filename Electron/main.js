@@ -11,12 +11,15 @@ function startBlackHole(){
     // Open address window
     createAddressWindow()
 }
-
 app.on('ready', startBlackHole)
+
+function closeBlackHole(e){
+    app.quit()
+}
 
 ipcMain.on('primaryLoad', (event, arg) => {
     createMainWindow()
-    addressDialog.destroy()
+    closeAddressWindow()
 })
 
 function createAddressWindow(){
@@ -25,15 +28,20 @@ function createAddressWindow(){
         width: 500,
         height: 250,
         resizable: false,
+        autoHideMenuBar: true,
         webPreferences: {
             nodeIntegration: true
         },
         maximizable: false
     })
-    addressDialog.removeMenu()
-
-    // and load the index.html of the app.
+    //addressDialog.removeMenu()
+    addressDialog.on('closed', closeBlackHole)
+    
     addressDialog.loadFile('./screens/windows/dialogs/widow_address/widow_address.html')
+}
+function closeAddressWindow(){
+    addressDialog.removeListener('closed', closeBlackHole)
+    addressDialog.destroy()
 }
 
 function createMainWindow() {
@@ -43,10 +51,12 @@ function createMainWindow() {
         height: 700,
         minWidth: 600,
         minHeight: 300,
+        backgroundColor: '#222724',
         webPreferences: {
             nodeIntegration: true
         }
     })
+    mainWindow.on('closed', closeBlackHole)
     
     // and load the index.html of the app.
     mainWindow.loadFile('./screens/windows/main_window/main_window.html')
@@ -68,15 +78,13 @@ function createChildWindow(parent, address, width, height, resizable, modal=fals
         resizable: resizable,
         modal: modal,
         frame: !frameless,
+        autoHideMenuBar: !showMenu,
         webPreferences: {
             nodeIntegration: !external,
             enableRemoteModule: !external,
             additionalArguments: arguments
         }
     })
-    if (!showMenu){
-        window.removeMenu()
-    }
     
     if (external){
         window.loadURL(address)

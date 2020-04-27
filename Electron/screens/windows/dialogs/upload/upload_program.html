@@ -8,6 +8,8 @@
     <script src="../../core_components/node_combos/utilities.js"></script>
     <script src="../../../../widow/widow.js"></script>
     <script>
+        const { dialog } = require('electron').remote
+        
         try{
             window.$ = window.jQuery = require("../../../..//node_modules/jquery/dist/jquery")
         }catch{}
@@ -18,16 +20,36 @@
         function uploadFile(){
             enterLoading()
             
+            // Prepare information
             programOs = document.getElementById("osSelect").value;
             programDes = document.getElementById("description").value;
             
             var fileList = document.getElementById("fileSelect").files
 
-            var formData = new FormData();
             if (fileList.length>0){
                 var file = fileList[0]
+                var filename = file.name
                 
-                formData.append("program", file, file.name)
+                //Check for name duplicates
+                var duplicate = widow.programs.getProgramByName(filename)
+                var isOverwrite = false
+                if (duplicate!=null){
+                    // Present options to handle duplication to user
+                    var locationOfDuplicate = duplicate.getIsExploit() ? "exploits" : "vulnerable programs"
+                    var overwriteSelection = dialog.showMessageBoxSync({type: "warning", title: "Program Name Duplicate", message: "There exists another program with the same name on "+locationOfDuplicate, buttons:["Cancel", "Keep Both", "Replace"]})
+                    switch(overwriteSelection){
+                        case 0://cancel
+                            exitLoading()
+                            return
+                        break
+                        case 1://Keep both
+                            filename = widow.programs.findSafeName(filename)
+                        break
+                        case 2://Overwrite
+                            isOverwrite = true
+                        break
+                    }
+                }
                 
                 file.arrayBuffer().then(function(buffer){
                     
@@ -35,17 +57,25 @@
                         setProgressBarPercent(Math.ceil(100/total*uploaded), "progressBar")
                     }
                     
-                    console.log(buffer)
-                    
-                    widow.programs.addProgram(buffer, file.name, programOs, programDes, isUploadingExploit, uploadProgressCallback)
+                    widow.programs.addProgram(buffer, filename, programOs, programDes, isUploadingExploit, uploadProgressCallback)
                     .then(function(program){
-                        
+
                         //Tell the others that there are changes
+                        if (isOverwrite){
+                            emitModifiedEvent(widow.programs, null, modificationTypes.REMOVED_ELEMENT, duplicate)
+                        }
                         emitModifiedEvent(widow.programs, null, modificationTypes.ADDED_ELEMENT, program)
 
                         //Close dialog window
                         electron.remote.getCurrentWindow().close()
+
+                    }).catch(function(error){
+                        if (Array.isArray(error)){//Error is list of exact duplicates (by content)
+                            var locationOfExactDuplicate = error[0].getIsExploit() ? "exploits" : "vulnerable programs"
+                            dialog.showErrorBox("Existing Program", "This same program ("+error[0].getName()+") has been previously uploaded to "+locationOfExactDuplicate)
+                        }
                         
+                        exitLoading()
                     })
                 })
             }
@@ -88,11 +118,11 @@
         <form onsubmit="uploadFile(); return false">
             <div class="form-group" id="rosvox">
                 <label for="name">File:</label>
-                <input type="file" class="form-control custom-file-input" id="fileSelect" required>
-                <label class="custom-file-label disableable" for="fileSelect">Choose file</label>
+                <input type="file" class="form-control custom-file-input disableable" id="fileSelect" required>
+                <label class="custom-file-label" for="fileSelect">Choose file</label>
                 
-                <label for="osSelect">OS:</label>
-                <select name="os" class="custom-select" id="osSelect" required>
+                <label for="osSelect">Target OS:</label>
+                <select name="os" class="custom-select disableable" id="osSelect" required>
                     <option value="linux">Linux</option>
                     <option value="windows">Windows</option>
                     <option value="mac os">Mac OS</option>
