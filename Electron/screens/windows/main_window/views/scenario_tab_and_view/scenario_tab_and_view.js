@@ -68,7 +68,7 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         var machineInfoNode = document.createElement("div")
         machineInfoNode.className = "machineInfoContainer"
         //create referencer object and save
-        machineInfo = new MachineInfo(machineInfoNode)
+        machineInfo = new MachineInfo(machineInfoNode, scenario)
         
         netGraph.setOnSelectedNodeChangedCallback(machineInfo.setMachine.bind(machineInfo))
 

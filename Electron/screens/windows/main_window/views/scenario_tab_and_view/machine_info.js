@@ -5,9 +5,10 @@ var machineInfoDefaultWidth = 300
  * @description Model for the machine info panel
  * @param   {object} machineInfoNode Node where the machine info components should get added
  */
-function MachineInfo(machineInfoNode){
+function MachineInfo(machineInfoNode, scenario){
     var self = this
     this.parentNode = machineInfoNode
+    this.scenario = scenario
     this.machine = null
     
     // Create a form to put all of the components in
@@ -44,7 +45,7 @@ function MachineInfo(machineInfoNode){
                 }
             break;
             case modificationTypes.DESTROYED:
-                
+                this.clear()
             break;
         }
         
@@ -148,10 +149,9 @@ function MachineInfo(machineInfoNode){
         
     }.bind(this)
     
-    addInterfaceNodes()
     
     // Generates the interface by making calls to NodeCombos (interface)
-    function addInterfaceNodes(){
+    const addInterfaceNodes = function(){
 //        var floating = addFloatingButtonNode(formNode, function(){
 //            
 //        }, "eye-slash")
@@ -164,7 +164,20 @@ function MachineInfo(machineInfoNode){
         interface.setOnchangeCallback(self.onchange)
         
         interface.addLabelPair(null, "Box:", "box", "")
-        interface.addEditDeleteButtons("editMachineButton", function(){showToast("Edit Machine", "Not yet implemented")}, "deleteMachineButton", function(){showToast("Delete Clicked", "Not yet implemented")})
+        
+        var deleteMachineClicked = function(){
+            if (this.machine!=null){
+                if (scenario.machines.removeMachine(this.machine)){
+                    
+                    // Emit event on scenario
+                    emitModifiedEvent(this.scenario, null, modificationTypes.REMOVED_ELEMENT, this.machine)
+                    // Emit event on machine
+                    emitModifiedEvent(this.machine, null, modificationTypes.DESTROYED)
+                }
+            }
+        }.bind(this)
+        
+        interface.addEditDeleteButtons("editMachineButton", null, "deleteMachineButton", deleteMachineClicked)
         
         addBrNode(formNode)
         
@@ -221,7 +234,9 @@ function MachineInfo(machineInfoNode){
         interface.addCheckbox("timeout", "Timeout")
 
         machineInfoNode.appendChild(formNode)
-    }
+    }.bind(this)
+    
+    addInterfaceNodes()
 }
 
 MachineInfo.prototype.deleteMachine = function(){
