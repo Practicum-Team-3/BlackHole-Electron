@@ -145,7 +145,7 @@ ScenariosListOverview.prototype.update = function(){
 }
 
 ScenariosListOverview.prototype.addScenarioSection = function(scenario){
-    var group = this.interface.addCollapsibleGroup(scenario.getName(), scenario.getName(), "server", "#scenarioListForm")
+    var group = this.interface.addCollapsibleGroup(scenario.getName(), scenario.getName(), "scroll", "#scenarioListForm")
     // General details
     this.interface.addLabelPair(null, "Name:", "scenarioName", scenario.getName())
 

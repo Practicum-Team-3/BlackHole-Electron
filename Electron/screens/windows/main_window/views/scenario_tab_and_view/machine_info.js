@@ -169,8 +169,8 @@ function MachineInfo(machineInfoNode, scenario){
             if (this.machine!=null){
                 if (scenario.machines.removeMachine(this.machine)){
                     
-                    // Emit event on scenario
-                    emitModifiedEvent(this.scenario, null, modificationTypes.REMOVED_ELEMENT, this.machine)
+                    // Emit event on machines
+                    emitModifiedEvent(this.scenario.machines, null, modificationTypes.REMOVED_ELEMENT, this.machine)
                     // Emit event on machine
                     emitModifiedEvent(this.machine, null, modificationTypes.DESTROYED)
                 }

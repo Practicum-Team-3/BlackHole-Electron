@@ -33,8 +33,6 @@ function NetGraph(scenario, parent){
     // use for machine info panel
     this.onSelectedNodeChangedCallback = 0
     this.date = new Date()
-
-// \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ 
     
     //================================
     // MAP BETWEEN MACHINES AND GRAPH NODES
@@ -58,11 +56,6 @@ function NetGraph(scenario, parent){
             case modificationTypes.ADDED_ELEMENT:
                 console.log("NetGraph: Notified that machine was added")
                 includeMachineInGraph(arg)
-            break
-            
-            case modificationTypes.DESTROYED:
-                console.log("NetGraph: Notified that machine was destroyed")
-                removeMachineFromGraph(arg)
             break
 
             default:break
@@ -199,7 +192,6 @@ function NetGraph(scenario, parent){
         unsubscribeFromAllMachineModifications()
     }.bind(this)
     
-// /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\
 
     /**
      * @function setOnSelectedNodeChangedCallback
