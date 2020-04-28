@@ -57,10 +57,27 @@ function BoxesListOverview(boxesListNode){
         this.boxesListNode = element
     }
 
-    this.onDeleteButtonClick = function(boxName, event){
-        event.target.disabled = true
-        
-        widow.boxes.removeBox(boxName)
+    this.onDeleteButtonClick = function(boxName, event){         
+
+         //console.log(programToDelete)
+         const { dialog } = require('electron').remote
+
+         //Minimum options object
+         let options  = {
+             buttons: ["Cancel","Yes"],
+             message: "Do you really want to delete this file " + boxName + "?"
+         }
+ 
+         //Synchronous usage
+         let response = dialog.showMessageBoxSync(options)
+         
+         if(response == 1){  
+            event.target.disabled = true      
+            widow.boxes.removeBox(boxName)
+         }else{
+            event.target.disabled = false
+         }
+        //widow.boxes.removeBox(boxName)
     }
 
 
@@ -88,7 +105,8 @@ function BoxesListOverview(boxesListNode){
     this.removeBoxSection = function(boxName){
         var formNode = this.interface.getNode("boxesListCollapsiblesForm")
         formNode.removeChild(this.boxSections[boxName])
-        delete this.boxSections[boxName]
+        delete this.boxSections[boxName] 
+
     }.bind(this)
 
 
