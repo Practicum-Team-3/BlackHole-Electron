@@ -70,11 +70,25 @@ function ScenariosListOverview(scenariosListNode){
     }
 
     this.removeScenario = function(strScenarioName, scenario){
-        console.log(scenario)
-        console.log(strScenarioName)
-        emitModifiedEvent(scenario, null, modificationTypes.DESTROYED)
-        widow.scenarios.removeScenarioByName(strScenarioName)
-        emitModifiedEvent(widow.scenarios, null, modificationTypes.REMOVED_ELEMENT, scenario)
+       
+        //console.log("strScenarioName")
+        const { dialog } = require('electron').remote
+        
+        //Minimum options object
+        let options  = {
+         buttons: ["Cancel","Yes"],
+         message: "Do you really want to delete Scenario " + strScenarioName + "?"
+        }
+        
+        //Synchronous usage
+        let response = dialog.showMessageBoxSync(options)
+        console.log(response)
+        
+        if (response == 1){
+            emitModifiedEvent(scenario, null, modificationTypes.DESTROYED)
+            widow.scenarios.removeScenarioByName(strScenarioName)
+            emitModifiedEvent(widow.scenarios, null, modificationTypes.REMOVED_ELEMENT, scenario)
+        }
     }
 }
 
@@ -131,7 +145,7 @@ ScenariosListOverview.prototype.update = function(){
 }
 
 ScenariosListOverview.prototype.addScenarioSection = function(scenario){
-    var group = this.interface.addCollapsibleGroup(scenario.getName(), scenario.getName(), "scroll", "#scenarioListForm")
+    var group = this.interface.addCollapsibleGroup(scenario.getName(), scenario.getName(), "server", "#scenarioListForm")
     // General details
     this.interface.addLabelPair(null, "Name:", "scenarioName", scenario.getName())
 

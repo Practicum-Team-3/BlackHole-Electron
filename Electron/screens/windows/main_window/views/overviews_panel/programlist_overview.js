@@ -2,14 +2,14 @@ const programListOverviewTypes = {
     VULNERABILITIES: {
         origin: "getAllNonExploits",
         shouldBeExploit: false,
-        iconLigature: "file-code",
+        iconLigature: "bug",
         uploadButtonLabel: "Upload Program",
         uploadArgument: "--vulnerability-upload"
     },
     EXPLOITS: {
         origin: "getAllExploits",
         shouldBeExploit: true,
-        iconLigature: "file-code",
+        iconLigature: "bomb",
         uploadButtonLabel: "Upload Exploit",
         uploadArgument: "--exploit-upload"
     }
@@ -19,7 +19,7 @@ const programListOverviewTypes = {
  * @class ProgramOverview
  * @description Program List in the overview panel
  */
-function ProgramListOverview(programListNode, programListOverviewType, nodeId="programListForm"){
+function ProgramListOverview(programListNode, programListOverviewType){
     this.nameForTabLabel = "ProgramList"
     this.programListNode = programListNode
     
@@ -51,7 +51,6 @@ function ProgramListOverview(programListNode, programListOverviewType, nodeId="p
         var formNode = document.createElement("form")
         //formNode.style ="background-color:red"
         formNode.className = "programListCollapsiblesForm"
-        formNode.id = nodeId
         formNode.setAttribute("onSubmit", "return false")
 
         // Add a reference to formNode on node combos, and append it
@@ -61,18 +60,44 @@ function ProgramListOverview(programListNode, programListOverviewType, nodeId="p
     addInterface()
     
     this.onDeleteButtonClick = function(programToDelete, event){
-        event.target.disabled = true
+
+        //console.log(programToDelete)
+        const { dialog } = require('electron').remote
+
+        //Minimum options object
+        let options  = {
+            buttons: ["Cancel","Yes"],
+            message: "Do you really want to delete this file " + programToDelete.getName() + "?"
+        }
+
+        //Synchronous usage
+        let response = dialog.showMessageBoxSync(options)
+        console.log(response)
         
-        widow.programs.removeProgram(programToDelete)
-        .then(function(){
-            emitModifiedEvent(widow.programs, null, modificationTypes.REMOVED_ELEMENT, programToDelete)
-        }.bind(this)).catch(function(){
-            event.target.disabled = false
-        })
+        if(response == 1){            
+            //event.target.disabled = true            
+            widow.programs.removeProgram(programToDelete)
+            .then(function(){
+                emitModifiedEvent(widow.programs, null, modificationTypes.REMOVED_ELEMENT, programToDelete)
+            }.bind(this)).catch(function(){
+                event.target.disabled = false
+            })
+        }
     }
     
     this.onIncludeButtonClick = function(programToInclude, event){
-        installProgram(programToInclude)
+        var scenarioTab = getActiveScenarioTab()
+        var selectedMachine
+        if (scenarioTab!=null){
+            selectedMachine = scenarioTab.getSelectedMachine()
+            if (selectedMachine!=null){
+                var didAddProgram = selectedMachine.programs.addProgram(programToInclude.getName(), "/bin")
+                if (didAddProgram){
+                    // Tell the world about this
+                    emitModifiedEvent(selectedMachine, null, modificationTypes.EDITED, "programs")
+                }
+            }
+        }
     }
 
     // Define the function that adds progran sections
@@ -80,7 +105,7 @@ function ProgramListOverview(programListNode, programListOverviewType, nodeId="p
         //Select the area for the groups
         interface.selectNode(interface.getNode("programListCollapsiblesForm"))
         
-        var group = interface.addCollapsibleGroup(null, programName, programListType.iconLigature, "#"+nodeId)
+        var group = interface.addCollapsibleGroup(null, programName, programListType.iconLigature)
         // General details of exploit
         interface.addLabelPair(null, "Name: ", "programName", programName)
         interface.addLabelPair(null, "OS: ", "programOs", program.getOs())
@@ -126,6 +151,15 @@ function ProgramListOverview(programListNode, programListOverviewType, nodeId="p
     this.programListNode.appendChild(sectionsContainer)
     
     
+
+
+    this.setExploits = function(exploit){
+        for(var i = 0; i < exploit.length; i++){
+            this.getNode("exploitName").innerHTML = exploit[i].getName()
+            this.getNode("exploitOs").innerHTML = exploits[i].getOs()
+
+        }
+    }
     
     this.programsModified = function(target, modificationType, arg){
         
