@@ -1,6 +1,6 @@
 {
   "name": "BlackHole",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Client for Black Widow",
   "main": "main.js",
   "scripts": {

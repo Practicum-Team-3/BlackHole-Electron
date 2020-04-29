@@ -15,7 +15,7 @@
     color: white;
     
     border: 2px solid #343a40;
-    background-color: #454d55;
+    background-color: #21243d;/* */
 }
 
 .nav-tabs .nav-link:hover, .nav-tabs .nav-link:focus {
@@ -26,10 +26,22 @@
 
 .nav-tabs .nav-link.active,
 .nav-tabs .nav-item.show .nav-link {
-    color: #495057;
+    color: #21243d;
+    font-weight: bold;
     background-color: #fff;
     border-color: #fff #fff #fff;
     overflow: hidden;
+}
+
+/* Override to custom style bars */
+.navbar-dark .navbar-nav .nav-link:link{
+    color: #007bff;
+}
+.navbar-dark .navbar-nav .nav-link:hover{
+    color: #0056b3;
+}
+.navbar-dark .navbar-nav .nav-link:active{
+    color: #0056b3;
 }
 
 /* More color options */
