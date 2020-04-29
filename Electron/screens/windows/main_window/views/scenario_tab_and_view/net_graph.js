@@ -25,7 +25,7 @@ function NetGraph(scenario, parent){
     this.link = 0;
     this.node = 0;
     this.selectedJSON = 0;
-    this.graphJSON = 0;
+    this.graphJSON = {"nodes":[], "links":[]}
     this.nodesNamesIDs = {}
 
     this.groupingsByNetMask = {}
@@ -35,7 +35,7 @@ function NetGraph(scenario, parent){
     this.date = new Date()
     
     //================================
-    // MAP BETWEEN MACHINES AND GRAPH NODES
+    // MAP BETWEEN MACHINES AND GRAPH NODE DESCRIPTORS
     //================================
     // To be able to keep the relationship between graph nodes and actual machines
     this.machineMap = new WeakMap()
@@ -57,7 +57,11 @@ function NetGraph(scenario, parent){
                 console.log("NetGraph: Notified that machine was added")
                 includeMachineInGraph(arg)
             break
+            case modificationTypes.REMOVED_ELEMENT:
 
+                removeMachineFromGraph(arg)
+
+            break
             default:break
         }
     }.bind(this)
@@ -81,20 +85,10 @@ function NetGraph(scenario, parent){
                 // check for what was actually changed
                 switch(arg){
                     case "getName"://The name was changed
-
-                        //use the name of the grapNode to update the nodeNamesIDs entry
-                        var newName = machine.getName() + "_" + generateUniqueId()
-
-                        this.nodesNamesIDs[machine.getName()] = newName
-
-                        delete this.nodesNamesIDs[this.getKeyByValue(this.nodesNamesIDs, graphNode.name)]
-
-
-                        graphNode.name = newName
+                        graphNode.name = machine.getName()
 
                         //missing updating nodeNamesIDs
                         console.log(this.graphJSON)
-                        console.log(this.nodesNamesIDs)
                     break
 
                     case "getIsAttacker":
@@ -104,11 +98,7 @@ function NetGraph(scenario, parent){
             break
 
 
-            case modificationTypes.DESTROYED:
-
-                removeMachineFromGraph(machine)
-
-            break
+            
        }
         //redraw the graph
         this.redrawGraph(this.graphJSON)
@@ -162,7 +152,7 @@ function NetGraph(scenario, parent){
         
         var newJSONNode = this.addNewNode(machine)
         
-        //At some point, add mapping from machine to graph node
+        //Add mapping from machine to graph node
         this.machineMap.set(machine, newJSONNode)
     }.bind(this)
     
@@ -170,10 +160,13 @@ function NetGraph(scenario, parent){
         console.log("NetGraph: Removing machine "+machine.getName()+" from graph")
         //Unsubscribe from machine modification events
         unsubscribeFromMachineModifications(machine)
-
-        this.deleteNode(this.nodesNamesIDs[machine.getName()])
         
-        //At some point, remove mapping from machine to graph node
+        //Get graph node
+        var nodeDescriptor = this.machineMap.get(machine)
+
+        this.deleteNode(nodeDescriptor.id)
+        
+        //Remove mapping from machine to graph node
         this.machineMap.delete(machine)
     }.bind(this)
     
@@ -192,6 +185,7 @@ function NetGraph(scenario, parent){
         unsubscribeFromAllMachineModifications()
     }.bind(this)
     
+    //////////////////////////////////////////////////////
 
     /**
      * @function setOnSelectedNodeChangedCallback
@@ -215,94 +209,14 @@ function NetGraph(scenario, parent){
         this.startGraph()
     }
 
-    /**
-     * @function getGraphJSONFromScenario
-     * @description Takes a senario object and returns a graphJSON object based on IP/24 masks
-     * @param {Scenario} scenarioObject Scenario object to use.
-     */
-    this.getGraphJSONFromScenario = function(scenarioObject){
-
-        this.groupingsByNetMask = {}
-
-        var machines = scenarioObject.getAllMachines()
-
-        //check that machines have unique names
-        var names = {}
+    this.addAllNodesFromScenario = function(){
+        var machines = this.scenario.machines.getAllMachines()
+        
         for(var i = 0; i<machines.length; i++){
-            names[machines[i].getName()] = 0
+            includeMachineInGraph(machines[i])
         }
-        for(var i = 0; i<machines.length; i++){
-            names[machines[i].getName()] += 1
-            if(names[machines[i].getName()] > 1){
-                showToast("Duplicate Machine Names", "This scenario contains machines with duplicate names, can't show graph.")
-                return
-            }
-        }
-
-        var JSONObj = {"nodes":[], "links":[]}
-
-        //create nodes
-        var nameIndex = {}
-        var machinePlaceholder = 0
-        this.machineMap = new WeakMap()
-        for(var i = 0; i<machines.length; i++){
-            this.nodesNamesIDs[machines[i].getName()] = machines[i].getName() + "_" + generateUniqueId()
-            machinePlaceholder = {
-                "name":this.nodesNamesIDs[machines[i].getName()],
-                "type": machines[i].getIsAttacker() ? "attacker" : "victim",
-                "x": 442, 
-                "y": 365,
-                "ip":machines[i].networkSettings.getIpAddress(),
-                "machine":machines[i]
-            }
-
-            //Add to machine map
-            this.machineMap.set(machines[i], machinePlaceholder)
-
-            JSONObj["nodes"].push(machinePlaceholder)
-            nameIndex[this.nodesNamesIDs[machines[i].getName()]] = i
-        }
-
-        //This implementation is net mask /24 hardcoded, in future must support any netmasks.
-        this.groupingsByNetMask = {}
-        for(var i = 0; i<machines.length; i++){
-            var ip = machines[i].networkSettings.getIpAddress().split(".")
-            var netMask24 = ip[0] + "." + ip[1] + "." + ip[2]
-            this.groupingsByNetMask[netMask24] = []
-        }
-
-        for(var i = 0; i<machines.length; i++){
-            var ip = machines[i].networkSettings.getIpAddress().split(".")
-            var netMask24 = ip[0] + "." + ip[1] + "." + ip[2]
-            this.groupingsByNetMask[netMask24].push(machines[i])
-        }
-
-        //but triple nested loop is because 'document.getElementById()' doesnt work
-        var pairings = []
-        var netMasks = Object.keys(this.groupingsByNetMask)
-        for(var i = 0; i<netMasks.length; i++){
-            var netMachines = this.groupingsByNetMask[netMasks[i]]
-            for(var j = 0; j<netMachines.length; j++){
-                for(var k = 0; k<netMachines.length; k++){
-                    if(j != k){
-                        var pair = [this.nodesNamesIDs[netMachines[j].getName()], this.nodesNamesIDs[netMachines[k].getName()]].sort()
-                        if(pairings.indexOf(pair.join()) < 0){
-                            pairings.push(pair.join())
-                            JSONObj["links"].push({
-                                "source": nameIndex[pair[0]],
-                                "target": nameIndex[pair[1]],
-                                "netMask": netMasks[i]
-                            })
-                        }
-                    }
-                }
-            }
-        }
-        console.log(JSONObj)
-        return JSONObj
     }
 
-    this.graphJSON = this.getGraphJSONFromScenario(this.scenario);
 
     /**
      * @function updateScenarioFromJSONGraph
@@ -316,7 +230,7 @@ function NetGraph(scenario, parent){
         //this function must be called whenever a node is added or a link is deleted/created
         var machine = 0
         for(var i = 0; i<this.graphJSON["nodes"].length; i++){
-            machine = this.scenario.getMachineByName(this.getKeyByValue(this.nodesNamesIDs, this.graphJSON["nodes"][i]["name"]))
+            machine = this.graphJSON["nodes"][i]["machine"]
             if(machine != undefined && machine != null){
                 //machine.setName(this.getKeyByValue(this.nodesNamesIDs, this.graphJSON["nodes"][i]["name"]))
                 //machine.setIsAttacker(this.graphJSON["nodes"][i]["type"] == "attacker" ? true : false)
@@ -442,9 +356,10 @@ function NetGraph(scenario, parent){
         this.force.linkDistance(80);
         this.force.on("tick", this.tick.bind(this));
 
-        //Instantiate a drag object and set the callback function 'dragstart'.
+        //Instantiate a drag object and set the callback functions 'dragstart' and 'dragend'.
         this.drag = this.force.drag();
         this.drag.on("dragstart", this.dragstart.bind(this));
+        this.drag.on("dragend", this.dragend.bind(this));
 
         this.resetGraphData();
         this.enableZoomAndPan(this.svg);
@@ -500,7 +415,7 @@ function NetGraph(scenario, parent){
         this.link.enter().append("line");
         this.link.attr("class", "link");
         this.link.attr("id", (d) => {
-            return d.source.name + "_to_" + d.target.name;
+            return d.source.id + "_to_" + d.target.id;
         })
         this.link.attr("stroke", "#f8f9fa");
         this.link.attr("stroke-width", "6");
@@ -512,7 +427,7 @@ function NetGraph(scenario, parent){
 
         this.node.enter().append("circle");
         this.node.attr("class", "node");
-        this.node.attr("id", (d) => {return d.name;});
+        this.node.attr("id", (d) => {return d.id;});
         this.node.attr("r", this.nodesRadius);
         this.node.attr("stroke-width", "4");
         this.node.attr("stroke", this.VMColor.bind(this));
@@ -568,10 +483,9 @@ function NetGraph(scenario, parent){
      */
     this.handleMouseOver = function(d) {
         
-        this.zoomAndPanEnabled = false;
         if(d.selected == "false"){
             // Use D3 to select element, change color and size
-            this.d3.select("#" + d.name).attr({
+            this.d3.select("#" + d.id).attr({
             fill: this.VMColor(d),
             r: this.nodesRadius * 1.2,
             stroke: this.strokeColor(d)
@@ -580,12 +494,12 @@ function NetGraph(scenario, parent){
         
         this.svg.append("text").attr({
         fill:"white",
-        id: "t" + d.name,  // Create an id for text so we can select it later for removing on mouseout
+        id: "t" + d.id,  // Create an id for text so we can select it later for removing on mouseout
             x: function() {return d.x - 70; },
             y: function() {return d.y - 15; },
         })
         .text(function() {
-        return d.name.split("_")[0];  // Value of the text
+        return d.name;  // Value of the text
         });
     }
 
@@ -596,10 +510,9 @@ function NetGraph(scenario, parent){
      */
     this.handleMouseOut = function(d) {
 
-        this.zoomAndPanEnabled = true;
         if(d.selected == "false"){
             // Use D3 to select element, change color back to normal
-            this.d3.select("#" + d.name).attr({
+            this.d3.select("#" + d.id).attr({
             fill: this.VMColor(d),
             r: this.nodesRadius,
             stroke: this.VMColor(d)
@@ -607,7 +520,7 @@ function NetGraph(scenario, parent){
         }
 
         // Select text by id and then remove
-        this.d3.select("#t" + d.name).remove();  
+        this.d3.select("#t" + d.id).remove();  
     }
 
     /**
@@ -628,13 +541,13 @@ function NetGraph(scenario, parent){
 
 
     this.updateX = function(d){
-        this.d3.select("#t" + d.name).attr("x", d.x - 70);
+        this.d3.select("#t" + d.id).attr("x", d.x - 70);
         return d.x; 
     }
 
 
     this.updateY = function(d){
-        this.d3.select("#t" + d.name).attr("y", d.y - 15);
+        this.d3.select("#t" + d.id).attr("y", d.y - 15);
         return d.y; 
     }
 
@@ -647,7 +560,7 @@ function NetGraph(scenario, parent){
     this.dblclick = function(d) {
         
         d.fixed = false
-        var elem = document.getElementById(d.name)
+        var elem = document.getElementById(d.id)
         elem.setAttribute("fixed", d.fixed)
         elem.setAttribute("fill", this.VMColor(d))
     }
@@ -658,11 +571,15 @@ function NetGraph(scenario, parent){
      * @param d nodeJSON object.
      */
     this.dragstart = function(d) {
-
+        this.zoomAndPanEnabled = false;
         d.fixed = true
-        var elem = document.getElementById(d.name)
+        var elem = document.getElementById(d.id)
         elem.setAttribute("fixed", d.fixed)
         elem.setAttribute("fill", this.VMColor(d))
+    }
+    
+     this.dragend = function(d) {
+        this.zoomAndPanEnabled = true;
     }
 
     /**
@@ -676,15 +593,14 @@ function NetGraph(scenario, parent){
             //search for link in graph and delete
             var index = -1;
             for(var i = 0; i<this.graphJSON.links.length; i++){
-                if((this.graphJSON.links[i].source.name == d.source.name)&&(this.graphJSON.links[i].target.name == d.target.name)){
+                if((this.graphJSON.links[i].source.id == d.source.id)&&(this.graphJSON.links[i].target.id == d.target.id)){
                     var index = i;
                 }
             }
 
             if(index >= 0){
                 this.graphJSON.links.splice(index, 1);
-                this.d3.select("#" + d.source.name + "_to_" + d.target.name).remove()
-                this.updateJSONString(this.graphJSON);
+                this.d3.select("#" + d.source.id + "_to_" + d.target.id).remove()
                 this.resetGraphData()
                 this.selectedJSON = 0;
             }else{
@@ -702,7 +618,7 @@ function NetGraph(scenario, parent){
      * @description Removes node from DOM and graphJSON.
      * @param d nodeJSON object.
      */
-    this.deleteNode = function(nodeName){
+    this.deleteNode = function(nodeId){
         //i hate this function, its ugly, 'document.getElementById()' doesn't work on svg elements, thats why
 
         //find node with id
@@ -719,7 +635,7 @@ function NetGraph(scenario, parent){
         if(svgElem != 0){
             children = svgElem.children
             for(var i = 0; i<children.length; i++){
-                if(children[i].id == nodeName){
+                if(children[i].id == nodeId){
                     elem = children[i]
                     this.d3.select(elem).remove()
                 }
@@ -727,7 +643,7 @@ function NetGraph(scenario, parent){
 
             if(elem != 0){
                 for(var i = 0; i<this.graphJSON.nodes.length; i++){
-                    if(this.graphJSON.nodes[i].name == elem.id){
+                    if(this.graphJSON.nodes[i].id == elem.id){
                         this.graphJSON.nodes.splice(i, 1)
                     }
                 }
@@ -737,7 +653,7 @@ function NetGraph(scenario, parent){
             //remove all link
             var linksToRemove = []
             for(var i = 0; i<this.graphJSON.links.length; i++){
-                if((this.graphJSON.links[i].source.name == nodeName) || (this.graphJSON.links[i].target.name == nodeName)){
+                if((this.graphJSON.links[i].source.id == nodeId) || (this.graphJSON.links[i].target.id == nodeId)){
                     linksToRemove.push(this.graphJSON.links[i])
                 }
             }
@@ -760,13 +676,13 @@ function NetGraph(scenario, parent){
         if(this.selectedJSON != 0){
             if(this.selectedJSON != d){
                 this.selectedJSON.selected = "false";
-                this.d3.select("#" + this.selectedJSON.name)
+                this.d3.select("#" + this.selectedJSON.id)
                 .attr("stroke", this.VMColor(this.selectedJSON))
                 .attr("r", this.nodesRadius);
 
                 if(this.connectionCreateEnabled){
                     //links are bididerctional for now
-                    if((this.d3.select("#" + this.selectedJSON.name + "_to_" + d.name)[0][0] == null) && (this.d3.select("#" + d.name + "_to_" + this.selectedJSON.name)[0][0] == null)){
+                    if((this.d3.select("#" + this.selectedJSON.id + "_to_" + d.id)[0][0] == null) && (this.d3.select("#" + d.id + "_to_" + this.selectedJSON.id)[0][0] == null)){
                         this.connectNodes(this.selectedJSON, d)
                     }
                 }
@@ -785,8 +701,8 @@ function NetGraph(scenario, parent){
             }
         }
         d.selected = "true";
-        this.d3.select("#" + d.name).attr("stroke", this.strokeColor(d))
-        this.d3.select("#" + d.name).attr("fill", this.VMColor(d))
+        this.d3.select("#" + d.id).attr("stroke", this.strokeColor(d))
+        this.d3.select("#" + d.id).attr("fill", this.VMColor(d))
         this.selectedJSON = d;
     }
 
@@ -803,7 +719,6 @@ function NetGraph(scenario, parent){
     this.connectNodes = function(sourceJSON, destJSON){
         newLink = {"source":sourceJSON, "target":destJSON}
         this.graphJSON.links.push(newLink);
-        this.updateJSONString(this.graphJSON);
         this.svg.selectAll("*").remove();
         this.resetGraphData();
 
@@ -832,6 +747,48 @@ function NetGraph(scenario, parent){
             }
         }
     }
+    
+    ////////////////
+    // This code lost it's home, but some of it seems important.
+    // Should it be put back somewhere?
+    ////////////////
+    /*
+    //This implementation is net mask /24 hardcoded, in future must support any netmasks.
+    this.groupingsByNetMask = {}
+    for(var i = 0; i<machines.length; i++){
+        var ip = machines[i].networkSettings.getIpAddress().split(".")
+        var netMask24 = ip[0] + "." + ip[1] + "." + ip[2]
+        this.groupingsByNetMask[netMask24] = []
+    }
+
+    for(var i = 0; i<machines.length; i++){
+        var ip = machines[i].networkSettings.getIpAddress().split(".")
+        var netMask24 = ip[0] + "." + ip[1] + "." + ip[2]
+        this.groupingsByNetMask[netMask24].push(machines[i])
+    }
+
+    //but triple nested loop is because 'document.getElementById()' doesnt work
+    var pairings = []
+    var netMasks = Object.keys(this.groupingsByNetMask)
+    for(var i = 0; i<netMasks.length; i++){
+        var netMachines = this.groupingsByNetMask[netMasks[i]]
+        for(var j = 0; j<netMachines.length; j++){
+            for(var k = 0; k<netMachines.length; k++){
+                if(j != k){
+                    var pair = [this.nodesNamesIDs[netMachines[j].getName()], this.nodesNamesIDs[netMachines[k].getName()]].sort()
+                    if(pairings.indexOf(pair.join()) < 0){
+                        pairings.push(pair.join())
+                        JSONObj["links"].push({
+                            "source": nameIndex[pair[0]],
+                            "target": nameIndex[pair[1]],
+                            "netMask": netMasks[i]
+                        })
+                    }
+                }
+            }
+        }
+    }
+    */
 
 
     /**
@@ -844,14 +801,11 @@ function NetGraph(scenario, parent){
 
         var machineName = machine.getName()
 
-        if(this.nodesNamesIDs[machineName] != null && this.nodesNamesIDs[machineName] != undefined){
-            machineName = machineName + generateUniqueId()
-        }
-
-        this.nodesNamesIDs[machineName] = machineName + "_" + generateUniqueId()
+        var nodeId = generateUniqueId()
+        
         //Clone an element from the graph.
         newNode = {
-            "name":this.nodesNamesIDs[machineName],
+            "name":machineName,
             "type":machine.getIsAttacker() == true ? "attacker" : "victim", 
             "x":0, 
             "y":0, 
@@ -860,8 +814,9 @@ function NetGraph(scenario, parent){
             "fixed":0,
             "selected":"false",
             "ip":this.getAvailableIpByNetMask("192.168.50"),//must guard for case where no ip is available
-            "machine":machine
-            }
+            "machine":machine,
+            "id": nodeId
+        }
 
         this.graphJSON["nodes"].push(newNode);
         
@@ -874,35 +829,6 @@ function NetGraph(scenario, parent){
         return newNode
     }
 
-    /**
-     * @function updateJSONString
-     * @description Updates the relevant fields of JSON string encoding of the graph. 
-     * @param graphJSONObject graphJSON object.
-     */    
-    this.updateJSONString = function(graphJSONObject){////////////////////////////////////////////////////////////////////////
-        updatedModelObject = {"nodes":[], "links":[]};
-        
-        var currentNodes = graphJSONObject["nodes"];
-        for(var i = 0; i<currentNodes.length; i++){
-            var newNode = {
-                "name": currentNodes[i]["name"],
-                "x": currentNodes[i]["x"],
-                "y": currentNodes[i]["y"],
-                "type": currentNodes[i]["type"]
-            }
-            updatedModelObject["nodes"].push(newNode);
-        }
-
-        var currentLinks = graphJSONObject["links"];
-        for(var i = 0; i<currentLinks.length; i++){
-            var newLink = {
-                "source":currentLinks[i]["source"]["index"],
-                "target":currentLinks[i]["target"]["index"],
-                "netMask":currentLinks[i]["netMask"]
-            }
-            updatedModelObject["links"].push(newLink);
-        }
-    }     
 
     /**
      * @function addFloatingFooterButtons
@@ -969,7 +895,7 @@ function NetGraph(scenario, parent){
         repositionButton.id = "repositionButton"
         repositionButton.innerHTML = "Re-center"
         repositionButton.style = "position:absolute; top: 60px; left:20px; z-index:1"
-        repositionButton.addEventListener("click", this.startGraph.bind(this))
+        repositionButton.addEventListener("click", this.redrawFromJson.bind(this))
         this.parentNode.appendChild(repositionButton)
     }
 
@@ -981,8 +907,10 @@ function NetGraph(scenario, parent){
      */ 
     this.startGraph = function(){
         this.redrawGraph(this.graphJSON)
+        this.addAllNodesFromScenario();
+    }
+    
+    this.redrawFromJson = function(){
+        this.redrawGraph(this.graphJSON)
     }
 }
-
-
-
