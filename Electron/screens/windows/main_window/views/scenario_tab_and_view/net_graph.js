@@ -95,7 +95,7 @@ function NetGraph(scenario, parent){
             break
        }
         //redraw the graph
-//        this.redrawGraph(this.graphJSON)
+//        this.drawGraph(this.graphJSON)
         this.setGraphData()
     }.bind(this)
     // When do we subscribe to the machine modification event?, whenever a machine is included in the graph
@@ -224,7 +224,6 @@ function NetGraph(scenario, parent){
             "machine":machine,
             "id": nodeId
         }
-
         this.graphJSON["nodes"].push(newNode);
         
         //temporary workaround, uncomment code above once netmasks are implemented//////////////////////////////////////////////////////////
@@ -381,12 +380,12 @@ function NetGraph(scenario, parent){
     }
     
     /**
-     * @function redrawGraph
-     * @description Redraws the graph encoded as a graphJSON, may be used for repositioning also.
+     * @function drawGraph
+     * @description Draws the graph encoded as a graphJSON, may be used for repositioning also.
      *                  Removes the whole SVG node, adds a fresh one, and sets the graph data
      * @param {JSON} graphJSON JSON object to use.
      */
-    this.redrawGraph = function(graphJSON){
+    this.drawGraph = function(graphJSON){
 
         this.graphJSON = graphJSON
 
@@ -427,7 +426,6 @@ function NetGraph(scenario, parent){
      * 
      */
     this.setGraphData = function(){
-        
         //Set the global link object to point to all the 'link' class elements inside the svg.
         this.link = this.svg.selectAll(".link");//line svg elements
         this.node = this.svg.selectAll(".node");//circle svg elements
@@ -465,6 +463,9 @@ function NetGraph(scenario, parent){
         this.node.attr("stroke-width", "4");
         this.node.attr("stroke", this.VMColor.bind(this));
         this.node.attr("fill", this.VMColor.bind(this));
+        
+        // Make sure the current transform is applied on the new guys
+        this.applyLastTransform()
         
         // Add mouse event listeners to the nodes
         this.node.on("mouseover", this.handleMouseOver.bind(this));
@@ -519,7 +520,7 @@ function NetGraph(scenario, parent){
      */
     this.enableZoomAndPan = function(svgElement){
         var zoom = this.d3.behavior.zoom()
-//        zoom.center([0,0])
+        zoom.scaleExtent([0.5, 5])
         this.zoom = zoom
         zoom.on("zoom", this.zoomAndPanHandler.bind(this))
         
@@ -527,6 +528,7 @@ function NetGraph(scenario, parent){
     }
     
     var lastTranslate = [0, 0]
+    var lastScale = 1
     
     /**
      * @function zoomAndPanHandler
@@ -539,11 +541,15 @@ function NetGraph(scenario, parent){
             var translate = this.d3.event.translate
             var scale = this.d3.event.scale
             
-            this.svg.selectAll('*').attr("transform", "translate(" + translate + ")" + " scale(" + scale + ")")
-            //this.node.attr("transform", "translate(" + this.d3.event.translate + ")" + " scale(" + this.d3.event.scale + ")")
+            this.svg.selectAll('*').attr("transform", "translate("+translate+") scale("+scale+")")
             
             lastTranslate = translate
+            lastScale = scale
         }
+    }
+    
+    this.applyLastTransform = function(){
+        this.svg.selectAll('*').attr("transform", "translate("+lastTranslate+") scale("+lastScale+")")
     }
     
     /**
@@ -552,7 +558,7 @@ function NetGraph(scenario, parent){
      * @param d nodeJSON object.
      */
     this.handleMouseOver = function(d) {
-        console.log(d.x)
+        
         if(d.selected == "false"){
             // Use D3 to select element, change color and size
             this.d3.select("#" + d.id).attr({
@@ -563,13 +569,14 @@ function NetGraph(scenario, parent){
         }
         
         this.svg.append("text").attr({
-        fill:"white",
-        id: "t" + d.id,  // Create an id for text so we can select it later for removing on mouseout
-            x: function() {return d.x - 70 + lastTranslate[0]; },
-            y: function() {return d.y - 15 + lastTranslate[1]; },
+            fill: "white",
+            id: "t" + d.id,  // Create an id for text so we can select it later for removing on mouseout
+                x: function() {return d.x - 70; },
+                y: function() {return d.y - 15; },
+            transform: "translate("+lastTranslate+") scale("+lastScale+")",
         })
         .text(function() {
-        return d.name;  // Value of the text
+            return d.name;  // Value of the text
         });
     }
     
@@ -600,7 +607,6 @@ function NetGraph(scenario, parent){
      * @param d nodeJSON object.
      */
     this.dblclick = function(d) {
-        
         d.fixed = false
         var elem = document.getElementById(d.id)
         elem.setAttribute("fixed", d.fixed)
@@ -935,13 +941,12 @@ function NetGraph(scenario, parent){
      */ 
     this.startGraph = function(){
         this.forceAndDragSetup()
-        this.redrawGraph(this.graphJSON)
+        this.drawGraph(this.graphJSON)
         this.addAllNodesFromScenario();
-        koko = this
     }
     
     this.redrawFromJson = function(){
-        this.redrawGraph(this.graphJSON)
+        this.drawGraph(this.graphJSON)
     }
     
     /**

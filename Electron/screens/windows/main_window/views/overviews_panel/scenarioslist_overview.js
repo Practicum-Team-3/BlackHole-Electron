@@ -152,7 +152,7 @@ ScenariosListOverview.prototype.addScenarioSection = function(scenario){
     this.interface.addLabelPair(null, "Description:", "scenarioDes", scenario.getDescription())
     this.interface.addLabelPair(null, "CreationDate:", "scenarioCreationDate", scenario.getCreationDate().toLocaleDateString())
     this.interface.addLabelPair(null, "LastAccessed:", "scenarioLastAccessed", scenario.getLastAccessed().toLocaleDateString())
-    this.interface.addLabelPair(null, "No. Machines:", "scenarioNoMachines", scenario.getAllMachines().length)
+    this.interface.addLabelPair(null, "No. Machines:", "scenarioNoMachines", scenario.machines.getAllMachines().length)
     this.interface.addLabelPair(null, "Status:", "scenarioStatus", "Running")
     var strScenarioName = scenario.getName();
     this.interface.addOpenEditButtons(null, openScenarioByName.bind(event, strScenarioName), null, this.removeScenario.bind(event, strScenarioName, scenario))
