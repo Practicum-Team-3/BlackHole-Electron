@@ -41,7 +41,7 @@ body {
 /* ======= Inside central view ======= */
 
 .overviewsPanel{
-    flex: 1 0 220px;
+    flex: 0 0 260px;
     max-width: 350px;
     height: 100%;
     overflow-x: hidden;
@@ -82,7 +82,7 @@ body {
 
 
 .networkGraphContainer{
-    background-color: #222724;
+    background-color: #191f25;
     flex-shrink: 2;
     flex-grow: 3;
     overflow: hidden;

@@ -72,9 +72,6 @@ function makeBridge(){
         show: false
     })
     
-    bridge.once('ready-to-show', () => {
-        bridge.setEnabled(false)
-    })
 
     // Load chromium instance with bridge
     bridge.loadFile('./widow/bridge/bridge.html')
