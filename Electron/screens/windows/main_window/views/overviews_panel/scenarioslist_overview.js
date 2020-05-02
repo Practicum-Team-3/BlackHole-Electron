@@ -8,6 +8,9 @@ function ScenariosListOverview(scenariosListNode){
     this.scenariosObject = null
     var sectionsContainer = document.createElement("div")
     sectionsContainer.className = "fillSpace columnFlex ScenariosListOverviewSectionsContainer"
+    
+    // Weak map to keep references to section nodes
+    this.scenarioSections = new WeakMap();
 
     this.interface = new NodeCombos(sectionsContainer)
 
@@ -45,6 +48,8 @@ function ScenariosListOverview(scenariosListNode){
     this.getInterface = function(){
         return this.interface
     }
+    
+    this.scenarioModifiedBound = this.scenarioModified.bind(this)
 
     this.removeScenarioSectionBound = this.removeScenarioSection.bind(this)
 
@@ -69,9 +74,10 @@ function ScenariosListOverview(scenariosListNode){
         // netGraph.addNewNode(boxName, "victim")
     }
 
-    this.removeScenario = function(strScenarioName, scenario){
+    this.removeScenario = function(scenario){
        
         //console.log("strScenarioName")
+        var strScenarioName = scenario.getName()
         const { dialog } = require('electron').remote
         
         //Minimum options object
@@ -103,8 +109,8 @@ ScenariosListOverview.prototype.setScenarios = function (scenariosObject){
     this.scenariosObject = scenariosObject
     //console.log(scenariosObject.getAllScenarios());
     //onModified(this.scenariosObject, this.scenariosModified.bind(this))
-    this.onScenarioModified = this.scenariosModified.bind(this);
-    onModified(this.scenariosObject, this.onScenarioModified)
+    this.onScenariosModified = this.scenariosModified.bind(this);
+    onModified(this.scenariosObject, this.onScenariosModified)
     this.update()
 }
 
@@ -149,24 +155,39 @@ ScenariosListOverview.prototype.addScenarioSection = function(scenario){
     // General details
     this.interface.addLabelPair(null, "Name:", "scenarioName", scenario.getName())
 
-    this.interface.addLabelPair(null, "Description:", "scenarioDes", scenario.getDescription())
-    this.interface.addLabelPair(null, "CreationDate:", "scenarioCreationDate", scenario.getCreationDate().toLocaleDateString())
-    this.interface.addLabelPair(null, "LastAccessed:", "scenarioLastAccessed", scenario.getLastAccessed().toLocaleDateString())
-    this.interface.addLabelPair(null, "No. Machines:", "scenarioNoMachines", scenario.getAllMachines().length)
-    this.interface.addLabelPair(null, "Status:", "scenarioStatus", "Running")
+    // Keep access to labels on group node
+    group.labels = {}
+    
+    group.labels.getDescription = this.interface.addLabelPair(null, "Description:", "scenarioDes", scenario.getDescription()).rightLabel
+    group.labels.getCreationDate = this.interface.addLabelPair(null, "Creation Date:", "scenarioCreationDate", scenario.getCreationDate().toLocaleDateString()).rightLabel
+    group.labels.getLastAccessed = this.interface.addLabelPair(null, "Last Accessed:", "scenarioLastAccessed", scenario.getLastAccessed().toLocaleDateString()).rightLabel
+    group.labels.machineCount = this.interface.addLabelPair(null, "No. Machines:", "scenarioNoMachines", scenario.machines.getAllMachines().length).rightLabel
+    group.labels.status = this.interface.addLabelPair(null, "Status:", "scenarioStatus", "Running").rightLabel
     var strScenarioName = scenario.getName();
-    this.interface.addOpenEditButtons(null, openScenarioByName.bind(event, strScenarioName), null, this.removeScenario.bind(event, strScenarioName, scenario))
+    this.interface.addOpenEditButtons(null, openScenario.bind(event, scenario), null, this.removeScenario.bind(event, scenario))
     this.interface.selectNode(this.interface.getNode("scenariosListCollapsiblesForm"))
+    
+    // Add mapping to be able to retrieve later
+    this.scenarioSections.set(scenario, group)
+    
+    // Subscribe to scenario modifications
+    onModified(scenario, this.scenarioModifiedBound)
     
     return group
 }
 
 //Remove Scenarios
-ScenariosListOverview.prototype.removeScenarioSection = function (scenario) {    
-    var group = this.interface.getNode(scenario.getName());
-    //console.log(group);
+ScenariosListOverview.prototype.removeScenarioSection = function (scenario) {
+    // Retrieve the group node from the map
+    var group = this.scenarioSections.get(scenario)
+    
     group.remove();
     
+    // No need to unsubscribe from modifications
+    // the whole scenario got removed!
+    
+    // Remove mapping to group node
+    this.scenarioSections.delete(scenario)
 }
 
 ScenariosListOverview.prototype.scenariosModified = function(target, modificationType, arg){
@@ -181,7 +202,19 @@ ScenariosListOverview.prototype.scenariosModified = function(target, modificatio
 
         case modificationTypes.REMOVED_ELEMENT:
             var group = this.removeScenarioSectionBound(arg)
-            //$(group.lastChild).collapse('show')
             break;
+    }
+}
+
+ScenariosListOverview.prototype.scenarioModified = function(target, modificationType, arg){
+    // Retrieve the group node from the map
+    var group = this.scenarioSections.get(target)
+    switch(modificationType){
+        case modificationTypes.EDITED:
+            // Check if modification conforms to the superautomaticnamingpractice
+            if (group.labels[arg]!=null && target[arg]!=null){
+                group.labels[arg].innerText = target[arg]()
+            }
+        break;
     }
 }

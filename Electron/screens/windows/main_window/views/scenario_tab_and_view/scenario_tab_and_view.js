@@ -54,8 +54,8 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
         
         netGraph = new NetGraph(scenario, netGraphNode)
         netGraph.startGraph()
-        var footerButtons = {"Restart All_success":function(){showToast("Restart All Machines", "Not Implemented")}, "Shutdown All_danger":function(){showToast("Shutdown All Machines", "Not Implemented")}, "Pause/Resume All_success":function(){showToast("Pause/Resume All Machines", "Not Implemented")}}
-        netGraph.addFloatingFooterButtons(footerButtons)
+//        var footerButtons = {"Restart All_success":function(){showToast("Restart All Machines", "Not Implemented")}, "Shutdown All_danger":function(){showToast("Shutdown All Machines", "Not Implemented")}, "Pause/Resume All_success":function(){showToast("Pause/Resume All Machines", "Not Implemented")}}
+//        netGraph.addFloatingFooterButtons(footerButtons)
         netGraph.drawGraphOptionButtons()
 
         //This gets real (Add to centralView's node)

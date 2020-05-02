@@ -3,9 +3,11 @@ const electron = require('electron')
 const defaultWidowAddress = "http://localhost"
 const defaultCloudSubdomain = "nextcloud"
 const defaultCloudPath = "/remote.php/dav/files/admin/"
+const defaultRemoteDesktopSubdomain = "guac"
+const defaultRemoteDesktopPath = "/guacamole/"
 /**
  * @class Widow
- * @version 1.3.0
+ * @version 1.4.0
  * @description Abstraction for the communication to the Widow backend.
  *              No need to instantiate, just reference the shared instance widow
  *              
@@ -13,7 +15,7 @@ const defaultCloudPath = "/remote.php/dav/files/admin/"
  */
 function Widow(){
     this.defaultAddress = defaultWidowAddress
-    this.widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudSubdomain, defaultCloudPath)
+    var widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudSubdomain, defaultCloudPath, defaultRemoteDesktopSubdomain, defaultRemoteDesktopPath)
     
     // Start global pocket
     pocket = null
@@ -30,19 +32,38 @@ function Widow(){
      * @description Access the scenarios from Black Widow
      * @memberof Widow
      */
-    this.scenarios = new Scenarios(this.widowSettings)
+    this.scenarios = new Scenarios(widowSettings)
     /**
      * @type {Boxes}
      * @description Access the vagrant boxes from Black Widow
      * @memberof Widow
      */
-    this.boxes = new Boxes(this.widowSettings)
+    this.boxes = new Boxes(widowSettings)
     /**
      * @type {Programs}
      * @description Access the installable programs from Black Widow
      * @memberof Widow
      */
-    this.programs = new Programs(this.widowSettings)
+    this.programs = new Programs(widowSettings)
+    
+    /**
+     * @function setAddress
+     * @description Set the address to Black Widiow
+     * @memberof Widow
+     * @param {string} address
+     */
+    this.setAddress = function(address){
+        widowSettings.setAddress(address)
+    }
+    
+    /**
+     * @function getRemoteDesktopAddress
+     * @description Returns the complete url to the remote desktop client
+     * @returns {string} Address to remote desktop service
+     */
+    this.getRemoteDesktopAddress = function(){
+        return widowSettings.getRemoteDesktopAddress()
+    }
 }
 
 /**
@@ -72,9 +93,6 @@ function makeBridge(){
         show: false
     })
     
-    bridge.once('ready-to-show', () => {
-        bridge.setEnabled(false)
-    })
 
     // Load chromium instance with bridge
     bridge.loadFile('./widow/bridge/bridge.html')
@@ -102,7 +120,7 @@ Widow.prototype.setAxiosBridge = function(_axiosBridge){
 Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
     console.log("Widow::linkAndSync....")
 
-    this.widowSettings.setAddress(address)
+    this.setAddress(address)
     syncUpdate(10)
     
     return this.scenarios.loadScenarios()
@@ -150,7 +168,7 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
  * @param   {string} _cloudSubdomain Subdomain for cloud service
  * @param   {string} _cloudPath   Path to cloud files
  */
-function WidowSettings(_address, _cloudSubdomain, _cloudPath){
+function WidowSettings(_address, _cloudSubdomain, _cloudPath, _remoteDesktopSubdomain, _remoteDesktopPath){
     var address = address
     var cloudSubdomain = _cloudSubdomain
     var cloudPath = _cloudPath
@@ -158,6 +176,9 @@ function WidowSettings(_address, _cloudSubdomain, _cloudPath){
         username: 'admin',
         password: 'password'
     }
+    var remoteDesktopSubdomain = _remoteDesktopSubdomain
+    var remoteDesktopPath = _remoteDesktopPath
+    
     
     this.getAddress = function(){
         return address
@@ -176,6 +197,15 @@ function WidowSettings(_address, _cloudSubdomain, _cloudPath){
         cloudUrl.hostname = cloudSubdomain+"."+cloudUrl.hostname
         
         return cloudUrl.href
+    }
+    
+    this.getRemoteDesktopAddress = function(){
+        // Make url with the complete route (still missing subdomain)
+        var remoteDesktopUrl = new URL(remoteDesktopPath, address)
+        // Add sumdomain
+        remoteDesktopUrl.hostname = remoteDesktopSubdomain+"."+remoteDesktopUrl.hostname
+        
+        return remoteDesktopUrl.href
     }
     
     this.setCloudCredentials = function(username, password){

@@ -7,6 +7,7 @@ body {
     padding-right:0px;
     overflow: hidden;
     background-color: #222724;
+    user-select: none;
 }
 
 .global{
@@ -24,9 +25,9 @@ body {
 
 .toolBar{
     flex-grow: 0;
-    font-size: 17pt;
-    font-family: icons;
+    font-size: 10pt;
 }
+
 .centralView{
     flex-grow: 1;
     overflow-y: hidden;
@@ -41,7 +42,7 @@ body {
 /* ======= Inside central view ======= */
 
 .overviewsPanel{
-    flex: 1 0 220px;
+    flex: 0 0 270px;
     max-width: 350px;
     height: 100%;
     overflow-x: hidden;
@@ -82,7 +83,7 @@ body {
 
 
 .networkGraphContainer{
-    background-color: #222724;
+    background-color: #191f25;
     flex-shrink: 2;
     flex-grow: 3;
     overflow: hidden;
@@ -103,6 +104,7 @@ body {
     z-index: 1;
     padding: 10px;
     border-top: 1px solid #343a40;
+    background-color: #191f25;
 }
 
 .machineInfoContainer{
