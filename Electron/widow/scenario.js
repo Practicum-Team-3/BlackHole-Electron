@@ -76,7 +76,7 @@ Scenario.prototype.getName = function(){
  *              When a scenario has been added to the backend, it also has an external name
  *              To set both external and internal names, call renameScenario() on Scenarios instead
  * @memberof Scenario
- * @param {string} ame New name of the scenario
+ * @param {string} name New name of the scenario
  */
 Scenario.prototype.setName = function(name){
     this.descriptor["scenario_name"] = name

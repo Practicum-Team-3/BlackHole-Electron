@@ -189,6 +189,7 @@ NodeCombos.prototype.addCollapsibleGroup = function(groupName, title, iconLigatu
  * @param {string} leftLabelText  Text to add to the left label
  * @param {string} rightLabelName Name to give the right label on the local reference
  * @param {string} rightLabelText Text to add to the right label
+ * @returns {object} Object with the nodes of both labels accesible through 'leftLabel' and 'rightLabel'
  * @see getNodes
  */
 NodeCombos.prototype.addLabelPair = function(leftLabelName, leftLabelText, rightLabelName, rightLabelText){
@@ -201,6 +202,8 @@ NodeCombos.prototype.addLabelPair = function(leftLabelName, leftLabelText, right
     this.addReferenceToNode(rightLabelName, rightLabelNode)
     
     this.currentNode.appendChild(rowNode)
+    
+    return {leftLabel: leftLabelNode, rightLabel: rightLabelNode}
 }
 
 NodeCombos.prototype.addLabelPairLeft = function(leftLabelName, leftLabelText, rightLabelName, rightLabelText){

@@ -7,6 +7,13 @@ label{
     margin-bottom: 0;
 }
 
+icon{
+    font-family: icons;
+    font-size: 17pt;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
 .iconArea{
     font-family: icons;
     float: left;

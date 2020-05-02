@@ -1,7 +1,7 @@
 var Modifiable = require('./core/modifiable.js').Modifiable
 /**
  * @class Scenarios
- * @version 2.3.0
+ * @version 2.4.0
  * @description Modifiable. Manager of scenarios.
  *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
@@ -117,7 +117,9 @@ Scenarios.prototype.addScenario = function(scenario){
         if (!this.nameList.includes(scenario.getName())){
             // declare new scenario to Widow
             this.declareScenarioByName(scenario.getName())
-            .then(function(){
+            .then(function(scenarioId){
+                //Set the ID given to the scenario by Black Widow
+                scenario.setId(scenarioId)
                 //Finally add the actual scenario info
                 //Scenario was already included, so just add (or overwrite) to loaded
                 this.loaded[scenario.getName()] = scenario
@@ -303,20 +305,20 @@ Scenarios.prototype.loadAllScenarios = function(){
  * @description Declare a new scenario name to Widow
  * @memberof Scenarios
  * @param   {string} scenarioName Name of the scenario to declare
- * @returns {Promise} Promise for the completion of the declaration
+ * @returns {Promise} Promise for the completion of the declaration. Resolves with scenario id.
  */
 Scenarios.prototype.declareScenarioByName = function(scenarioName){
     return new Promise(function(resolve, reject){
         // Check for the existance of the "new scenario", should fail if already exists
         if (!this.nameList.includes(scenarioName)){
-            console.log(this.getAddress()+"/scenarios/newEmpty/"+encodeURIComponent(scenarioName))
             
             axiosBridged({
                 url: this.getAddress()+"/scenarios/newEmpty/"+encodeURIComponent(scenarioName)
             }, function (response) {
                 // Add to the loaded dictionary
                 this.nameList.push(scenarioName)
-                resolve()
+                
+                resolve(response.data.body.scenario_id)
 
             }.bind(this), function (error) {
                 // handle error

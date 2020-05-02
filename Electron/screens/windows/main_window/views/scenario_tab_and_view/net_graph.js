@@ -524,7 +524,7 @@ function NetGraph(scenario, parent){
         this.zoom = zoom
         zoom.on("zoom", this.zoomAndPanHandler.bind(this))
         
-        svgElement.call(zoom).append("g");
+        svgElement.call(zoom).on("dblclick.zoom", null);
     }
     
     var lastTranslate = [0, 0]
@@ -850,6 +850,18 @@ function NetGraph(scenario, parent){
 //================================
 // UI
 //================================
+    var footerBar
+    const addFooterSection = function(){
+        
+        var buttonsContainer = document.createElement("div")
+        buttonsContainer.className = "netGraphToolbar"
+    
+        this.parentNode.appendChild(buttonsContainer)
+        
+        footerBar = buttonsContainer
+        
+    }.bind(this)
+    addFooterSection()
     
     /**
      * @function addFloatingFooterButtons
@@ -857,8 +869,7 @@ function NetGraph(scenario, parent){
      * @param footerButtonsNamesAndHandlers dictionary containing label=>handler pairs.
      */ 
     this.addFloatingFooterButtons = function(footerButtonsNamesAndHandlers){
-        var buttonsContainer = document.createElement("div")
-        buttonsContainer.className = "netGraphToolbar"
+        var buttonsContainer = footerBar
         
         var keys = Object.keys(footerButtonsNamesAndHandlers)
     
@@ -871,7 +882,6 @@ function NetGraph(scenario, parent){
             placeholderButton.addEventListener("click", footerButtonsNamesAndHandlers[keys[i]])
             buttonsContainer.appendChild(placeholderButton)
         }
-        this.parentNode.appendChild(buttonsContainer)
     }
 
     /**
@@ -898,26 +908,13 @@ function NetGraph(scenario, parent){
      * 
      */ 
     this.drawGraphOptionButtons = function(){
-        //toggle-connect button
-        var toggleConnectButton = document.createElement("button")
-        toggleConnectButton.setAttribute("type", "button")
-        toggleConnectButton.className = "toggleConnectButton button btn btn-light"
-        toggleConnectButton.id = "toggleConnectButton"
-        toggleConnectButton.innerHTML = "Manual Linking: Off"
-        toggleConnectButton.style = "position:absolute; top: 20px; left:20px; z-index:1"
-        toggleConnectButton.addEventListener("click", function(){showToast("Toggle link Creation", "Implemented but disabled")})
-        // toggleConnectButton.addEventListener("click", this.toggleConnect.bind(this))
-        this.parentNode.appendChild(toggleConnectButton)
-
-        //reposition button
-        var repositionButton = document.createElement("button")
-        repositionButton.setAttribute("type", "button")
-        repositionButton.className = "repositionButton button btn btn-outline-light"
-        repositionButton.id = "repositionButton"
-        repositionButton.innerHTML = "Re-center"
-        repositionButton.style = "position:absolute; top: 60px; left:20px; z-index:1"
-        repositionButton.addEventListener("click", this.redrawFromJson.bind(this))
-        this.parentNode.appendChild(repositionButton)
+        
+        var graphControls = {
+            "<icon>crosshairs</icon>_dark":this.redrawFromJson.bind(this),
+            "<icon>link</icon>Off_dark":function(){showToast("Toggle link Creation", "Implemented but disabled")}
+        }
+        
+        this.addFloatingFooterButtons(graphControls)
     }
     
 //================================
