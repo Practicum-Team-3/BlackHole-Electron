@@ -20,13 +20,19 @@ body {
     flex-flow: column nowrap;
 }
 
+icon{
+    font-family: icons;
+    font-size: 17pt;
+    padding-right: 3px;
+}
+
 /* ======= Outer sections ======= */
 
 .toolBar{
     flex-grow: 0;
-    font-size: 17pt;
-    font-family: icons;
+    font-size: 10pt;
 }
+
 .centralView{
     flex-grow: 1;
     overflow-y: hidden;
@@ -41,7 +47,7 @@ body {
 /* ======= Inside central view ======= */
 
 .overviewsPanel{
-    flex: 0 0 260px;
+    flex: 0 0 270px;
     max-width: 350px;
     height: 100%;
     overflow-x: hidden;
@@ -103,6 +109,7 @@ body {
     z-index: 1;
     padding: 10px;
     border-top: 1px solid #343a40;
+    background-color: #191f25;
 }
 
 .machineInfoContainer{
