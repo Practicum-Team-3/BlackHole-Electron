@@ -1,13 +1,15 @@
 const electron = require('electron')
+const crypto = require('crypto')
 
 const defaultWidowAddress = "http://localhost"
 const defaultCloudSubdomain = "nextcloud"
 const defaultCloudPath = "/remote.php/dav/files/admin/"
 const defaultRemoteDesktopSubdomain = "guac"
 const defaultRemoteDesktopPath = "/guacamole/"
+const defaultAnalyticsSubdomain = "kibana"
 /**
  * @class Widow
- * @version 1.4.0
+ * @version 1.5.0
  * @description Abstraction for the communication to the Widow backend.
  *              No need to instantiate, just reference the shared instance widow
  *              
@@ -15,7 +17,7 @@ const defaultRemoteDesktopPath = "/guacamole/"
  */
 function Widow(){
     this.defaultAddress = defaultWidowAddress
-    var widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudSubdomain, defaultCloudPath, defaultRemoteDesktopSubdomain, defaultRemoteDesktopPath)
+    var widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudSubdomain, defaultCloudPath, defaultRemoteDesktopSubdomain, defaultRemoteDesktopPath, defaultAnalyticsSubdomain)
     
     // Start global pocket
     pocket = null
@@ -58,11 +60,22 @@ function Widow(){
     
     /**
      * @function getRemoteDesktopAddress
+     * @memberof Widow
      * @description Returns the complete url to the remote desktop client
      * @returns {string} Address to remote desktop service
      */
     this.getRemoteDesktopAddress = function(){
         return widowSettings.getRemoteDesktopAddress()
+    }
+    
+    /**
+     * @function getAnalyticsAddress
+     * @memberof Widow
+     * @description Returns the address for the analytics dashboard
+     * @returns {string} Address to analytics dashboard
+     */
+    this.getAnalyticsAddress = function(){
+        return widowSettings.getAnalyticsAddress()
     }
 }
 
@@ -168,7 +181,7 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
  * @param   {string} _cloudSubdomain Subdomain for cloud service
  * @param   {string} _cloudPath   Path to cloud files
  */
-function WidowSettings(_address, _cloudSubdomain, _cloudPath, _remoteDesktopSubdomain, _remoteDesktopPath){
+function WidowSettings(_address, _cloudSubdomain, _cloudPath, _remoteDesktopSubdomain, _remoteDesktopPath, _analyticsSubdomain){
     var address = address
     var cloudSubdomain = _cloudSubdomain
     var cloudPath = _cloudPath
@@ -178,7 +191,7 @@ function WidowSettings(_address, _cloudSubdomain, _cloudPath, _remoteDesktopSubd
     }
     var remoteDesktopSubdomain = _remoteDesktopSubdomain
     var remoteDesktopPath = _remoteDesktopPath
-    
+    var analyticsSubdomain = _analyticsSubdomain
     
     this.getAddress = function(){
         return address
@@ -208,6 +221,15 @@ function WidowSettings(_address, _cloudSubdomain, _cloudPath, _remoteDesktopSubd
         return remoteDesktopUrl.href
     }
     
+    this.getAnalyticsAddress = function(){
+        // Make url
+        var analyticsUrl = new URL("", address)
+        // Add sumdomain
+        analyticsUrl.hostname = analyticsSubdomain+"."+analyticsUrl.hostname
+        
+        return analyticsUrl.href
+    }
+    
     this.setCloudCredentials = function(username, password){
         cloudAuth.username = username
         cloudAuth.password = password
@@ -217,10 +239,12 @@ function WidowSettings(_address, _cloudSubdomain, _cloudPath, _remoteDesktopSubd
     }
 }
 
+    
 //======================================================
 //=== Automatic instance for shared Electron runtime ===
 //======================================================
 try{
+    console.log("Retrieving widow")
     // Try to get existing scenarios instance from electron.remote
     var widow = electron.remote.getGlobal('widow')
     
@@ -232,8 +256,82 @@ try{
         console.log("Automatic instance of widow failed to start")
     }
 }
-    
-    
+
+//=============            
+// File upload helper
+//=============
+/**
+ * @function uploadFileToWidow
+ * @description Since uploads interfaced through remote are less efficient, this function makes file uploads on behalf of widow modules.
+ *              For a module to be compatible with widowUpload, it requires the implementation of cloud.UploadReceiver
+ * @param   {object}   receiver         Object to be notified of the upload upon completion
+ * @param   {File}     file             File to upload
+ * @param   {function} progressCallback Callback to update on the upload progress, should accept two int parameters: upload progress, upload total.
+ * @param   {...any}   properties       Additional properties for the uploaded file that will get passed to the receiver
+ *                                      See receiver's uploadComplete() for the expected properties
+ * @returns {Promise}  Promise for the completion of the upload and the notification to receiver
+ */
+const uploadFileToWidow = function(receiver, file, filename, progressCallback, ...properties){
+    electron.remote.getCurrentWebContents().session.clearStorageData(["cookies"])
+    const axios = require('axios')
+    // Prepare promise to return to caller
+    return new Promise(function(resolve, reject){
+        
+        // Calculate hash
+        var stream = file.stream()
+        var reader = stream.getReader()
+        var hash = crypto.createHash("sha256")
+        var onHashCalculated = function(){
+            console.log("WUC5")
+            //See if there's another program with the same hash
+            var duplicates = receiver.getListOfFilesWithHash(hash)
+            if (duplicates.length>0){//There are duplicates
+                
+                reject(duplicates)
+                return
+            }
+            
+            // Perform the upload with the upload configuration of the receiver
+            var uploadConfig = receiver.getUploadConfigForFileWithName(filename)
+            uploadConfig.onUploadProgress = function (progressEvent) {
+                try{
+                    progressCallback(progressEvent.loaded, progressEvent.total)
+                }catch{
+                    console.log("::Skipping upload progress")
+                }
+            }
+            uploadConfig.data = file
+            axios(uploadConfig).then(function (response) {
+                
+                receiver.uploadComplete(filename, hash, properties)
+                .then(function(program){
+                    resolve(program)
+                }).catch(function(){
+                    reject()
+                })
+
+            }.bind(receiver)).catch(function (error) {
+                
+                console.log(error)
+                reject()
+
+            }.bind(receiver))
+        }.bind(receiver)
+        
+        // Process hash
+        reader.read().then(function processText({done, value}){
+            if (!done){
+                hash.update(value)
+                return reader.read().then(processText);
+                
+            }else{
+                hash = hash.digest("hex")
+                onHashCalculated()
+            }
+        })
+    }.bind(receiver))
+}
+
 //=============            
 // Modifiable helpers
 //=============
