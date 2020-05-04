@@ -2,33 +2,40 @@ const Modifiable = require('./core/modifiable.js').Modifiable
 const Collectionist = require('./core/collectionist.js').Collectionist
 const Collectable = require('./core/collectionist.js').Collectable
 const NextcloudManager = require('./cloud/nextcloud.js').NextcloudManager
+const UploadReceiver = require('./cloud/upload_receiver.js').UploadReceiver
 const crypto = require('crypto')
 /**
  * @class Programs
- * @version 0.5.0
- * @description Modifiable. Collectionist. Available programs
+ * @version 1.0.0
+ * @description Modifiable. Collectionist. UploadReceiver. Available programs
  *              
  * @param {string} descriptor Program descriptor (JSON)
  */
 function Programs(widowSettings){
     Modifiable.call(this)
     
+    var widowSettings = widowSettings
     var registryLocation = "programs/registry.json"
     var uploadLocation = "programs/bin/"
     this.descriptor = []
     
-    // Inherit from collectionist and pass empty descriptor object
+    // Inherit from Collectionist and pass empty descriptor object
     Collectionist.call(this, this.descriptor, Program)
     
     
     this.cloud = new NextcloudManager(widowSettings)
-    var widowSettings = widowSettings
+    
+    // Inherit from UploadReceiver
+    UploadReceiver.call(this, this.cloud, uploadLocation)
     
     this.getAddress = function(){
         return widowSettings.getAddress()
     }
     this.getCloudAddress = function(){
         return widowSettings.getCloudAddress()
+    }
+    this.getUploadLocation = function(){
+        return uploadLocation
     }
     
     /**
@@ -112,92 +119,14 @@ function Programs(widowSettings){
         return this.cloud.upload(JSON.stringify(this.descriptor), registryLocation)
     }.bind(this)
     
-    /**
-     * @function addProgram
-     * @description Uploads a program into Black Widow. Will throw in an attempt to upload a files with a duplicate hash.
-     * @memberof Program
-     * @param   {ArrayBuffer} arrayBuffer       Buffer of the file
-     * @param   {string} name                   Name of the file
-     * @param   {string}   os                   Operating system target
-     * @param   {string} description            Description of the program
-     * @param   {boolean} isExploit             Pass true if program is an exploit
-     * @param   {function} uploadProgressCallback Callback to update on the upload progress, should accept two int parameters: upload progress, upload total.
-     * @returns {Promise} Promise for the program upload process. Passes the instance of the
-     *                    added program when resolved
-     */
-    this.addProgram = function(arrayBuffer, name, os, description, isExploit, uploadProgressCallback){
-
-        // Get hash before anything
-        // Convert the passed array buffer into a buffer
-        var buffer = Buffer.from(arrayBuffer)
-        var programHash = crypto.createHash("sha256").update(buffer).digest("hex")
-        
-        //See if there's another program with the same hash
-        var duplicates = this.super.getCollectablesByCharacteristic("getHash", programHash)
-        
-        
-        // Prepare promise to return to caller
-        return new Promise(function(resolve, reject){
-            
-            if (duplicates.length>0){//There are duplicates
-                reject(duplicates)
-                return
-            }
-            
-            // Perform the upload
-            axiosBridged({
-                method: 'put',
-                url: this.getCloudAddress()+uploadLocation+encodeURIComponent(name),
-                auth: {
-                    username: 'admin',
-                    password: 'password'
-                },
-                onUploadProgress: function (progressEvent) {
-                    try{
-                        uploadProgressCallback(progressEvent.loaded, progressEvent.total)
-                    }catch{
-                        console.log("::Skipping upload progress")
-                    }
-                },
-                data: arrayBuffer
-            }, function (response) {
-                
-
-                // Create default instance of Program
-                var program = new Program()
-                // Customize
-                program.setName(name)
-                program.setOs(os)
-                program.setDescription(description)
-                program.setIsExploit(isExploit)
-                program.setHash(programHash)
-
-                //Add without duplicates, but with replacements
-                var addSuccess = this.super.add(program, false, true)
-                if (!addSuccess){
-                    console.log("Unable to do dis")
-                    reject()
-                    return
-                }
-
-                //Save descriptor
-                saveRegistry()
-                .then(function(){
-                    resolve(program)
-                }).catch(function(){
-                    reject()
-                })
-
-            }.bind(this), function (error) {
-
-                console.log(error)
-                reject()
-                
-            }.bind(this))
-            
-        }.bind(this))
-    }
     
+    /**
+     * @function removeProgram
+     * @memberof Programs
+     * @description Removes a program from Widow
+     * @param   {Program} program Instance of a program to remove
+     * @returns {Promise} Promise for the completion of the removal process
+     */
     this.removeProgram = function(program){
         // Delete the file
         return this.cloud.delete(uploadLocation+program.getName()).then(function(){
@@ -208,6 +137,51 @@ function Programs(widowSettings){
             // Save registry, and return promise
             return saveRegistry()
         }.bind(this))
+    }
+    
+    /**
+     * @function uploadComplete
+     * @memberof Programs
+     * @description When the upload of a program is completed, this function allows for it's inclusion into the list.
+     * @param   {string}    name       Filename of the program that was uploaded
+     * @param   {string}    hash       Hash of the program
+     * @param   {[string, string, boolean]}  properties Properties of the program (OS, description, isExploit)
+     */
+    this.uploadComplete = function(name, hash, properties){
+        return new Promise(function(resolve, reject){
+            // Create default instance of Program
+            var program = new Program()
+            // Customize
+            program.setName(name)
+            program.setHash(hash)
+            program.setOs(properties[0])
+            program.setDescription(properties[1])
+            program.setIsExploit(properties[2])
+
+            //Add without duplicates, but with replacements
+            var addSuccess = this.super.add(program, false, true)
+            if (!addSuccess){
+                reject()
+            }
+
+            //Save descriptor
+            saveRegistry()
+            .then(function(){
+                resolve(program)
+            }).catch(function(){
+                reject()
+            })
+        }.bind(this))
+    }
+    
+    /**
+     * @function getListOfFilesWithHash
+     * @memberof Programs
+     * @param   {string} hash Hash to match programs to
+     * @returns {Program[]} List of program objects that match the hash
+     */
+    this.getListOfFilesWithHash = function(hash){
+        return this.super.getCollectablesByCharacteristic("getHash", hash)
     }
 }
 

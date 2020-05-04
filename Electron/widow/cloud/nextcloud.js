@@ -1,7 +1,7 @@
 var DOMParser = require('xmldom').DOMParser;
 /**
  * @class NextcloudManager
- * @version 0.2.0
+ * @version 0.3.0
  * @description Abstraction for Nextcloud WebDAV operations
  */
 function NextcloudManager(widowSettings){
@@ -39,13 +39,18 @@ function NextcloudManager(widowSettings){
         })
     }
     
-    this.upload = function(buffer, filePath){
-        return genericRequest({
+    this.getUploadConfig = function(filePath){
+        return {
             method: 'put',
             url: getCloudAddress()+encodeURI(filePath),
-            auth: getCredentials(),
-            data: buffer
-        })
+            auth: getCredentials()
+        }
+    }
+    
+    this.upload = function(data, filePath){
+        var uploadConfig = this.getUploadConfig(filePath)
+        uploadConfig.data = data
+        return genericRequest(uploadConfig)
     }
     
     this.createFolder = function(folderName){

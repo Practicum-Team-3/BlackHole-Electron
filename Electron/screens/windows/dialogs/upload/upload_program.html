@@ -9,7 +9,6 @@
     <script src="../../../../widow/widow.js"></script>
     <script>
         const { dialog } = require('electron').remote
-        
         try{
             window.$ = window.jQuery = require("../../../..//node_modules/jquery/dist/jquery")
         }catch{}
@@ -26,11 +25,12 @@
             
             var fileList = document.getElementById("fileSelect").files
 
+            // Check if there is something to upload
             if (fileList.length>0){
                 var file = fileList[0]
                 var filename = file.name
                 
-                //Check for name duplicates
+                //Check for name duplicates by name
                 var duplicate = widow.programs.getProgramByName(filename)
                 var isOverwrite = false
                 if (duplicate!=null){
@@ -51,32 +51,29 @@
                     }
                 }
                 
-                file.arrayBuffer().then(function(buffer){
-                    
-                    var uploadProgressCallback = function(uploaded, total){
-                        setProgressBarPercent(Math.ceil(100/total*uploaded), "progressBar")
+                var uploadProgressCallback = function(uploaded, total){
+                    setProgressBarPercent(Math.ceil(100/total*uploaded), "progressBar")
+                }
+                
+                // Perform upload
+                uploadFileToWidow(widow.programs, file, filename, uploadProgressCallback, programOs, programDes, isUploadingExploit)
+                .then(function(program){
+
+                    //Tell the others that there are changes
+                    if (isOverwrite){
+                        emitModifiedEvent(widow.programs, null, modificationTypes.REMOVED_ELEMENT, duplicate)
                     }
-                    
-                    widow.programs.addProgram(buffer, filename, programOs, programDes, isUploadingExploit, uploadProgressCallback)
-                    .then(function(program){
+                    emitModifiedEvent(widow.programs, null, modificationTypes.ADDED_ELEMENT, program)
 
-                        //Tell the others that there are changes
-                        if (isOverwrite){
-                            emitModifiedEvent(widow.programs, null, modificationTypes.REMOVED_ELEMENT, duplicate)
-                        }
-                        emitModifiedEvent(widow.programs, null, modificationTypes.ADDED_ELEMENT, program)
+                    //Close dialog window
+                    electron.remote.getCurrentWindow().close()
 
-                        //Close dialog window
-                        electron.remote.getCurrentWindow().close()
-
-                    }).catch(function(error){
-                        if (Array.isArray(error)){//Error is list of exact duplicates (by content)
-                            var locationOfExactDuplicate = error[0].getIsExploit() ? "exploits" : "vulnerable programs"
-                            dialog.showErrorBox("Existing Program", "This same program ("+error[0].getName()+") has been previously uploaded to "+locationOfExactDuplicate)
-                        }
-                        
-                        exitLoading()
-                    })
+                }).catch(function(error){
+                    if (Array.isArray(error)){//Error is list of exact duplicates (by content)
+                        var locationOfExactDuplicate = error[0].getIsExploit() ? "exploits" : "vulnerable programs"
+                        dialog.showErrorBox("Existing Program", "This same program ("+error[0].getName()+") has been previously uploaded to "+locationOfExactDuplicate)
+                    }
+                    exitLoading()
                 })
             }
         }
