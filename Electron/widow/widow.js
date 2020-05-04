@@ -6,6 +6,7 @@ const defaultCloudSubdomain = "nextcloud"
 const defaultCloudPath = "/remote.php/dav/files/admin/"
 const defaultRemoteDesktopSubdomain = "guac"
 const defaultRemoteDesktopPath = "/guacamole/"
+const defaultAnalyticsSubdomain = "kibana"
 /**
  * @class Widow
  * @version 1.5.0
@@ -16,7 +17,7 @@ const defaultRemoteDesktopPath = "/guacamole/"
  */
 function Widow(){
     this.defaultAddress = defaultWidowAddress
-    var widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudSubdomain, defaultCloudPath, defaultRemoteDesktopSubdomain, defaultRemoteDesktopPath)
+    var widowSettings = new WidowSettings(defaultWidowAddress, defaultCloudSubdomain, defaultCloudPath, defaultRemoteDesktopSubdomain, defaultRemoteDesktopPath, defaultAnalyticsSubdomain)
     
     // Start global pocket
     pocket = null
@@ -59,11 +60,22 @@ function Widow(){
     
     /**
      * @function getRemoteDesktopAddress
+     * @memberof Widow
      * @description Returns the complete url to the remote desktop client
      * @returns {string} Address to remote desktop service
      */
     this.getRemoteDesktopAddress = function(){
         return widowSettings.getRemoteDesktopAddress()
+    }
+    
+    /**
+     * @function getAnalyticsAddress
+     * @memberof Widow
+     * @description Returns the address for the analytics dashboard
+     * @returns {string} Address to analytics dashboard
+     */
+    this.getAnalyticsAddress = function(){
+        return widowSettings.getAnalyticsAddress()
     }
 }
 
@@ -169,7 +181,7 @@ Widow.prototype.linkAndSync = function(address, syncUpdateCallback){
  * @param   {string} _cloudSubdomain Subdomain for cloud service
  * @param   {string} _cloudPath   Path to cloud files
  */
-function WidowSettings(_address, _cloudSubdomain, _cloudPath, _remoteDesktopSubdomain, _remoteDesktopPath){
+function WidowSettings(_address, _cloudSubdomain, _cloudPath, _remoteDesktopSubdomain, _remoteDesktopPath, _analyticsSubdomain){
     var address = address
     var cloudSubdomain = _cloudSubdomain
     var cloudPath = _cloudPath
@@ -179,7 +191,7 @@ function WidowSettings(_address, _cloudSubdomain, _cloudPath, _remoteDesktopSubd
     }
     var remoteDesktopSubdomain = _remoteDesktopSubdomain
     var remoteDesktopPath = _remoteDesktopPath
-    
+    var analyticsSubdomain = _analyticsSubdomain
     
     this.getAddress = function(){
         return address
@@ -207,6 +219,15 @@ function WidowSettings(_address, _cloudSubdomain, _cloudPath, _remoteDesktopSubd
         remoteDesktopUrl.hostname = remoteDesktopSubdomain+"."+remoteDesktopUrl.hostname
         
         return remoteDesktopUrl.href
+    }
+    
+    this.getAnalyticsAddress = function(){
+        // Make url
+        var analyticsUrl = new URL("", address)
+        // Add sumdomain
+        analyticsUrl.hostname = analyticsSubdomain+"."+analyticsUrl.hostname
+        
+        return analyticsUrl.href
     }
     
     this.setCloudCredentials = function(username, password){
