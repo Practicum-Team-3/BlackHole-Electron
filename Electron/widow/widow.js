@@ -262,7 +262,7 @@ try{
 //=============
 /**
  * @function uploadFileToWidow
- * @description Since uploads interfaced through remote are less efficient, this function makes file uploads on behalf of widow modules.
+ * @description Since uploads interfaced through remote are not efficient, this function makes file uploads on behalf of widow modules.
  *              For a module to be compatible with widowUpload, it requires the implementation of cloud.UploadReceiver
  * @param   {object}   receiver         Object to be notified of the upload upon completion
  * @param   {File}     file             File to upload
