@@ -910,8 +910,8 @@ function NetGraph(scenario, parent){
     this.drawGraphOptionButtons = function(){
         
         var graphControls = {
-            "<icon>crosshairs</icon>_dark":this.redrawFromJson.bind(this),
-            "<icon>link</icon>Off_dark":function(){showToast("Toggle link Creation", "Implemented but disabled")}
+            "<largeIcon>crosshairs</largeIcon>_dark":this.redrawFromJson.bind(this),
+            "<largeIcon>link</largeIcon>Off_dark":function(){showToast("Toggle link Creation", "Implemented but disabled")}
         }
         
         this.addFloatingFooterButtons(graphControls)

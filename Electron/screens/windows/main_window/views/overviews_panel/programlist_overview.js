@@ -97,7 +97,7 @@ function ProgramListOverview(programListNode, programListOverviewType, nodeId="p
         
         var group = interface.addCollapsibleGroup(null, programName, programListType.iconLigature, "#"+nodeId)
         // General details of exploit
-        interface.addLabelPair(null, "Name: ", "programName", programName)
+        //interface.addLabelPair(null, "Name: ", "programName", programName)
         interface.addLabelPair(null, "OS: ", "programOs", program.getOs())
         interface.addLabelPair(null, "Description: ", "programTarget", program.getDescription())
         

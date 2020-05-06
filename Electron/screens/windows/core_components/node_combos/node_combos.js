@@ -150,7 +150,7 @@ NodeCombos.prototype.addCollapsibleGroup = function(groupName, title, iconLigatu
     
     //Make the title
     var group = addNode(this.currentNode, "div", "card")
-    var header = addNode(group, "div", "card-header")
+    var header = addNode(group, "div", "card-header shadow-sm")
     var link = addHyperlinkNode(header, "card-link", "#"+groupId, getLinkHTML(title, iconLigature))
     link.setAttribute("data-toggle", "collapse")
     
@@ -216,6 +216,8 @@ NodeCombos.prototype.addLabelPairLeft = function(leftLabelName, leftLabelText, r
     this.addReferenceToNode(rightLabelName, rightLabelNode)
     
     this.currentNode.appendChild(rowNode)
+    
+    return {leftLabel: leftLabelNode, rightLabel: rightLabelNode}
 }
 
 NodeCombos.prototype.addLabel = function(labelName, labelText){
@@ -223,6 +225,41 @@ NodeCombos.prototype.addLabel = function(labelName, labelText){
     var labelNode = addLabelNode(this.currentNode, "ml-4 font-weight-bold", labelText)
     
     this.addReferenceToNode(labelName, labelNode)
+}
+
+//======================================
+// BUTTONS
+//======================================
+
+/**
+ * @class Button
+ * @description Descriptor for a button
+ * @param {string}   name      Name to give the button
+ * @param {string}   innerHTML Content for the inside of the button node
+ * @param {string}   className Style classes to give the button
+ * @param {function} rightOnClick Reference to a function to call when the button gets clicked
+ */
+NodeCombos.prototype.Button = function(name, innerHTML, className, onClick){
+    this.name = name
+    this.innerHTML = innerHTML
+    this.className = className
+    this.onClick = onClick
+}
+
+/**
+ * @function addButtons
+ * @description Adds multiple button nodes in a row
+ * @param {NodeCombos.Button[]} buttonList Array with Button objects
+ */
+NodeCombos.prototype.addButtons = function(buttonList){
+    var rowNode = this.getNewRow()
+    
+    buttonList.forEach(function(button){
+        var buttonNode = addButtonNode(rowNode, button.className, button.onClick, button.innerHTML)
+        this.addReferenceToNode(button.name, buttonNode)
+    }.bind(this))
+    
+    this.currentNode.appendChild(rowNode)
 }
 
 /**
@@ -237,11 +274,12 @@ NodeCombos.prototype.addSingleButton = function(buttonName, style, functionOnCli
     var rowNode = this.getNewRow()
 
     var buttonNode = addButtonNode(rowNode, style, functionOnClick, buttonName)
-
     this.addReferenceToNode(buttonName, buttonNode)
 
     this.currentNode.appendChild(rowNode)
 }
+
+
 
 /**
  * @function addButtonPair
@@ -257,15 +295,9 @@ NodeCombos.prototype.addSingleButton = function(buttonName, style, functionOnCli
  * @param {function} rightOnClick Reference to a function to call when the right button gets clicked
  */
 NodeCombos.prototype.addButtonPair = function(leftButtonName, leftButtonLabel, leftButtonClassName, leftOnClick, rightButtonName, rightButtonLabel, rightButtonClassName, rightOnClick){
-    var rowNode = this.getNewRow()
-    
-    var leftButtonNode = addButtonNode(rowNode, leftButtonClassName, leftOnClick, leftButtonLabel)
-    var rightButtonNode = addButtonNode(rowNode, rightButtonClassName, rightOnClick, rightButtonLabel)
-    
-    this.addReferenceToNode(leftButtonName, leftButtonNode)
-    this.addReferenceToNode(rightButtonName, rightButtonNode)
-    
-    this.currentNode.appendChild(rowNode)
+    var leftButton = new this.Button(leftButtonName, leftButtonLabel, leftButtonClassName, leftOnClick)
+    var rightButton = new this.Button(rightButtonName, rightButtonLabel, rightButtonClassName, rightOnClick)
+    this.addButtons([leftButton, rightButton])
 }
 
 
@@ -279,15 +311,21 @@ NodeCombos.prototype.addButtonPair = function(leftButtonName, leftButtonLabel, l
  * @param {function} deleteOnClick Reference to a function to call when the delete button gets clicked
  */
 NodeCombos.prototype.addEditDeleteButtons = function(editName, editOnClick, deleteName, deleteOnClick){
-    this.addButtonPair(editName, "Edit", "col ml-5 mr-1 mt-2 btn btn-primary", editOnClick, deleteName, "Delete", "col ml-1 mr-5 mt-2 btn btn-danger", deleteOnClick)
+    this.addButtonPair(editName, "Edit", "col shadow ml-5 mr-1 mt-2 btn btn-primary", editOnClick, deleteName, "Delete", "col shadow ml-1 mr-5 mt-2 btn btn-danger", deleteOnClick)
 }
 
 NodeCombos.prototype.addOpenEditButtons = function(openName, openOnClick, editName, editOnClick){
-    this.addButtonPair(openName, "Open", "col ml-5 mr-1 mt-2 btn btn-success", openOnClick, editName, "Delete", "col ml-1 mr-5 mt-2 btn btn-danger", editOnClick)
+    this.addButtonPair(openName, "<icon>external-link-alt</icon>", "col shadow ml-5 mr-1 mt-2 btn btn-success", openOnClick, editName, "<icon>trash</icon>", "col shadow ml-1 mr-5 mt-2 btn btn-danger", editOnClick)
 }
 
 NodeCombos.prototype.addDeleteAndIncludeButtons = function(deleteName, deleteOnClick, includeName, includeMachineOnClick){
-    this.addButtonPair(deleteName, "Delete", "col ml-5 mr-1 mt-2 btn btn-danger", deleteOnClick, includeName, "Include", "col ml-1 mr-5 mt-2 btn btn-success", includeMachineOnClick)
+    this.addButtonPair(includeName, "<icon>plus</icon>", "col shadow ml-5 mr-1 mt-2 btn btn-success", includeMachineOnClick, deleteName, "<icon>trash</icon>", "col shadow ml-1 mr-5 mt-2 btn btn-danger", deleteOnClick)
+}
+
+NodeCombos.prototype.addDeleteButton = function(name, onClick, _label){
+    var label = _label==null ? "" : _label
+    var deleteButton = new this.Button(name, "<icon>trash</icon>"+label, "col shadow ml-5 mr-5 mt-2 btn btn-danger", onClick)
+    this.addButtons([deleteButton])
 }
 
 /**

@@ -145,7 +145,7 @@ function Programs(widowSettings){
      * @description When the upload of a program is completed, this function allows for it's inclusion into the list.
      * @param   {string}    name       Filename of the program that was uploaded
      * @param   {string}    hash       Hash of the program
-     * @param   {[string, string, boolean]}  properties Properties of the program (OS, description, isExploit)
+     * @param   {any[]}     properties Properties of the program (OS, description, isExploit)
      */
     this.uploadComplete = function(name, hash, properties){
         return new Promise(function(resolve, reject){

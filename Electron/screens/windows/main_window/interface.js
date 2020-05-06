@@ -182,7 +182,7 @@ function installProgram(programToInstall){
             //Store the machine in the pocket so the installed program setup can retrieve
             selectedMachine.hold()
             
-            openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 220, false, true, false, ["--edit-mode=install", "--program-name="+programToInstall.getName()])
+            openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 225, false, true, false, ["--edit-mode=install", "--program-name="+programToInstall.getName()])
         }else{
             dialog.showErrorBox("No machine selected", "Please select a machine to continue")
         }
@@ -193,7 +193,7 @@ function installProgram(programToInstall){
 
 function editInstalledProgram(machine, programName){
     machine.hold()
-    openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 220, false, true, false, ["--edit-mode=modify", "--program-name="+programName])
+    openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 225, false, true, false, ["--edit-mode=modify", "--program-name="+programName])
 }
 
 //======================
@@ -207,9 +207,25 @@ function editInstalledProgram(machine, programName){
  * @param {string} message Content of the message
  */
 function showToast(title, message){
-    $('.toast').toast('show');
+    $('.toastMessage').toast('show');
     document.getElementById("toastHeader").innerHTML = title
     document.getElementById("toastBody").innerHTML = message
+}
+
+/**
+ * @function showProgressToast
+ * @description Shows a brief message to the user
+ * @param {string} title   Title of the message
+ * @param {string} message Content of the message
+ */
+function showProgressToast(title, message){
+    $('.toastProgress').toast('show');
+    document.getElementById("toastProgressHeader").innerHTML = title
+    document.getElementById("toastProgressBody").innerHTML = message
+}
+
+function setToastProgressBar(percent){
+    setProgressBarPercent(percent, "toastProgressBar")
 }
 
 
@@ -223,11 +239,16 @@ function runScenario(event){
     }
     var scenarioName = activeTabAndView.getScenario().getName()
     //Feedback
-    showToast("Run...", "Preparing machines to run scenario: "+scenarioName)
+    showToast("Run...", "Preparing to run scenario: "+scenarioName)
     
-    widow.scenarios.runScenarioByName(scenarioName)
+    function runFinished(){
+        $('.toastProgress').toast('hide');
+        showToast("Done", "Scenario run complete: "+scenarioName)
+    }
+    
+    widow.scenarios.runScenarioByName(scenarioName, setToastProgressBar, runFinished)
     .then(function(){
-        showToast("Running", "Scenario running: "+scenarioName)
+        showProgressToast("Running", "Running scenario: "+scenarioName)
     })
 }
 

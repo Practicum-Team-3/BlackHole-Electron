@@ -1,10 +1,12 @@
-var Loadable = require('./core/loadable.js').Loadable
-var Modifiable = require('./core/modifiable.js').Modifiable
+const Loadable = require('./core/loadable.js').Loadable
+const Modifiable = require('./core/modifiable.js').Modifiable
+const TaskMaster = require('./core/task_observer.js').TaskMaster
 
 /**
  * @class Boxes
- * @version 1.5.0
- * @description Available VM boxes
+ * @version 1.6.0
+ * @description Modifiable. TaskMaster. Loadable.
+ *              Available VM boxes
  *              No need to instantiate, just reference the shared instance on widow.boxes
  *              
  * @param {WidowSettings} widowSettings
@@ -14,7 +16,7 @@ function Boxes(widowSettings){
     console.log("inside Boxes, calling load...")
     Loadable.call(this, widowSettings, "/vagrant/boxes/all")
     Modifiable.call(this)
-
+    TaskMaster.call(this, widowSettings)
 }
 
 
@@ -29,74 +31,6 @@ Boxes.prototype.getBoxesList = function(){
 }
 
 
-/////////////////////////////////////
-// Audit: 
-//        > Split task observer into a separate class
-//             > Hide task observer from public
-//        > Add documentation comments
-
-Boxes.prototype.requestTaskProgress = function(taskID, syncUpdateCallback, modificationType, arg){
-    console.log("Getting progress for task: "+ taskID +"...")
-    
-    axiosBridged({
-        url: this.getAddress() + "/vagrant/taskStatus/" + taskID
-    }, function (response) {
-
-        try{
-
-            //if response says download is not 100%
-            if(syncUpdateCallback != null){
-                syncUpdateCallback(((response.data.body.current*1.0)/response.data.body.total)*100)
-            }
-            console.log(response.data)
-            if(response.data.body.state == "PROGRESS"){
-                console.log("calling requestTaskProgress...")
-                this.requestTaskProgress(taskID, syncUpdateCallback, modificationType, arg)
-            }else{
-                if(response.data.body.state == "SUCCESS"){
-                    console.log("Task complete...")
-                    //Update local list of boxes to reflect changes made on server
-                    if(modificationType != null && arg != null){
-
-                        console.log("Updating boxesList...")
-                        switch(modificationType){
-                            case "addedElement":
-                                this.items[arg] = arg
-                                console.log("addedElement")
-                                break;
-
-                            case "removedElement":
-                                this.super.removeItem(arg)
-                                console.log("removedElement")
-                                break;
-
-                            default:
-                                console.log("Modification type not recognized")
-                                break;
-                        }
-                        console.log("Emitting modified event...")
-                        this.emitModifiedEvent(null, modificationType, arg)
-                    }else{
-                        console.log("modificationtype is null, can't emit...")
-                    }
-                }else{
-                    console.log("Server has suddenly stopped replying with 'PROGRESS'")
-                }
-            }
-
-        }catch(error){
-            console.log(error)
-        }
-
-    }.bind(this), function (error) {
-        console.log(error)
-        console.log("An error occured while requesting task progress...")
-        
-    })
-    
-}
-
-
 Boxes.prototype.downloadBoxFromVagrant = function(vagrantBoxID, syncUpdateCallback, modificationType){
     
     console.log("Downloading vagrant box: "+vagrantBoxID+"...")
@@ -108,11 +42,16 @@ Boxes.prototype.downloadBoxFromVagrant = function(vagrantBoxID, syncUpdateCallba
         headers: {'Content-Type': 'application/json'}
     }, function (response) {
         console.log("Starting download...")
-        try{
-            this.requestTaskProgress(response.data.task_id, syncUpdateCallback, modificationType, vagrantBoxID)
-        }catch(error){
-            console.log(error)
-        }
+        
+        var completionCallback = function(){
+            
+            this.items[vagrantBoxID] = vagrantBoxID
+            console.log("addedElement")
+            console.log("Emitting modified event...")
+            this.emitModifiedEvent(null, "addedElement", vagrantBoxID)
+            
+        }.bind(this)
+        this.observe("/vagrant/taskStatus/", response.data.task_id, syncUpdateCallback, completionCallback)
         
     }.bind(this), function (error) {
         console.log(error);
@@ -123,7 +62,7 @@ Boxes.prototype.downloadBoxFromVagrant = function(vagrantBoxID, syncUpdateCallba
 
 
 Boxes.prototype.removeBox = function(boxName) {
-
+    console.log("Removing box "+boxName)
     
     axiosBridged({
         url: this.getAddress()+"/vagrant/boxes/remove",
@@ -133,7 +72,16 @@ Boxes.prototype.removeBox = function(boxName) {
     }, function (response) {
 
         try{
-            this.requestTaskProgress(response.data.task_id, null, "removedElement", boxName)
+            
+            var completionCallback = function(){
+
+                this.super.removeItem(boxName)
+                console.log("removedElement")
+                this.emitModifiedEvent(null, "removedElement", boxName)
+                
+            }.bind(this)
+            
+            this.observe("/vagrant/taskStatus/", response.data.task_id, null, completionCallback)
         }catch(error){
             console.log(error)
         }

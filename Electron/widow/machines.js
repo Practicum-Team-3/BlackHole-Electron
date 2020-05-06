@@ -107,6 +107,7 @@ Machines.prototype.removeMachineByName = function(machineName){
 /**
  * @function removeMachine
  * @description Removes a machine instance
+ * @memberof Machines
  * @param   {Machine} machine Machine instance to remove
  * @returns {boolean} Success flag of the removal
  */

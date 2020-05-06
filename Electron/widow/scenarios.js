@@ -1,7 +1,8 @@
-var Modifiable = require('./core/modifiable.js').Modifiable
+const Modifiable = require('./core/modifiable.js').Modifiable
+const TaskMaster = require('./core/task_observer.js').TaskMaster
 /**
  * @class Scenarios
- * @version 2.4.0
+ * @version 2.5.0
  * @description Modifiable. Manager of scenarios.
  *              No need to instantiate, just reference the shared instance on widow.scenarios
  *              
@@ -10,6 +11,7 @@ var Modifiable = require('./core/modifiable.js').Modifiable
 function Scenarios(widowSettings){
     console.log("Starting widow.scenarios")
     Modifiable.call(this)
+    TaskMaster.call(this, widowSettings)
     var widowSettings = widowSettings
     
     this.getAddress = function(){
@@ -409,10 +411,12 @@ Scenarios.prototype.prepareMachinesByScenarioName = function(scenarioName){
  * @function runScenarioByName
  * @description Execute the run command on a specific scenario
  * @memberof Scenarios
- * @param   {string} scenarioName Name of the scenario to run
- * @returns {Promise} Promise for the completion of the run command
+ * @param   {string}   scenarioName        Name of the scenario to run
+ * @param   {function} runProgressCallback Optional: function to receive progress updates of the run task
+ * @param   {function} runCompleteCallback Optional: function to be called when the whole run process ends
+ * @returns {Promise}  Promise for the completion of the run command
  */
-Scenarios.prototype.runScenarioByName = function(scenarioName){
+Scenarios.prototype.runScenarioByName = function(scenarioName, runProgressCallback, runCompleteCallback){
     return new Promise(function(resolve, reject){
         // Check for the existance of the "new scenario", should fail if already exists
         if (this.nameList.includes(scenarioName)){
@@ -420,7 +424,10 @@ Scenarios.prototype.runScenarioByName = function(scenarioName){
             axiosBridged({
                 url: this.getAddress()+"/vagrant/"+encodeURIComponent(scenarioName)+"/run"
             }, function (response) {
-                // Add to the loaded dictionary
+                
+                // Start observing the run process
+                this.observe("/vagrant/taskStatus/", response.data.task_id, runProgressCallback, runCompleteCallback)
+                // Resolve the original promise
                 resolve()
 
             }.bind(this), function (error) {

@@ -163,7 +163,6 @@ function MachineInfo(machineInfoNode, scenario){
         // Setup change event
         interface.setOnchangeCallback(self.onchange)
         
-        interface.addLabelPair(null, "Box:", "box", "")
         
         var deleteMachineClicked = function(){
             if (this.machine!=null){
@@ -177,7 +176,7 @@ function MachineInfo(machineInfoNode, scenario){
             }
         }.bind(this)
         
-        interface.addEditDeleteButtons("editMachineButton", null, "deleteMachineButton", deleteMachineClicked)
+        interface.addDeleteButton("deleteMachineButton", deleteMachineClicked, "Remove")
         
         addBrNode(formNode)
         
@@ -189,7 +188,8 @@ function MachineInfo(machineInfoNode, scenario){
         //addBrNode(formNode)
         //interface.addLabelPair(null, "Type:", "machineType", "")
         interface.addLabelAndSelect(null, "Type:", "setIsAttacker-getIsAttacker", ["Victim", "Attacker"])
-        interface.addLabelPair(null, "GUI:", "machineGui", "")
+        interface.addLabelPairLeft(null, "Box:", "box", "")
+        interface.addLabelPairLeft(null, "GUI:", "machineGui", "")
         
 
         // === Settings
@@ -220,18 +220,18 @@ function MachineInfo(machineInfoNode, scenario){
         
         // === Collector
         // Exit previous group, create new group, then add components into it
-        interface.deselectNode()
-        interface.addCollapsibleGroup(null, "Collectors", "inbox", null, true)
-
-        interface.addLabelAndSelect(null, "Collector:", "collectorValue", ["ECELd"])
-
-        interface.addCheckbox("networkTraffic", "Network Traffic")
-        interface.addCheckbox("systemLogs", "System Logs")
-        interface.addCheckbox("apiCalls", "API Calls")
-
-        interface.addLabelAndSelect(null, "Start:", "startCondition", ["Total Eclipse", "Pandemic"])
-        interface.addLabelAndSelect(null, "Stop:", "stopCondition", ["Earthquake"])
-        interface.addCheckbox("timeout", "Timeout")
+//        interface.deselectNode()
+//        interface.addCollapsibleGroup(null, "Collectors", "inbox", null, true)
+//
+//        interface.addLabelAndSelect(null, "Collector:", "collectorValue", ["ECELd"])
+//
+//        interface.addCheckbox("networkTraffic", "Network Traffic")
+//        interface.addCheckbox("systemLogs", "System Logs")
+//        interface.addCheckbox("apiCalls", "API Calls")
+//
+//        interface.addLabelAndSelect(null, "Start:", "startCondition", ["Total Eclipse", "Pandemic"])
+//        interface.addLabelAndSelect(null, "Stop:", "stopCondition", ["Earthquake"])
+//        interface.addCheckbox("timeout", "Timeout")
 
         machineInfoNode.appendChild(formNode)
     }.bind(this)
