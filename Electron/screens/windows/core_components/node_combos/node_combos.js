@@ -210,7 +210,7 @@ NodeCombos.prototype.addLabelPairLeft = function(leftLabelName, leftLabelText, r
     var rowNode = this.getNewRow()
     
     var leftLabelNode = addLabelNode(rowNode, "ml-4 font-weight-bold", leftLabelText)
-    var rightLabelNode = addLabelNode(rowNode, "col-6 alignLeft", rightLabelText)
+    var rightLabelNode = addLabelNode(rowNode, "col alignLeft", rightLabelText)
     
     this.addReferenceToNode(leftLabelName, leftLabelNode)
     this.addReferenceToNode(rightLabelName, rightLabelNode)

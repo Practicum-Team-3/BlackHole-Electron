@@ -220,7 +220,7 @@ function NetGraph(scenario, parent){
             "py":0, 
             "fixed":0,
             "selected":"false",
-            "ip":this.getAvailableIpByNetMask("192.168.50"),//must guard for case where no ip is available
+            "ip":this.getAvailableIpByNetMask("192.168.50", machine.networkSettings.getIpAddress()),//must guard for case where no ip is available
             "machine":machine,
             "id": nodeId
         }
@@ -758,27 +758,25 @@ function NetGraph(scenario, parent){
      * @description Returns an available slot within the ip netmask, based on the current groupings. returns "" if no addresses are available.
      * @param {String} netMask Network section of the ip address, to be compared against existing netmask groupings.
      */
-    this.getAvailableIpByNetMask = function(netMask){
+    this.getAvailableIpByNetMask = function(netMask, preferred){
         var ip = netMask
         var octets = netMask.split(".")
-        if(this.groupingsByNetMask[netMask] != undefined && this.groupingsByNetMask[netMask] != null){
-            var nodesInNet = this.groupingsByNetMask[netMask]
-            ip = this.getNextAvailableIP(netMask, nodesInNet, 4 - octets.length)
-        }else{
-            
-            if(octets.length > 0 && octets.length < 4){
-                for(var i = octets.length; i<4; i++){
-                   ip += "." + 1 
-                   
-                }
-            }else{
-                return ""
-            }
+        if(this.groupingsByNetMask[netMask] == null){
+            this.groupingsByNetMask[netMask] = []
         }
+        
+        var nodesInNet = this.groupingsByNetMask[netMask]
+        ip = this.getAvailableIP(netMask, preferred, nodesInNet, 4 - octets.length)
+        
         return ip
     }
 
-    this.getNextAvailableIP = function(netMask, addressList, slots){
+    this.getAvailableIP = function(netMask, preferred, addressList, slots){
+        
+        if (preferred!=null && preferred!="" && addressList.indexOf(preferred)==-1){
+            addressList.push(preferred)
+            return preferred
+        }
         
         
         var counters = []
@@ -790,7 +788,10 @@ function NetGraph(scenario, parent){
         while(i > -1){
             
             if(addressList.indexOf(netMask + "." + counters.join(".")) < 0){
-                return netMask + "." + counters.join(".")
+                var generated = netMask + "." + counters.join(".")
+                // Reserve
+                addressList.push(generated)
+                return generated
             }else{
                 
                 counters[i] += 1
@@ -956,4 +957,6 @@ function NetGraph(scenario, parent){
             this.onSelectedNodeChangedCallback = callbackFunction
         }
     }
+    
+    koko=this
 }

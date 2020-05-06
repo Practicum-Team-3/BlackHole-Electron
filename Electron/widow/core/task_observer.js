@@ -1,6 +1,6 @@
 /**
  * @class TaskObserver
- * @version 1.0.0
+ * @version 1.0.1
  * @description Observes a specific task running in Black Widow
  * @param   {WidowSettings} widowSettings
  * @param   {string}        taskCheckPath      Path to the task check service
@@ -48,7 +48,7 @@ TaskObserver.prototype.requestTaskProgress = function(){
             //if response says download is not 100%
             this.callProgress(Math.ceil(100*response.data.body.current/response.data.body.total))
             
-            if (response.data.body.state == "PROGRESS"){
+            if (response.data.body.state == "PROGRESS" || response.data.body.state == "PENDING"){
                 
                 // Setup to request progress again
                 setTimeout(this.requestTaskProgress.bind(this), 700)
@@ -74,7 +74,7 @@ TaskObserver.prototype.requestTaskProgress = function(){
 
 /**
  * @class TaskMaster
- * @version 1.0.0
+ * @version 1.0.1
  * @description Set of functions that can be inherited directly to help in the observing of tasks
  * @param {WidowSettings} widowSettings
  */
@@ -87,14 +87,15 @@ function TaskMaster(widowSettings){
      * @description Starts the observing of a task by instantiating a TaskObserver. Removes the observer when task is completed
      * @param   {string}        taskCheckPath      Path to the task check service
      * @param   {string}        taskId             ID of the task to check
-     * @param   {function}      prograssCallback   Callback to update progress. Gets passed int for percentage
+     * @param   {function}      prograssCallback   Optional: Callback to update progress. Gets passed int for percentage
      * @param   {function}      completionCallback Callback for when the task is done
      */
     this.observe = function(taskCheckPath, taskId, progressCallback, completionCallback){
-        if (taskId==undefined || progressCallback==undefined || completionCallback==undefined){
+        if (taskId==undefined || completionCallback==undefined){
+            console.log("Refused to observe task "+taskId)
             return
         }
-        
+        console.log("Observing task "+taskId)
         var completionCallbackWrap = function(){
             completionCallback()
             this.removeObserver(taskId)
