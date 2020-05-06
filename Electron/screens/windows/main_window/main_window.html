@@ -57,22 +57,22 @@
                     -->
                     <li class="nav-item">
                         <a class="nav-link" id="saveScenarioButton" title="Save Scenario" href="#" onclick="saveScenario(event)">
-                            <icon>save</icon>Save
+                            <largeIcon>save</largeIcon>Save
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="runScenarioButton" title="Run Scenario" href="#" onclick="runScenario(event)">
-                            <icon>play</icon>Run
+                            <largeIcon>play</largeIcon>Run
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" title="Remote Desktop" onclick="openBrowserWindow(widow.getRemoteDesktopAddress())">
-                            <icon>mortar-pestle</icon>RDP
+                            <largeIcon>mortar-pestle</largeIcon>RDP
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" title="Analytics Dashboard" onclick="openBrowserWindow(widow.getAnalyticsAddress())">
-                            <icon>tachometer-alt</icon>Analytics
+                            <largeIcon>tachometer-alt</largeIcon>Analytics
                         </a>
                     </li>
                     <!--
@@ -160,12 +160,26 @@
         </div>
         
         <!-- Toast -->
-        <div class="toast">
-            <div class="toast-header" id="toastHeader">
-                Toast Header
+        <div class="toast toastMessage">
+            <div class="toast-header">
+                <strong class="mr-auto text-primary" id="toastHeader">TH</strong>
             </div>
             <div class="toast-body" id="toastBody">
-                Some text inside the toast body
+                TB
+            </div>
+        </div>
+        
+        <div class="toast toastProgress" data-autohide="false">
+            <div class="toast-header">
+                <span class="spinner-border spinner-border-sm text-primary mr-1"></span>
+                <strong class="mr-auto text-primary" id="toastProgressHeader">TPH</strong>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+            </div>
+            <div class="toast-body" id="toastProgressBody">
+                TPB
+            </div>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped" style="width:0" id="toastProgressBar"></div>
             </div>
         </div>
         

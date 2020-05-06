@@ -9,6 +9,13 @@ label{
 
 icon{
     font-family: icons;
+    white-space: pre;
+    display: inline-block;
+    width: 30px;
+}
+
+largeicon{
+    font-family: icons;
     font-size: 17pt;
     padding-left: 3px;
     padding-right: 3px;
@@ -73,4 +80,8 @@ icon{
 /* Form */
 .form-control{
     height: 32px;
+}
+.form-row {
+    margin-right: 0;
+    margin-left: 0;
 }

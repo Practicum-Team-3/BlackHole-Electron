@@ -88,3 +88,10 @@
 .list-group-item {
     padding: 0.40rem 1rem;
 }
+
+/* Progress bar */
+.progress{
+    height: 6px;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0; 
+}
