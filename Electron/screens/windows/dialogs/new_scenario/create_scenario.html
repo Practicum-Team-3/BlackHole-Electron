@@ -14,6 +14,11 @@
                 window.$ = window.jQuery = require("../../../../node_modules/jquery/dist/jquery")
             }catch{}
 
+            var additionalArgs = []
+            var scenarioBeingEdited = undefined
+
+            const remote = require('electron').remote
+
             //Creates a new scenario object
             function createScenario(){
                 scenarioName = document.getElementById("name").value;
@@ -53,6 +58,20 @@
             function cancel(){
                 electron.remote.getCurrentWindow().close()
             }
+
+            function saveScenario(){
+                if(scenarioBeingEdited != undefined){
+                    var scenario = widow.scenarios.getScenarioByName(scenarioBeingEdited)
+                    
+                    scenario.setName(document.getElementById("name").value)
+                    scenario.setDescription(document.getElementById("description").value)
+
+                    emitModifiedEvent(scenario, null, modificationTypes.EDITED, "getName")
+                    emitModifiedEvent(scenario, null, modificationTypes.EDITED, "getDescription")
+                }
+                electron.remote.getCurrentWindow().close()
+            }
+
     </script>
 
     <!-- -->
@@ -77,8 +96,8 @@
 <body>
     <div class="container">
         <br>
-        <h3>Create Scenario</h3>
-        <form onsubmit="createScenario(); return false">
+        <h3 id="WindowTitle">Create Scenario</h3>
+        <form id="MainForm" onsubmit="createScenario(); return false">
             <div class="form-group" id="rosvox">
                 <label for="name">Scenario:</label>
                 <input type="text" class="form-control disableable" id="name" required>
@@ -92,5 +111,23 @@
             <button class="btn btn-danger float-right" type="button" onclick="cancel()">Cancel</button>
         </form>
     </div>
+
+    <script>
+
+        additionalArgs = window.process.argv[window.process.argv.length - 1].split("=")
+        
+        if(additionalArgs[0] == "SCENARIO_EDIT"){
+            scenarioBeingEdited = additionalArgs[1].split(";")[0]
+            document.getElementById("WindowTitle").innerHTML = "Edit Scenario"
+            document.getElementById("name").value = additionalArgs[1].split(";")[0]
+            document.getElementById("description").value =additionalArgs[1].split(";")[1]
+            document.getElementById("subm").innerHTML = "Save"
+            document.getElementById("MainForm").setAttribute("onsubmit", "saveScenario()")
+           
+            //Changing name of scenario will change name on body of collapsible but not header
+            //for this reason, changing name is temporarily disabled
+            document.getElementById("name").disabled = true        
+        }
+    </script>
 </body>
 </html>

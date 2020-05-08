@@ -23,7 +23,7 @@ function ScenariosListOverview(scenariosListNode){
 
     // Create a form to put all of the components in
     var formNode = document.createElement("form")
-    // formNode.style = "background-color:red"
+    
     formNode.className = "scenariosListCollapsiblesForm"
     formNode.id = "scenarioListForm"
     formNode.setAttribute("onSubmit", "return false")
@@ -34,7 +34,7 @@ function ScenariosListOverview(scenariosListNode){
     this.interface.selectNode(this.interface.getNodes()["scenariosListCollapsiblesForm"])
 
     this.interface.selectNode(this.interface.getNodes()["scenariosListOptions"])
-    //this.interface.getNodes()["scenariosListOptions"].style = "height:20%;"
+
     this.interface.getNodes()["scenariosListOptions"].className = "fixedFlex container scenariosListOptions bg-dark"
 
     var optionButtons = { "Create Scenario_primary": function () { openWindow('./screens/windows/dialogs/new_scenario/create_scenario.html', 530, 355, false, true)}, "Upload Scenario_info":function(){showToast("Upload Scenario", "Not yet implemented")}}
@@ -71,12 +71,10 @@ function ScenariosListOverview(scenariosListNode){
         boxName = boxName.replace(/\//gi, '-').split(".").join("-")
 
         showToast("Include Node", "Implemented but disabled")
-        // netGraph.addNewNode(boxName, "victim")
     }
 
     this.removeScenario = function(scenario){
        
-        //console.log("strScenarioName")
         var strScenarioName = scenario.getName()
         const { dialog } = require('electron').remote
         
@@ -96,6 +94,10 @@ function ScenariosListOverview(scenariosListNode){
             emitModifiedEvent(widow.scenarios, null, modificationTypes.REMOVED_ELEMENT, scenario)
         }
     }
+
+    this.editFields = function(scenario){
+        openWindow('./screens/windows/dialogs/new_scenario/create_scenario.html', 530, 355, false, true, false, ["SCENARIO_EDIT="+scenario.getName()+";"+scenario.getDescription()])
+    }
 }
 
 
@@ -107,8 +109,7 @@ function ScenariosListOverview(scenariosListNode){
 ScenariosListOverview.prototype.setScenarios = function (scenariosObject){
     this.clear()
     this.scenariosObject = scenariosObject
-    //console.log(scenariosObject.getAllScenarios());
-    //onModified(this.scenariosObject, this.scenariosModified.bind(this))
+
     this.onScenariosModified = this.scenariosModified.bind(this);
     onModified(this.scenariosObject, this.onScenariosModified)
     this.update()
@@ -164,7 +165,8 @@ ScenariosListOverview.prototype.addScenarioSection = function(scenario){
     group.labels.machineCount = this.interface.addLabelPair(null, "No. Machines:", "scenarioNoMachines", scenario.machines.getAllMachines().length).rightLabel
     group.labels.status = this.interface.addLabelPair(null, "Status:", "scenarioStatus", "Running").rightLabel
     var strScenarioName = scenario.getName();
-    this.interface.addOpenEditButtons(null, openScenario.bind(event, scenario), null, this.removeScenario.bind(event, scenario))
+    this.interface.addEditDeleteButtons(null, this.editFields.bind(this, scenario), null, this.removeScenario.bind(event, scenario))
+    this.interface.addOpenButton("openScenarioButton", openScenario.bind(event, scenario), "")
     this.interface.selectNode(this.interface.getNode("scenariosListCollapsiblesForm"))
     
     // Add mapping to be able to retrieve later

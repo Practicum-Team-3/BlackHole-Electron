@@ -311,7 +311,7 @@ NodeCombos.prototype.addButtonPair = function(leftButtonName, leftButtonLabel, l
  * @param {function} deleteOnClick Reference to a function to call when the delete button gets clicked
  */
 NodeCombos.prototype.addEditDeleteButtons = function(editName, editOnClick, deleteName, deleteOnClick){
-    this.addButtonPair(editName, "Edit", "col shadow ml-5 mr-1 mt-2 btn btn-primary", editOnClick, deleteName, "Delete", "col shadow ml-1 mr-5 mt-2 btn btn-danger", deleteOnClick)
+    this.addButtonPair(editName, "<icon>pen</icon>", "col shadow ml-5 mr-1 mt-2 btn btn-primary", editOnClick, deleteName, "<icon>trash</icon>", "col shadow ml-1 mr-5 mt-2 btn btn-danger", deleteOnClick)
 }
 
 NodeCombos.prototype.addOpenEditButtons = function(openName, openOnClick, editName, editOnClick){
@@ -326,6 +326,12 @@ NodeCombos.prototype.addDeleteButton = function(name, onClick, _label){
     var label = _label==null ? "" : _label
     var deleteButton = new this.Button(name, "<icon>trash</icon>"+label, "col shadow ml-5 mr-5 mt-2 btn btn-danger", onClick)
     this.addButtons([deleteButton])
+}
+
+NodeCombos.prototype.addOpenButton = function(name, onClick, _label){
+    var label = _label==null ? "" : _label
+    var openButton = new this.Button(name, "<icon>external-link-alt</icon>"+label, "col shadow ml-5 mr-5 mt-2 btn btn-success", onClick)
+    this.addButtons([openButton])
 }
 
 /**
