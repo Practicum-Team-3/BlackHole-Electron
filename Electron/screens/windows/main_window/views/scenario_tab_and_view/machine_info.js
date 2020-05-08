@@ -207,7 +207,7 @@ function MachineInfo(machineInfoNode, scenario){
         interface.deselectNode()
         interface.addCollapsibleGroup(null, "Network", "network-wired", null, true)
 
-        interface.addLabelAndInput(null, "Network:", "networkValue", "")
+        //interface.addLabelAndInput(null, "Network:", "networkValue", "")
         interface.addLabelPairLeft(null, "IP:", "setIpAddress-getIpAddress", "")
 
         // === Program
