@@ -1,6 +1,6 @@
 /**
  * @class TaskObserver
- * @version 1.0.1
+ * @version 1.0.2
  * @description Observes a specific task running in Black Widow
  * @param   {WidowSettings} widowSettings
  * @param   {string}        taskCheckPath      Path to the task check service
@@ -53,7 +53,7 @@ TaskObserver.prototype.requestTaskProgress = function(){
                 // Setup to request progress again
                 setTimeout(this.requestTaskProgress.bind(this), 700)
                 
-            }else if (response.data.body.state == "SUCCESS"){
+            }else if (response.data.body.state == "SUCCESS" || response.data.body.state == "COMPLETE"){
                 
                 console.log("Task complete...")
                 this.callCompletion()
