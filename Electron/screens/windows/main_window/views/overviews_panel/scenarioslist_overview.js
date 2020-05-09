@@ -153,17 +153,17 @@ ScenariosListOverview.prototype.update = function(){
 
 ScenariosListOverview.prototype.addScenarioSection = function(scenario){
     var group = this.interface.addCollapsibleGroup(scenario.getName(), scenario.getName(), "scroll", "#scenarioListForm")
-    // General details
-    this.interface.addLabelPair(null, "Name:", "scenarioName", scenario.getName())
 
     // Keep access to labels on group node
     group.labels = {}
     
+    // General details
+    group.labels.getName = this.interface.addLabelPair(null, "Name:", "scenarioName", scenario.getName()).rightLabel
     group.labels.getDescription = this.interface.addLabelPair(null, "Description:", "scenarioDes", scenario.getDescription()).rightLabel
     group.labels.getCreationDate = this.interface.addLabelPair(null, "Creation Date:", "scenarioCreationDate", scenario.getCreationDate().toLocaleDateString()).rightLabel
     group.labels.getLastAccessed = this.interface.addLabelPair(null, "Last Accessed:", "scenarioLastAccessed", scenario.getLastAccessed().toLocaleDateString()).rightLabel
     group.labels.machineCount = this.interface.addLabelPair(null, "No. Machines:", "scenarioNoMachines", scenario.machines.getAllMachines().length).rightLabel
-    group.labels.status = this.interface.addLabelPair(null, "Status:", "scenarioStatus", "Running").rightLabel
+    //group.labels.status = this.interface.addLabelPair(null, "Status:", "scenarioStatus", "Running").rightLabel
     var strScenarioName = scenario.getName();
     this.interface.addEditDeleteButtons(null, this.editFields.bind(this, scenario), null, this.removeScenario.bind(event, scenario))
     this.interface.addOpenButton("openScenarioButton", openScenario.bind(event, scenario), "")
@@ -211,11 +211,19 @@ ScenariosListOverview.prototype.scenariosModified = function(target, modificatio
 ScenariosListOverview.prototype.scenarioModified = function(target, modificationType, arg){
     // Retrieve the group node from the map
     var group = this.scenarioSections.get(target)
+    console.log(arg)
     switch(modificationType){
         case modificationTypes.EDITED:
             // Check if modification conforms to the superautomaticnamingpractice
             if (group.labels[arg]!=null && target[arg]!=null){
                 group.labels[arg].innerText = target[arg]()
+            }
+            
+            // Special actions
+            switch (arg){
+                case "getName"://Also need to change group title
+                    group.titleNode.innerText = target.getName()
+                break
             }
         break;
     }

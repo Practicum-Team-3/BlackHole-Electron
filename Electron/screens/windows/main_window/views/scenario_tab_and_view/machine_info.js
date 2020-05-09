@@ -71,7 +71,7 @@ function MachineInfo(machineInfoNode, scenario){
         this.getNode("setBaseMemory-getBaseMemory").dispatchEvent(new Event("input"))
         this.getNode("setProcessors-getProcessors").value = machine.getProcessors()
         this.getNode("setProcessors-getProcessors").dispatchEvent(new Event("input"))
-        this.getNode("networkValue").value = ""
+        //this.getNode("networkValue").value = ""
         this.getNode("setIpAddress-getIpAddress").innerHTML = machine.networkSettings.getIpAddress()
 
     }.bind(this)

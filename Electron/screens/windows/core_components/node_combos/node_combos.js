@@ -143,7 +143,7 @@ function NodeCombos(parentNode){
  * @param   {string}  iconLigature Optional: ligature of an icon to use on the group
  * @param   {string}  dataParent   Optional: Parent of the group, only 1 group can be opened when under a parent
  * @param   {boolean} willShow     Optional: Boolean for if group should be open by default
- * @returns {object} The top node of the group
+ * @returns {object} The top node of the group with members to access some inner nodes: .iconNode, .titleNode, groupBody
  */
 NodeCombos.prototype.addCollapsibleGroup = function(groupName, title, iconLigature, dataParent, willShow){
     var groupId = generateUniqueId()
@@ -151,8 +151,19 @@ NodeCombos.prototype.addCollapsibleGroup = function(groupName, title, iconLigatu
     //Make the title
     var group = addNode(this.currentNode, "div", "card")
     var header = addNode(group, "div", "card-header shadow-sm")
-    var link = addHyperlinkNode(header, "card-link", "#"+groupId, getLinkHTML(title, iconLigature))
+    var link = addHyperlinkNode(header, "card-link", "#"+groupId, "<icon></icon><grouptitle></grouptitle>")
     link.setAttribute("data-toggle", "collapse")
+    //Keep easy access reference
+    group.iconNode = link.getElementsByTagName("icon")[0]
+    group.titleNode = link.getElementsByTagName("grouptitle")[0]
+    
+    if (title!=null){
+        group.titleNode.innerText = title
+    }
+    
+    if (iconLigature!=null){
+        group.iconNode.innerText = iconLigature
+    }
     
     //Make a place for the content
     var collapse = addNode(group, "div", "collapse"+(willShow?" show":""))
@@ -174,11 +185,6 @@ NodeCombos.prototype.addCollapsibleGroup = function(groupName, title, iconLigatu
     this.selectNode(body)
     
     return group
-    
-    //Generates the html for inside the link
-    function getLinkHTML(title, iconLigature){
-        return (iconLigature==null ? "" : "<div class='iconArea'>"+iconLigature+"</div>")+title
-    }
 }
 
 /**
@@ -234,9 +240,9 @@ NodeCombos.prototype.addLabel = function(labelName, labelText){
 /**
  * @class Button
  * @description Descriptor for a button
- * @param {string}   name      Name to give the button
- * @param {string}   innerHTML Content for the inside of the button node
- * @param {string}   className Style classes to give the button
+ * @param {string}   name         Name to give the button
+ * @param {string}   innerHTML    Content for the inside of the button node
+ * @param {string}   className    Style classes to give the button
  * @param {function} rightOnClick Reference to a function to call when the button gets clicked
  */
 NodeCombos.prototype.Button = function(name, innerHTML, className, onClick){
@@ -248,7 +254,7 @@ NodeCombos.prototype.Button = function(name, innerHTML, className, onClick){
 
 /**
  * @function addButtons
- * @description Adds multiple button nodes in a row
+ * @description Adds multiple button nodes in a single row
  * @param {NodeCombos.Button[]} buttonList Array with Button objects
  */
 NodeCombos.prototype.addButtons = function(buttonList){
