@@ -14,28 +14,24 @@ function ScenariosListOverview(scenariosListNode){
 
     this.interface = new NodeCombos(sectionsContainer)
 
+    //
     var sections = ["scenariosListCollapsibles", "scenariosListOptions"]
     this.interface.addMultipleSections(sections)
     //populate the collapsibles
-    this.interface.selectNode(this.interface.getNodes()["scenariosListCollapsibles"])
-    this.interface.getNodes()["scenariosListCollapsibles"].style = "overflow-y:scroll; overflow-x:hidden"
-    this.interface.getNodes()["scenariosListCollapsibles"].className = "stretchFlex scenariosListCollapsibles bg-light"
+    this.interface.selectNode(this.interface.getNode("scenariosListCollapsibles"))
+    this.interface.getNode("scenariosListCollapsibles").style = "overflow-y:scroll; overflow-x:hidden"
+    this.interface.getNode("scenariosListCollapsibles").className = "stretchFlex scenariosListCollapsibles bg-light"
 
     // Create a form to put all of the components in
     var formNode = document.createElement("form")
-    
     formNode.className = "scenariosListCollapsiblesForm"
     formNode.id = "scenarioListForm"
     formNode.setAttribute("onSubmit", "return false")
 
     this.interface.addReferenceToNode(formNode.className, formNode)
-    this.interface.getNodes()["scenariosListCollapsibles"].appendChild(formNode)
-
-    this.interface.selectNode(this.interface.getNodes()["scenariosListCollapsiblesForm"])
-
-    this.interface.selectNode(this.interface.getNodes()["scenariosListOptions"])
-
-    this.interface.getNodes()["scenariosListOptions"].className = "fixedFlex container scenariosListOptions bg-dark"
+    this.interface.getNode("scenariosListCollapsibles").appendChild(formNode)
+    this.interface.selectNode(this.interface.getNode("scenariosListOptions"))
+    this.interface.getNode("scenariosListOptions").className = "fixedFlex container scenariosListOptions bg-dark"
 
     var optionButtons = { "Create Scenario_primary": function () { openWindow('./screens/windows/dialogs/new_scenario/create_scenario.html', 530, 355, false, true)}, "Upload Scenario_info":function(){showToast("Upload Scenario", "Not yet implemented")}}
     
@@ -45,43 +41,21 @@ function ScenariosListOverview(scenariosListNode){
 
 
     //-------------------------------------------
-    this.getInterface = function(){
-        return this.interface
-    }
     
-    this.scenarioModifiedBound = this.scenarioModified.bind(this)
-
-    this.removeScenarioSectionBound = this.removeScenarioSection.bind(this)
-
-    this.getNode = function(nodeName){
-        return this.getInterface().getNodes()[nodeName]
-    }
-
-    this.getTabLabel = function(){
-        return this.nameForTabLabel
-    }
-
-    this.setNode = function(element){
-        this.scenariosListNode = element
-    }
-
-    this.includeClicked = function(i){
-
-        var boxName = this.scenariosObject.getScenariosList()[i]
-        boxName = boxName.replace(/\//gi, '-').split(".").join("-")
-
-        showToast("Include Node", "Implemented but disabled")
-    }
-
+    /**
+     * @function removeScenario
+     * @description Called by delete button, to delete a scenario
+     * @param {Scenario} scenario
+     */
     this.removeScenario = function(scenario){
        
         var strScenarioName = scenario.getName()
         const { dialog } = require('electron').remote
         
         //Minimum options object
-        let options  = {
-         buttons: ["Cancel","Yes"],
-         message: "Do you really want to delete Scenario " + strScenarioName + "?"
+        let options = {
+            buttons: ["Cancel","Yes"],
+            message: "Do you really want to delete Scenario " + strScenarioName + "?"
         }
         
         //Synchronous usage
@@ -95,11 +69,18 @@ function ScenariosListOverview(scenariosListNode){
         }
     }
 
+    /**
+     * function editFields
+     * @description Called by the edit button, to edit scenario details
+     * @param {Scenario} scenario
+     */
     this.editFields = function(scenario){
         openWindow('./screens/windows/dialogs/new_scenario/create_scenario.html', 530, 355, false, true, false, ["SCENARIO_EDIT="+scenario.getName()+";"+scenario.getDescription()])
     }
 }
 
+//=====================================
+//=====================================
 
 /**
  * @function setScenarios
@@ -112,22 +93,22 @@ ScenariosListOverview.prototype.setScenarios = function (scenariosObject){
 
     this.onScenariosModified = this.scenariosModified.bind(this);
     onModified(this.scenariosObject, this.onScenariosModified)
-    this.update()
+    this.addScenarioSectionsForAll()
 }
 
 /**
  * @function clear
- * @description Call to unassign the scenario from the machine info
+ * @description Call to clear internals before removing nodes
  */
 ScenariosListOverview.prototype.clear = function(){
     if (this.scenariosObject==null){
         return
     }
-    removeOnModifiedListener(this.scenariosObject, this.update)
+    //removeOnModifiedListener(this.scenariosObject, this.update)
     this.scenariosObject = null
 
     //clear collapsibles
-    var formContainer = this.interface.getNodes()["scenariosListCollapsiblesForm"]
+    var formContainer = this.interface.getNode("scenariosListCollapsiblesForm")
     var containerChildren = formContainer.children
 
     for(var i = 0; i<containerChildren.length;i++){
@@ -135,7 +116,11 @@ ScenariosListOverview.prototype.clear = function(){
     }
 }
 
-ScenariosListOverview.prototype.update = function(){
+/**
+ * @function addScenarioSectionsForAll
+ * @description Makes repeated calls to addScenarioSection() to add sections for all scenarios in the scenario list
+ */
+ScenariosListOverview.prototype.addScenarioSectionsForAll = function(){
     if (this.scenariosObject==null){
         return
     }
@@ -143,7 +128,7 @@ ScenariosListOverview.prototype.update = function(){
     //get scenariosList should return a list of JSON objects with more details for each box than just OS    
     var scenariosArray = this.scenariosObject.getAllScenarios()
 
-    this.interface.selectNode(this.interface.getNodes()["scenariosListCollapsiblesForm"])
+    this.interface.selectNode(this.interface.getNode("scenariosListCollapsiblesForm"))
 
     //populate the form
     for (var i = 0; i <scenariosArray.length;i++){
@@ -151,6 +136,12 @@ ScenariosListOverview.prototype.update = function(){
     }
 }
 
+/**
+ * @function addScenarioSection
+ * @description Adds a section corresponding to a scenario
+ * @param   {Scenario}   scenario Scenario to link this section to
+ * @returns {DOMNode} The DOM-node of the group added for the scenario
+ */
 ScenariosListOverview.prototype.addScenarioSection = function(scenario){
     var group = this.interface.addCollapsibleGroup(scenario.getName(), scenario.getName(), "scroll", "#scenarioListForm")
 
@@ -161,7 +152,8 @@ ScenariosListOverview.prototype.addScenarioSection = function(scenario){
     group.labels.getName = this.interface.addLabelPair(null, "Name:", "scenarioName", scenario.getName()).rightLabel
     group.labels.getDescription = this.interface.addLabelPair(null, "Description:", "scenarioDes", scenario.getDescription()).rightLabel
     group.labels.getCreationDate = this.interface.addLabelPair(null, "Creation Date:", "scenarioCreationDate", scenario.getCreationDate().toLocaleDateString()).rightLabel
-    group.labels.getLastAccessed = this.interface.addLabelPair(null, "Last Accessed:", "scenarioLastAccessed", scenario.getLastAccessed().toLocaleDateString()).rightLabel
+    // This guy needs additional processing, so it doesn't conform to the superautomaticnamingpractice
+    group.labels.lastAccessed = this.interface.addLabelPair(null, "Last Accessed:", "scenarioLastAccessed", scenario.getLastAccessed().toLocaleDateString()).rightLabel
     group.labels.machineCount = this.interface.addLabelPair(null, "No. Machines:", "scenarioNoMachines", scenario.machines.getAllMachines().length).rightLabel
     //group.labels.status = this.interface.addLabelPair(null, "Status:", "scenarioStatus", "Running").rightLabel
     var strScenarioName = scenario.getName();
@@ -173,12 +165,16 @@ ScenariosListOverview.prototype.addScenarioSection = function(scenario){
     this.scenarioSections.set(scenario, group)
     
     // Subscribe to scenario modifications
-    onModified(scenario, this.scenarioModifiedBound)
+    onModified(scenario, this.scenarioModified.bind(this))
     
     return group
 }
 
-//Remove Scenarios
+/**
+ * @function rmeoveScenarioSection
+ * @description Removes the section corresponding to a scenario
+ * @param {Scenario} scenario Scenario of the section to remove
+ */
 ScenariosListOverview.prototype.removeScenarioSection = function (scenario) {
     // Retrieve the group node from the map
     var group = this.scenarioSections.get(scenario)
@@ -192,6 +188,10 @@ ScenariosListOverview.prototype.removeScenarioSection = function (scenario) {
     this.scenarioSections.delete(scenario)
 }
 
+/**
+ * @function scenariosModified
+ * @description Callback for when the scenarios object in widow gets modified
+ */
 ScenariosListOverview.prototype.scenariosModified = function(target, modificationType, arg){
     
     switch(modificationType){
@@ -203,15 +203,19 @@ ScenariosListOverview.prototype.scenariosModified = function(target, modificatio
             break;
 
         case modificationTypes.REMOVED_ELEMENT:
-            var group = this.removeScenarioSectionBound(arg)
+            var group = this.removeScenarioSection(arg)
             break;
     }
 }
 
+/**
+ * @function scenarioModified
+ * @description Callback for when a single specific scenario is modified
+ */
 ScenariosListOverview.prototype.scenarioModified = function(target, modificationType, arg){
     // Retrieve the group node from the map
     var group = this.scenarioSections.get(target)
-    console.log(arg)
+    
     switch(modificationType){
         case modificationTypes.EDITED:
             // Check if modification conforms to the superautomaticnamingpractice
@@ -219,11 +223,15 @@ ScenariosListOverview.prototype.scenarioModified = function(target, modification
                 group.labels[arg].innerText = target[arg]()
             }
             
-            // Special actions
+            // Special actions & non-conforming fields
             switch (arg){
                 case "getName"://Also need to change group title
                     group.titleNode.innerText = target.getName()
                 break
+                case "getLastAccessed":
+                    group.labels.lastAccessed.innerText = target.getLastAccessed().toLocaleDateString()
+                break
+                
             }
         break;
     }

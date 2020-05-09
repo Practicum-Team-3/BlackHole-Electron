@@ -14,6 +14,10 @@ function ScenarioTabAndView(scenario, tabBarNode, scenarioViewsNode){
     var netGraph = null
     var scenarioCloseCallback = null
     
+    //Update the last accessed field of the scenario and tell everyone
+    scenario.setLastAccessed(new Date())
+    emitModifiedEvent(scenario, null, modificationTypes.EDITED, "getLastAccessed")
+    
     //create a single scenario view (a div node)
     var scenarioViewNode = document.createElement("div")
     scenarioViewNode.className = "tab-pane scenarioView"
