@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>BlackHole User Manual</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+html,body,h1,h2,h3,h4,h5,h6 {font-family: "Roboto", sans-serif;}
+.w3-sidebar {
+  z-index: 3;
+  width: 250px;
+  top: 43px;
+  bottom: 0;
+  height: inherit;
+}
+</style>
+<body>
+
+<!-- Navbar -->
+<div class="w3-top">
+    <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+        <a class="w3-bar-item w3-button w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1" href="javascript:void(0)" onclick="w3_open()"><i class="fa fa-bars"></i></a>
+        <a href="user_manual.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">About</a>
+        <a href="TypesOfPanels.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Types of Panels</a>
+        <a href="GettingStarted.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Getting Started</a>
+    </div>
+</div>
+
+<!-- Sidebar -->
+<nav class="w3-sidebar w3-bar-block w3-collapse w3-large w3-theme-l5 w3-animate-left" id="mySidebar">
+    <a href="javascript:void(0)" onclick="w3_close()" class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="Close Menu">
+        <i class="fa fa-remove"></i>
+    </a>
+    <h4 class="w3-bar-item"><b>Getting Started</b></h4>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#CreateScenario">Creating a new Scenario</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#DeleteScenario">Delete a Scenario</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#SaveScenario">Save a Scenario</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#RunScenario">Run a Scenario</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#AddBox">Add a Box</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#AddBoxVagrant">Add a Box from Vagrant</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#RemoveBox">Remove a Box from a Scenario</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#DeleteBox">Delete a Box from the tool</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#BoxSettings">Box Settings</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#Scenarios">View different Scenarios</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#UploadExploit">Upload an Exploit</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#AddExploit">Add an Exploit</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#DeleteExploit">Delete an Exploit</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#AddProgram">Add a Program</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#UploadProgram">Upload a Program</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#DeleteProgram">Delete a Program</a>
+    <a class="w3-bar-item w3-button w3-hover-black" href="#RDP">RDP</a>
+
+
+</nav>
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
+<div class="w3-main" style="margin-left:250px">
+
+<!--Create Scenario-->
+    <div class="w3-row w3-padding-64">
+        <div class="w3-twothird w3-container">
+            <a id="CreateScenario"></a>
+            <h1 class="w3-text-teal">Creating a new Scenario</h1>
+            <p>To create a new scenario you must already be connected to the tool.
+                This process will allow you to add systems to a uniquely named scenario. You may also edit the scenario after creating it or delete it. You have to create a scenario to run attacks from one system to another.
+            <p style="font-weight: bold;">Example: To create a new Scenario</p>
+            <ol>
+                <li>Click to the first tab of the “Overviews Panel” (the panel on the left). This is the Scenarios tab.</li>
+                <li>Click on the button labeled “Create Scenario”, located on the bottom of the panel. A dialog box will appear.</li>
+                <li>Enter a unique name on the first text box.</li>
+                <li>Enter a brief description of the scenario on the second text box (Optional).</li>
+                <li>Click on the button labeled “Create”.</li>
+            </ol>
+            <p style="color:red;">NOTE: The tool only allows you to enter only a unique name of each scenario, therefore, names may not be repeated.</p>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="CreateScenario.png" style="width:800px;height:500px;">
+    </div>
+
+<!-- Delete Scenario-->
+    <div class="w3-row">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="DeleteScenario"></a>
+            <h1 class="w3-text-teal">Delete a Scenario</h1>
+            <p>To delete a scenario you must already be connected to the tool. To delete a scenario, the scenario must have already been created.
+                This process will allow you to delete a scenario from the tool without deleting a duplicate system from another scenario.
+            <p style="font-weight: bold;">Example: To delete a new Scenario</p>
+            <ol>
+                <li>Click to the first tab of the “Overviews Panel” (the panel on the left). This is the Scenarios tab.</li>
+                <li>Click on the name of the Scenario you want to delete.</li>
+                <li>Click on the red trash bin button. A dialogue box should appear.</li>
+                <li>Click Yes to confirm you want to delete the Scenario.</li>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="DeleteScenario.png" style="width:800px;height:500px;">
+    </div>
+
+<!-- Save a Scenario-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="SaveScenario"></a>
+            <h1 class="w3-text-teal">Save a Scenario</h1>
+            <p>To save changes made to a scenario you must be connected to the tool. To save a scenario, the scenario must have already been created. This process will allow you to save any modifications made to a scenario.
+            <p style="font-weight: bold;">Example: To save a Scenario</p>
+            <ol>
+                <li>Click to the first tab of the “Overviews Panel” (the panel on the left). This is the Scenarios tab.</li>
+                <li>Click on the name of the Scenario you want to save.</li>
+                <li>Click on the green button under the Scenario to open the scenario onto the "Network Graph".</li>
+                <li>Click the save button, located at the top left corner of the screen. The save button will be an icon of a floppy disk. You should see a notification box appear on the top right corner once the scenario has been successfully saved.</li>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="SaveScenario.png" style="width:800px;height:500px;">
+    </div>
+    <!-- Run Scenario-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="RunScenario"></a>
+            <h1 class="w3-text-teal">Run a Scenario</h1>
+            <p>To run a scenario, you must be connected to the tool. To run a scenario, the scenario must already have been created. This process will allow you to run attacks from boxes that have already been set up with exploits and programs.
+            <p style="font-weight: bold;">Example: To run a Scenario</p>
+            <ol>
+                <li>Click to the first tab of the “Overviews Panel” (the panel on the left). This is the Scenarios tab.</li>
+                <li>Click on the name of the Scenario you want to save.</li>
+                <li>Click on the green button under the Scenario to open the scenario onto the "Network Graph".</li>
+                <li>Click the run button, located second to the top left corner of the screen. The run button will be an icon of a play button. You should see a notification box appear on the top right corner with a progress bar of the scenario running. Once the progress bar is complete, the same notification window will let you know the scenario has run successfully.</li>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="RunScenario.png" style="width:800px;height:500px;">
+    </div>
+    <!--Add a Box from Vagrant-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="AddBoxVagrant"></a>
+            <h1 class="w3-text-teal">Add a Box from Vagrant</h1>
+            <p>This process will allow you to add boxes to the system from Vagrant to be able to run a scenario and attacks from one system to another.
+            <p style="font-weight: bold;">Example: To Add a Box from Vagrant</p>
+            <ol>
+                <li>Click the second tab of the "Overviews Panel"(the panel on the left). This is the Boxes tab.</li>
+                <li>Click the bottom right button labeled, "Add from vagrant". A dialogue window should appear.</li>
+                <li>Enter the ID name for the box you want to add from Vagrant.</li>
+                <li>Click on the button labeled, "Download".</li>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="AddBoxVagrant.png" style="width:800px;height:500px;">
+    </div>
+
+<!--Add Box to a Scenario-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="AddBox"></a>
+            <h1 class="w3-text-teal">Add a Box to a Scenario</h1>
+            <p>To add a Box to a Scenario, the scenario must have already been created. This process will allow you to add boxes to a scenario to run attacks from one system to another.
+            <p style="font-weight: bold;">Example: To add a Box to a Scenario</p>
+            <ol>
+                <li>Click to the first tab of the “Overviews Panel” (the panel on the left). This is the Scenarios tab.</li>
+                <li>Click on the name of the Scenario you want to save.</li>
+                <li>Click on the green button under the Scenario to open the scenario onto the "Network Graph".</li>
+                <li>Click the second tab of the "Overviews Panel"(the panel on the left). This is the Boxes tab.</li>
+                <li>Click the name of the Box you want to add to the scenario.</li>
+                <li>Click click on the green button, in green and labeled as "+", located under the name of the Box.</li>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="AddBox.png" style="width:800px;height:500px;">
+    </div>
+
+<!--Remove a Box from a Scenario-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="RemoveBox"></a>
+            <h1 class="w3-text-teal">Remove a Box from a Scenario</h1>
+            <p>To remove a box from a scenario, the box must have already been uploaded into the tool and added to a scenario. This process will allow you to remove a box from the tool without removing the box from other scenarios or the entire tool.
+            <p style="font-weight: bold;">Example: To Remove a Box from a Scenario</p>
+            <ol>
+                <li>Click to the first tab of the “Overviews Panel” (the panel on the left). This is the Scenarios tab.</li>
+                <li>Click on the name of the Scenario you want to remove a Box from.</li>
+                <li>Click on the green button under the Scenario to open the scenario onto the "Network Graph".</li>
+                <li>Click on the node on the Network Graph that represents the box you want to remove.</li>
+                <li>On the right side panel, the "Settings Panel", click the button labeled as "Removed" and in red.</li>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="RemoveBox.png" style="width:800px;height:500px;">
+    </div>
+
+    <!--Delete a Box from the tool-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="DeleteBox"></a>
+            <h1 class="w3-text-teal">Delete a Box from the system</h1>
+            <p>To delete a box, the box must have already been uploaded into the tool. This process will allow you to delete a box from the tool.
+            <p style="font-weight: bold;">Example: To Delete a Box from the tool</p>
+            <ol>
+                <li>Click to the second tab of the “Overviews Panel” (the panel on the left). This is the Boxes tab.</li>
+                <li>Click on the name of the Box you want to delete from the tool.</li>
+                <li>Click on the red button under the Box name labeled with a "trash bin" icon.</li>
+                <li>Click on the button labeled, "Yes" to confirm deletion.</li>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="DeleteBox.png" style="width:800px;height:500px;">
+    </div>
+
+
+<!--Box Settings-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="BoxSettings"></a>
+            <h1 class="w3-text-teal">Box Settings</h1>
+            <p>This document makes the assumption that you are knowledgeable in the purpose of an automated malware and exploit data collection tool. You should have some knowledge in basic system settings, such as motherboard memory and processors. Lastly, you should have experience in operating buttons, drop down menus, and drag and drop on windows.
+            <p style="font-weight: bold;">Example: To change the Settings of a Box</p>
+            <ol>
+                <li>Click to the first tab of the “Overviews Panel” (the panel on the left). This is the Scenarios tab.</li>
+                <li>Click on the name of the Scenario you want to change the setting of a Box from.</li>
+                <li>Click on the green button under the Scenario to open the scenario onto the "Network Graph".</li>
+                <li>Click on the node on the Network Graph that represents the box you want to change the settings of.</li>
+                <li>On the right side panel, the "Settings Panel", you can make any changes using the drop-down menus and sliders.</li>
+                <p style="color:red;">NOTE: Changes in a Box will be saved after you have saved the scenario or have run the scenario.</p>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="BoxSettings.png" style="width:800px;height:500px;">
+    </div>
+
+<!--View different Scenarios-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="Scenarios"></a>
+            <h1 class="w3-text-teal">View different Scenarios</h1>
+            <p>Through this process you will be able to view different scenarios.
+            <p style="font-weight: bold;">Example: To view a different scenario</p>
+            <ol>
+                <li>Click to the first tab of the “Overviews Panel” (the panel on the left). This is the Scenarios tab.</li>
+                <li>Click on the name of the Scenario you want to view.</li>
+                <li>Click on the green button under the Scenario to open the scenario onto the "Network Graph".</li>
+                <li>Above the "Network Graph" you can click on the tab of the scenario you want to view/make changes to.</li>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="Scenarios.png" style="width:800px;height:500px;">
+    </div>
+
+<!--Upload Exploit-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="UploadExploit"></a>
+            <h1 class="w3-text-teal">Upload an Exploit</h1>
+            <p> This process will allow you to upload Exploits from your directory to the system. These exploits can then be installed in a box, used to attack other systems.
+            <p style="font-weight: bold;">Example: To Upload an Exploit to the system</p>
+            <ol>
+                <li>Click to the third tab of the “Overviews Panel” (the panel on the left). This is the Exploits tab.</li>
+                <li>Click on the button labeled, "Upload Exploit", located on the bottom right of the screen. A dialogue window should open.</li>
+                <li>Click on the "browse" button, to select the file from your computer's directory, and choose the file.</li>
+                <li>Select from the drop-down menu the target OS.</li>
+                <li>Enter a brief description of the exploit.</li>
+                <li>Click on the button labeled, "Upload".</li>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="UploadExploit.png" style="width:800px;height:500px;">
+    </div>
+
+    <!--Add Exploit-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="AddExploit"></a>
+            <h1 class="w3-text-teal">Add an Exploit</h1>
+            <p> To add an exploit to a box, the exploit must already be uploaded to the system. This process will allow you to automatically install an exploit to a Box.
+            <p style="font-weight: bold;">Example: To add an Exploit to a Box</p>
+            <ol>
+                <li>Click to the third tab of the “Overviews Panel” (the panel on the left). This is the Exploits tab.</li>
+                <li>Click on the name of the Exploit you want to add to a Box.</li>
+                <li>Click on the green button labeled, "+". A dialogue box should appear.</li>
+                <li>Enter the path of the box the exploit should be installed to.</li>
+                <li>Click on the button labeled, "Save".</li>
+                <p style="color:red;">NOTE: The exploit will be installed into the box until the scenario is ran.</p>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="AddExploit.png" style="width:800px;height:500px;">
+    </div>
+
+<!-- Delete Exploit-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="Delete Exploit"></a>
+            <h1 class="w3-text-teal">Delete an Exploit</h1>
+            <p> This process allow you to Delete an Exploit from the system.
+            <p style="font-weight: bold;">Example: To Delete an Exploit from the system</p>
+            <ol>
+                <li>Click to the third tab of the “Overviews Panel” (the panel on the left). This is the Exploits tab.</li>
+                <li>Click on the the name of the exploit you would like to delete.</li>
+                <li>Click on the red button labeled with a "trash bin" icon, located under the name of the Exploit. A dialogue box should appear.</li>
+                <li>Click on the button labeled "Yes" in the dialogue box, to confirm the deletion.</li>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="DeleteExploit.png" style="width:800px;height:500px;">
+    </div>
+
+    <!-- Upload a Program-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="UploadProgram"></a>
+            <h1 class="w3-text-teal">Upload a Program</h1>
+            <p> This process will allow you to upload Programs from your directory to the system. These programs can then be installed in a box.
+            <p style="font-weight: bold;">Example: To Upload a Program to the system</p>
+            <ol>
+                <li>Click to the fourth tab of the “Overviews Panel” (the panel on the left). This is the Exploits tab.</li>
+                <li>Click on the button labeled, "Upload Program", located on the bottom right of the screen. A dialogue window should open.</li>
+                <li>Click on the "browse" button, to select the file from your computer's directory, and choose the file.</li>
+                <li>Select from the drop-down menu the target OS.</li>
+                <li>Enter a brief description of the program.</li>
+                <li>Click on the button labeled, "Upload".</li>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="UploadProgram.png" style="width:800px;height:500px;">
+    </div>
+
+    <!--Add Program-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="AddProgram"></a>
+            <h1 class="w3-text-teal">Add a Program</h1>
+            <p> To add a Program to a box, the program must already be uploaded to the system. This process will allow you to automatically install a program to a Box.
+            <p style="font-weight: bold;">Example: To add a Program to a Box</p>
+            <ol>
+                <li>Click to the fourth tab of the “Overviews Panel” (the panel on the left). This is the Programs tab.</li>
+                <li>Click on the name of the Program you want to add to a Box.</li>
+                <li>Click on the green button labeled, "+". A dialogue box should appear.</li>
+                <li>Enter the path of the box the exploit should be installed to.</li>
+                <li>Click on the button labeled, "Save".</li>
+                <p style="color:red;">NOTE: The program will be installed into the box until the scenario is ran.</p>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="AddProgram.png" style="width:800px;height:500px;">
+    </div>
+
+    <!-- Delete a Program-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="DeleteProgram"></a>
+            <h1 class="w3-text-teal">Delete a Program</h1>
+            <p> This process allow you to Delete a Program from the system.
+            <p style="font-weight: bold;">Example: To Delete a Program from the system</p>
+            <ol>
+                <li>Click to the fourth tab of the “Overviews Panel” (the panel on the left). This is the Programs tab.</li>
+                <li>Click on the the name of the program you would like to delete.</li>
+                <li>Click on the red button labeled with a "trash bin" icon, located under the name of the Program. A dialogue box should appear.</li>
+                <li>Click on the button labeled "Yes" in the dialogue box, to confirm the deletion.</li>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="DeleteProgram.png" style="width:800px;height:500px;">
+    </div>
+
+    <!-- RDP-->
+    <div class="w3-row w3-padding-64">
+        <hr style="border: 1px solid black;" />
+        <div class="w3-twothird w3-container">
+            <a id="RPD"></a>
+            <h1 class="w3-text-teal">RDP</h1>
+            <p>This process will allow you to RDP from any box and any scenario. A scenario and a box must have already been created.
+            <p style="font-weight: bold;">Example: RDP to a box</p>
+            <ol>
+                <li>Click to the first tab of the “Overviews Panel” (the panel on the left). This is the Scenarios tab.</li>
+                <li>Click on the the name of the Scenario you would like to choose a Box from to RDP.</li>
+                <li>Click on the node in the Network Graph that represents the Box you want to RDP.</li>
+                <li>Click on the third icon from the top left of the screen, labeled "RDP". A screen should appear with the RDP.</li>
+            </ol>
+        </div>
+    </div>
+    <div class="w3-third w3-container">
+        <img src="RDP.png" style="width:800px;height:500px;">
+    </div>
+
+    <!--Footer-->
+
+    <footer id="myFooter">
+        <div class="w3-container w3-theme-l2 w3-padding-20">
+            <h4>BlackHole User Manual</h4>
+        </div>
+    </footer>
+
+    <!-- END MAIN -->
+</div>
+
+<script>
+// Get the Sidebar
+var mySidebar = document.getElementById("mySidebar");
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById("myOverlay");
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = "none";
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = "none";
+  overlayBg.style.display = "none";
+}
+</script>
+
+</body>
+</html>
