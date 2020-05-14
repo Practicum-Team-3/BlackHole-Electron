@@ -34,6 +34,84 @@
             }
             
             widow.setAxiosBridge(axiosBridge)
+            
+            
+            function uploadExp(){
+                electron.remote.getCurrentWebContents().session.clearStorageData(["cookies"])
+                const axios = require('axios')
+                
+                var fileList = document.getElementById("fileSelect").files
+                var file = fileList[0]
+                
+                const fs = require('fs')
+                stream = fs.createReadStream(file.path);
+                stream.pause()
+                
+                stream.on('data', (chunk) => {
+                    console.log(`Received ${chunk.length} bytes of data.`);
+                    stream.pause();
+                });
+                
+                var plok = function(){
+                    console.log("conconconconc")
+                }
+//                file.stream = plok
+//                file.arrayBuffer = plok
+//                file.slice = plok
+//                file.text = plok
+//                
+//                
+//                var blob = new Blob(["ahdadadwd22"])
+//                
+//                blob.stream = plok
+//                blob.arrayBuffer = plok
+//                blob.slice = plok
+//                blob.text = plok
+                
+                // /Users/LaunchZone/Downloads/registry.txt
+                /*
+                var stream = file.stream()
+                var reader = stream.getReader()
+
+                reader.read().then(function processText({done, value}){
+                    if (!done){
+                        hash.update(value)
+                        return reader.read().then(processText);
+
+                    }else{
+                        hash = hash.digest("hex")
+                        onHashCalculated()
+                    }
+                })
+                */
+                
+                
+                axios({
+                    method: "put",
+                    url: "http://nextcloud.localhost:9933/remote.php/dav/files/admin/programs/bin/loco.txt",
+                    auth: {
+                        username: "admin",
+                        password: "password"
+                    },
+                    data: file.stream(),
+                    onUploadProgress: function (progressEvent) {
+                        console.log("Pr: "+progressEvent.loaded+"/"+progressEvent.total)
+                    }
+                }).then(function (response) {
+
+                    console.log(response)
+
+                }.bind(this)).catch(function (error) {
+
+                    console.log(error)
+
+                }.bind(this))
+                
+                
+            }
         </script>
     </head>
+    <body>
+        <input type="file" class="form-control" id="fileSelect" required>
+    </body>
 </html>

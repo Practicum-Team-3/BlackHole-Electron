@@ -103,7 +103,7 @@ function makeBridge(){
         width: 500,
         height: 250,
         webPreferences: {nodeIntegration: true},
-        show: false
+//        show: false
     })
     
 
