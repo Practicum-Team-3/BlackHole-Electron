@@ -63,10 +63,10 @@
 //                
 //                var blob = new Blob(["ahdadadwd22"])
 //                
-//                blob.stream = plok
-//                blob.arrayBuffer = plok
-//                blob.slice = plok
-//                blob.text = plok
+                Blob.prototype.stream = plok
+                Blob.prototype.arrayBuffer = plok
+                Blob.prototype.slice = plok
+                Blob.prototype.text = plok
                 
                 // /Users/LaunchZone/Downloads/registry.txt
                 /*
@@ -86,6 +86,7 @@
                 */
                 
                 
+                
                 axios({
                     method: "put",
                     url: "http://nextcloud.localhost:9933/remote.php/dav/files/admin/programs/bin/loco.txt",
@@ -93,7 +94,7 @@
                         username: "admin",
                         password: "password"
                     },
-                    data: file.stream(),
+                    data: file,
                     onUploadProgress: function (progressEvent) {
                         console.log("Pr: "+progressEvent.loaded+"/"+progressEvent.total)
                     }
@@ -107,7 +108,17 @@
 
                 }.bind(this))
                 
+                /*
+                var xhr = new XMLHttpRequest()
+                xhr.open("put", "http://nextcloud.localhost:9933/remote.php/dav/files/admin/programs/bin/loco.txt", true)
+                xhr.setRequestHeader("Authorization", 'Basic ' + btoa('admin:password'));
                 
+                xhr.onprogress = function(event){
+                    console.log("Pr: "+event.loaded+"/"+event.total)
+                }
+                
+                xhr.send(file.stream().getReader())
+                */
             }
         </script>
     </head>
