@@ -196,6 +196,10 @@ function editInstalledProgram(machine, programName){
     openWindow('./screens/windows/dialogs/component_settings/program.html', 530, 225, false, true, false, ["--edit-mode=modify", "--program-name="+programName])
 }
 
+function openManual(){
+    openWindow('./screens/windows/manual/user_manual.html', 1124, 550, true, false, false)
+}
+
 //======================
 // Toast
 //======================
